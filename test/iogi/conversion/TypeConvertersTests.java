@@ -2,9 +2,6 @@ package iogi.conversion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import iogi.conversion.DoubleConverter;
-import iogi.conversion.IntegerConverter;
-import iogi.conversion.TypeConverter;
 
 import org.junit.Test;
 
@@ -30,5 +27,10 @@ public class TypeConvertersTests {
 		assertEquals(Integer.valueOf(2), converter.convert("2", Integer.class));
 	}
 	
-	
+	@Test
+	public void stringConverter() throws Exception {
+		TypeConverter<String> converter = new StringConverter();
+		assertTrue(converter.isAbleToConvertTo(String.class));
+		assertEquals("foozble", converter.convert("foozble", Integer.class));
+	}
 }

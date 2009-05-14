@@ -1,6 +1,7 @@
 package iogi;
 
 import static java.util.Collections.singleton;
+import iogi.conversion.Converter;
 import iogi.conversion.DoubleConverter;
 import iogi.conversion.IntegerConverter;
 import iogi.conversion.TypeConverter;
