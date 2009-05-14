@@ -1,13 +1,14 @@
 package iogi;
 
+import iogi.conversion.ConversionException;
 import iogi.conversion.TypeConverter;
 
-import java.util.List;
+import java.util.Collection;
 
 public class Converter {
-	public List<TypeConverter<?>> converters;
+	public Collection<TypeConverter<?>> converters;
 
-	public Converter(List<TypeConverter<?>> converters) {
+	public Converter(Collection<TypeConverter<?>> converters) {
 		this.converters = converters;
 	}
 
