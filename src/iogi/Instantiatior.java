@@ -1,76 +1,63 @@
 package iogi;
 
+import static java.util.Collections.singleton;
 import iogi.conversion.DoubleConverter;
 import iogi.conversion.IntegerConverter;
 import iogi.conversion.TypeConverter;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-
-import com.thoughtworks.paranamer.BytecodeReadingParanamer;
-import com.thoughtworks.paranamer.CachingParanamer;
+import java.util.Map;
+import java.util.Set;
 
 
 
 public class Instantiatior {
-	private List<TypeConverter<?>> converters = Collections.unmodifiableList(Arrays.<TypeConverter<?>>asList(new IntegerConverter(), new DoubleConverter()));
+	private Converter converter = new Converter(Collections.unmodifiableList(Arrays.<TypeConverter<?>>asList(new IntegerConverter(), new DoubleConverter())));
 
-	public <T> T instantiate(Class<T> rootClass, String path) {
-		try {
-			return rootClass.newInstance();
-		} catch (java.lang.InstantiationException e) {
-			throw new IogiException(e); 
-		} catch (IllegalAccessException e) {
-			throw new IogiException(e);
-		}
-	}
-
-	public <T> T instantiate(Class<T> rootClass, String key, String value) {
-		String[] keyComponents = key.split("\\.");
-		String requiredParameterName = keyComponents[1]; 
+	public <T> T instantiate(Class<T> rootClass, Parameter... parameters) {
+		return instantiate(rootClass, Arrays.asList(parameters));
+	}	
+	
+	public <T> T instantiate(Class<T> rootClass, List<Parameter> parameters) {
+		Map<String, String> arguments = arguments(parameters);
+		ClassConstructor targetConstructor = targetConstructorFromArguments(arguments);
 		
-		Constructor<?> constructor = rootClass.getConstructors()[0];
-		CachingParanamer paranamer = new CachingParanamer(new BytecodeReadingParanamer());
-		Class<?>[] parameterTypes = constructor.getParameterTypes();
-		String[] parameterNames = paranamer.lookupParameterNames(constructor);
+		Set<ClassConstructor> candidateConstructors = candidateConstructorsInRootClass(rootClass);  
+		candidateConstructors.retainAll(singleton(targetConstructor));
 		
-		String formalParameterName = parameterNames[0];
-		Class<?> formalParameterType = parameterTypes[0];
-		if (formalParameterName.equals(requiredParameterName)) {
-			Object convertedValue = convert(value, formalParameterType);
-			return instantiateWithConstructor(rootClass, convertedValue, constructor);
+		ClassConstructor matchingConstructor = candidateConstructors.iterator().next();
+		
+		return rootClass.cast(matchingConstructor.instantiate(converter, arguments));
+	}
+
+	private Map<String, String> arguments(List<Parameter> parameters) {
+		Map<String, String> arguments = new HashMap<String, String>();
+		
+		for (Parameter parameter : parameters) {
+			String[] keyComponents = parameter.getName().split("\\.");
+			String argumentName = keyComponents[1];
+			String argumentValue = parameter.getValue();
+			arguments.put(argumentName, argumentValue);
 		}
 		
-		return null;
+		return arguments;
+	}
+	
+	private ClassConstructor targetConstructorFromArguments(Map<String, String> arguments) {
+		Set<String> givenParameterNames = arguments.keySet();
+		return new ClassConstructor(givenParameterNames);
 	}
 
-	private Object convert(String value, Class<?> formalParameterType) {
-		Object convertedValue;
-		if (formalParameterType == double.class) {
-			convertedValue = Double.valueOf(value);
-		} else if (formalParameterType== int.class) {
-			convertedValue = Integer.valueOf(value);
-		} else {
-			convertedValue = null;
+	public Set<ClassConstructor> candidateConstructorsInRootClass(Class<?> theClass) {
+		HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
+		for (Constructor<?> constructor : theClass.getConstructors()) {
+			classConstructors.add(new ClassConstructor(constructor));
 		}
-		return convertedValue;
+		return classConstructors;
 	}
-
-	private <T> T instantiateWithConstructor(Class<T> rootClass, Object value, Constructor<?> constructor) {
-		try {
-			return rootClass.cast(constructor.newInstance(value));
-		} catch (IllegalArgumentException e) {
-			throw new IogiException(e);
-		} catch (InstantiationException e) {
-			throw new IogiException(e);
-		} catch (IllegalAccessException e) {
-			throw new IogiException(e);
-		} catch (InvocationTargetException e) {
-			throw new IogiException(e);
-		}
-	}
-
 }
