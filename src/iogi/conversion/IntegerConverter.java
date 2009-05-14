@@ -1,6 +1,6 @@
-package conversion;
+package iogi.conversion;
 
-public class IntegerConverter implements Converter<Integer> {
+public class IntegerConverter implements TypeConverter<Integer> {
 
 	@Override
 	public boolean isAbleToConvertTo(Class<?> type) {

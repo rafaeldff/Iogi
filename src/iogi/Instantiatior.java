@@ -1,13 +1,22 @@
 package iogi;
 
+import iogi.conversion.DoubleConverter;
+import iogi.conversion.IntegerConverter;
+import iogi.conversion.TypeConverter;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
 
 
+
 public class Instantiatior {
+	private List<TypeConverter<?>> converters = Collections.unmodifiableList(Arrays.<TypeConverter<?>>asList(new IntegerConverter(), new DoubleConverter()));
 
 	public <T> T instantiate(Class<T> rootClass, String path) {
 		try {

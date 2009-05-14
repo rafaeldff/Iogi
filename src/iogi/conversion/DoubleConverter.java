@@ -1,7 +1,7 @@
-package conversion;
+package iogi.conversion;
 
 
-public class DoubleConverter implements Converter<Double> {
+public class DoubleConverter implements TypeConverter<Double> {
 	@Override
 	public boolean isAbleToConvertTo(Class<?> type) {
 		return type == double.class || type == Double.class;
