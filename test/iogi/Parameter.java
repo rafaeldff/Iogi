@@ -16,4 +16,9 @@ public class Parameter {
 	public String getValue() {
 		return value;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Parameter(%s -> %s)", name, value);
+	}
 }

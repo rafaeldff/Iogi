@@ -75,7 +75,8 @@ public class ClassConstructor {
 		for (int i = 0; i < parameterNames.length; i++) {
 			String name = parameterNames[i];
 			String valueAsString = arguments.get(name);
-			Object value = converter.convert(valueAsString, parameterTypes[i]);
+			Target<?> target = new Target(parameterTypes[i], name);
+			Object value = converter.convert(valueAsString, target, arguments);
 			argumentValues[i] = value;
 		}
 		
