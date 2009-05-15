@@ -8,11 +8,11 @@ import iogi.conversion.TypeConverter;
 
 import java.lang.reflect.Constructor;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableList;
 
 
 public class ClassConstructorTest {
@@ -47,10 +47,8 @@ public class ClassConstructorTest {
 	@Test
 	public void canInstantiateFromArgumentNames() throws Exception {
 		ClassConstructor constructor = new ClassConstructor(fooConstructor); 
-		Map<String, String> arguments = new HashMap<String,String>();
-		arguments.put("two", "b");
-		arguments.put("one", "a");
-		Foo foo = (Foo)constructor.instantiate(converter, arguments);
+		ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
+		Foo foo = (Foo)constructor.instantiate(converter, parameters);
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());
 	}

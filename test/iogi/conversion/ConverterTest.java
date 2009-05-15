@@ -29,6 +29,7 @@ public class ConverterTest {
 		context.assertIsSatisfied();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void converterWillUseAnAbleTypeConverter() throws Exception {
 		Converter converter = new Converter(theTypeConverter);

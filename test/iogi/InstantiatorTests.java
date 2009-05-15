@@ -65,7 +65,38 @@ public class InstantiatorTests {
 		assertEquals(8, object.getArg().getAnInteger());
 	}
 	
-	static class Empty {
+	@Test
+	public void ignoresParametersThatArentRelatedToTheTarget() throws Exception {
+		Parameter relevantParam = new Parameter("relevant.someString", "ok");
+		Parameter irrelevantParam = new Parameter("irrelevant.someString", "not ok");
+		Target<OneString> target = new Target<OneString>(OneString.class, "relevant");
+		OneString object = instantiator.instantiate(target, relevantParam, irrelevantParam);
+		assertEquals("ok", object.getSomeString());
+	}
+	
+	@Test
+	public void ignoresParametersThatArentRelatedToTheTargetRegardlessOfOrder() throws Exception {
+		Parameter relevantParam = new Parameter("relevant.someString", "ok");
+		Parameter irrelevantParam = new Parameter("irrelevant.someString", "not ok");
+		Target<OneString> target = new Target<OneString>(OneString.class, "relevant");
+		
+		OneString instantiatedWithOneOrder = instantiator.instantiate(target, relevantParam, irrelevantParam);
+		assertEquals("ok", instantiatedWithOneOrder.getSomeString());
+		
+		OneString instantiatedWithAnotherOrder = instantiator.instantiate(target, relevantParam, irrelevantParam);
+		assertEquals("ok", instantiatedWithAnotherOrder.getSomeString());
+	}
+	
+	static class OneString {
+		private final String someString;
+
+		public OneString(String someString) {
+			this.someString = someString;
+		}
+		
+		public String getSomeString() {
+			return someString;
+		}
 	}
 	
 	static class OneIntegerPrimitive {

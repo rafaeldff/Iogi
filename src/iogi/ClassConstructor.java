@@ -4,7 +4,9 @@ import iogi.conversion.Converter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,7 +69,8 @@ public class ClassConstructor {
 		return true;
 	}
 
-	public Object instantiate(Converter converter, Map<String, String> arguments) {
+	public Object instantiate(Converter converter, List<Parameter> parameters) {
+		Map<String, String> arguments = arguments(parameters);
 		Class<?>[] parameterTypes = constructor.getParameterTypes();
 		String[] parameterNames = paranamer.lookupParameterNames(constructor);
 		Object[] argumentValues = new Object[parameterNames.length];
@@ -75,12 +78,27 @@ public class ClassConstructor {
 		for (int i = 0; i < parameterNames.length; i++) {
 			String name = parameterNames[i];
 			String valueAsString = arguments.get(name);
+			
+			@SuppressWarnings("unchecked")
 			Target<?> target = new Target(parameterTypes[i], name);
+			
 			Object value = converter.convert(valueAsString, target, arguments);
 			argumentValues[i] = value;
 		}
 		
 		return instantiateWithConstructor(argumentValues);
+	}
+	
+	private Map<String, String> arguments(List<Parameter> parameters) {
+		Map<String, String> arguments = new HashMap<String, String>();
+		
+		for (Parameter parameter : parameters) {
+			String argumentName = parameter.getName();
+			String argumentValue = parameter.getValue();
+			arguments.put(argumentName, argumentValue);
+		}
+		
+		return arguments;
 	}
 	
 	private Object instantiateWithConstructor(Object[] values) {

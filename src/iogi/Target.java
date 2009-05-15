@@ -1,5 +1,9 @@
 package iogi;
 
+import java.lang.reflect.Constructor;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Target<T> {
 	private Class<T> type;
 	private final String name;
@@ -32,5 +36,13 @@ public class Target<T> {
 	@Override
 	public String toString() {
 		return String.format("Target(name=%s, type=%s)", name, type);
+	}
+	
+	public Set<ClassConstructor> classConstructors() {
+		HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
+		for (Constructor<?> constructor : getType().getConstructors()) {
+			classConstructors.add(new ClassConstructor(constructor));
+		}
+		return classConstructors;
 	}
 }
