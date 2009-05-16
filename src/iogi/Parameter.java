@@ -1,10 +1,11 @@
 package iogi;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 public class Parameter {
-	private final String value;
 	private final String name;
+	private final String value;
 	private final ImmutableList<String> nameComponents;
 
 	/** 
@@ -12,18 +13,18 @@ public class Parameter {
 	 * Prefer calling one of the two-argument constructors to maintain
 	 * consistency between name and nameComponents.
 	 */
-	private Parameter(String value, String name, ImmutableList<String> nameComponents) {
-		this.value = value;
+	private Parameter(String name, String value, ImmutableList<String> nameComponents) {
 		this.name = name;
+		this.value = value;
 		this.nameComponents = nameComponents;
 	}
 	
 	public Parameter(String name, String value) {
-		this(value, computeNameComponents(name));
+		this(name, value, computeNameComponents(name));
 	}
 
 	private Parameter(String value, ImmutableList<String> nameComponents) {
-		this(value, computeName(nameComponents), nameComponents);
+		this(computeName(nameComponents), value, nameComponents);
 	}
 	
 	private static ImmutableList<String> computeNameComponents(String name) {
@@ -31,24 +32,17 @@ public class Parameter {
 	}
 
 	private static String computeName(ImmutableList<String> nameComponents) {
-		StringBuilder name1 = new StringBuilder();
-		for (String component : nameComponents) {
-			name1.append(component);
-			name1.append(".");
-		}
-		name1.deleteCharAt(name1.length() - 1);
-		return name1.toString();
+		return Joiner.on(".").join(nameComponents);
 	}
 
+	public String getName() {
+		return name;
+	}
+	
 	public String getValue() {
 		return value;
 	}
 	
-	@Override
-	public String toString() {
-		return String.format("Parameter(%s -> %s)", getName(), getValue());
-	}
-
 	public String getFirstNameComponent() {
 		return nameComponents.get(0);
 	}
@@ -61,7 +55,8 @@ public class Parameter {
 		return new Parameter(value, componentsExceptTheFirst);
 	}
 	
-	public String getName() {
-		return name;
+	@Override
+	public String toString() {
+		return String.format("Parameter(%s -> %s)", getName(), getValue());
 	}
 }
