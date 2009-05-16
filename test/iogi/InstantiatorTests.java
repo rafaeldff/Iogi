@@ -106,6 +106,16 @@ public class InstantiatorTests {
 		assertEquals(42, object.getLevel2().getArg().getAnInteger());
 	}
 	
+	@Test
+	public void canMixConstructibleAndPrimitiveArgumeynts() throws Exception {
+		Parameter primitiveParameter = new Parameter("root.one", "555");
+		Parameter constructibleParameter = new Parameter("root.two.anInteger", "666");
+		Target<MixedPrimitiveAndConstructibleArguments> target = new Target<MixedPrimitiveAndConstructibleArguments>(MixedPrimitiveAndConstructibleArguments.class, "root");
+		MixedPrimitiveAndConstructibleArguments object = instantiator.instantiate(target, primitiveParameter, constructibleParameter);
+		assertEquals(555, object.getOne());
+		assertEquals(666, object.getTwo().getAnInteger());
+	}
+	
 	static class OneString {
 		private final String someString;
 
@@ -207,6 +217,24 @@ public class InstantiatorTests {
 		
 		public OneConstructibleArgument getLevel2() {
 			return level2;
+		}
+	}
+	
+	static class MixedPrimitiveAndConstructibleArguments {
+		private final int one;
+		private final OneIntegerPrimitive two;
+
+		public MixedPrimitiveAndConstructibleArguments(int one,  OneIntegerPrimitive two) {
+			this.one = one;
+			this.two = two;
+		}
+
+		public int getOne() {
+			return one;
+		}
+
+		public OneIntegerPrimitive getTwo() {
+			return two;
 		}
 	}
 }
