@@ -87,6 +87,25 @@ public class InstantiatorTests {
 		assertEquals("ok", instantiatedWithAnotherOrder.getSomeString());
 	}
 	
+	@Test
+	public void canRecursivelyInstantiateMultipleParameters() throws Exception {
+		Parameter parameter1 = new Parameter("root.one.someString", "a");
+		Parameter parameter2 = new Parameter("root.two.anInteger", "2");
+		Target<TwoConstructibleArguments> target = new Target<TwoConstructibleArguments>(TwoConstructibleArguments.class, "root");
+		
+		TwoConstructibleArguments object = instantiator.instantiate(target, parameter1, parameter2);
+		assertEquals("a", object.getOne().getSomeString());
+		assertEquals(2, object.getTwo().getAnInteger());
+	}
+	
+	@Test
+	public void canInstantiateTwoWithTwoLevelsOfRecursiveInstantiation() throws Exception {
+		Parameter parameter = new Parameter("root.level2.arg.anInteger", "42"); 
+		Target<TwoLevelConstructible> target = new Target<TwoLevelConstructible>(TwoLevelConstructible.class, "root");
+		TwoLevelConstructible object = instantiator.instantiate(target, parameter);
+		assertEquals(42, object.getLevel2().getArg().getAnInteger());
+	}
+	
 	static class OneString {
 		private final String someString;
 
@@ -158,6 +177,36 @@ public class InstantiatorTests {
 		}
 		
 		public TwoConstructors(String a, String b) {
+		}
+	}
+	
+	static class TwoConstructibleArguments {
+		private final OneString one;
+		private final OneIntegerPrimitive two;
+
+		public TwoConstructibleArguments(OneString one, OneIntegerPrimitive two) {
+			this.one = one;
+			this.two = two;
+		}
+
+		public OneString getOne() {
+			return one;
+		}
+
+		public OneIntegerPrimitive getTwo() {
+			return two;
+		}
+	}
+	
+	static class TwoLevelConstructible {
+		private final OneConstructibleArgument level2;
+
+		public TwoLevelConstructible(OneConstructibleArgument level2) {
+			this.level2 = level2;
+		}
+		
+		public OneConstructibleArgument getLevel2() {
+			return level2;
 		}
 	}
 }
