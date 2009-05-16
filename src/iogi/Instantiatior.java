@@ -8,6 +8,8 @@ import iogi.conversion.IntegerConverter;
 import iogi.conversion.ObjectConverter;
 import iogi.conversion.StringConverter;
 import iogi.conversion.TypeConverter;
+import iogi.exceptions.InvalidTypeException;
+import iogi.exceptions.NoConstructorFoundException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,20 +43,40 @@ public class Instantiatior {
 	}
 
 	private <T> Object instantiatePrimitive(Target<T> target, List<Parameter> parameters) {
+		signalErrorIfTargetIsVoid(target);
 		Parameter parameter = parameterNamed(parameters, target.getName());
 		return converter.convert(parameter.getValue(), target, null);
 	}
 	
+	private void signalErrorIfTargetIsVoid(Target<?> target) {
+		if (target.getType() ==  Void.class)
+			throw new InvalidTypeException("Cannot instantiate Void"); 
+	}
+
 	private <T> Object instantiateObject(Target<T> target, List<Parameter> parameters) {
+		signalErrorIfTargetIsAbstract(target);
 		List<Parameter> relevantParameters = relevantParameters(parameters, target);
 		Set<ClassConstructor> candidateConstructors = target.classConstructors();  
 		
 		ClassConstructor desiredConstructor = desiredConstructor(relevantParameters);
-		Set<ClassConstructor> foundConstructors = findMatchingConstructors(candidateConstructors, desiredConstructor);
+		Set<ClassConstructor> matchingConstructors = findMatchingConstructors(candidateConstructors, desiredConstructor);
+		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors);
 		
-		ClassConstructor firstMatchingConstructor = foundConstructors.iterator().next();
+		ClassConstructor firstMatchingConstructor = matchingConstructors.iterator().next();
 		
 		return firstMatchingConstructor.instantiate(converter, relevantParameters);
+	}
+
+	private <T> void signalErrorIfTargetIsAbstract(Target<T> target) {
+		if (!target.isInstantiable())
+			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getType());
+	}
+
+	private <T> void signalErrorIfNoMatchingConstructorFound(Target<T> target,
+			Set<ClassConstructor> matchingConstructors) {
+		if (matchingConstructors.isEmpty())
+			throw new NoConstructorFoundException("No constructor found for to instantiate a %s named %s",
+					target.getType(), target.getName());
 	}
 	
 	private List<Parameter> relevantParameters(List<Parameter> parameters, Target<?> target) {
@@ -85,6 +107,6 @@ public class Instantiatior {
 				return parameter;
 			}
 		}
-		throw new NoSuchElementException("Cannot find parameter named \"" + name + "\"");
+		throw new NoSuchElementException("Cannot find any parameter named \"" + name + "\"");
 	}
 }

@@ -1,6 +1,7 @@
 package iogi;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,5 +45,9 @@ public class Target<T> {
 			classConstructors.add(new ClassConstructor(constructor));
 		}
 		return classConstructors;
+	}
+
+	 boolean isInstantiable() {
+		return !getType().isInterface() && !Modifier.isAbstract(getType().getModifiers()) && getType() != Void.class;
 	}
 }

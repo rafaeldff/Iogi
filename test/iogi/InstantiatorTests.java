@@ -2,6 +2,8 @@ package iogi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import iogi.exceptions.InvalidTypeException;
+import iogi.exceptions.NoConstructorFoundException;
 
 import java.util.Arrays;
 
@@ -107,13 +109,45 @@ public class InstantiatorTests {
 	}
 	
 	@Test
-	public void canMixConstructibleAndPrimitiveArgumeynts() throws Exception {
+	public void canMixConstructibleAndPrimitiveArguments() throws Exception {
 		Parameter primitiveParameter = new Parameter("root.one", "555");
 		Parameter constructibleParameter = new Parameter("root.two.anInteger", "666");
 		Target<MixedPrimitiveAndConstructibleArguments> target = new Target<MixedPrimitiveAndConstructibleArguments>(MixedPrimitiveAndConstructibleArguments.class, "root");
 		MixedPrimitiveAndConstructibleArguments object = instantiator.instantiate(target, primitiveParameter, constructibleParameter);
 		assertEquals(555, object.getOne());
 		assertEquals(666, object.getTwo().getAnInteger());
+	}
+	
+	@Test(expected=NoConstructorFoundException.class)
+	public void testWillThrowANoConstructorFoundExceptionIfNoAdequateConstructorIsFound() {
+		Parameter aParameter = new Parameter("root.a", "");
+		Target<OneIntegerPrimitive> target = new Target<OneIntegerPrimitive>(OneIntegerPrimitive.class, "root");
+		instantiator.instantiate(target, aParameter);
+	}
+	
+	@Test(expected=InvalidTypeException.class)
+	public void willThrowAnInvalidTypeExceptionIfGivenAnInterface() throws Exception {
+		Parameter aParameter = new Parameter("root.a", "");
+		Target<CharSequence> target = new Target<CharSequence>(CharSequence.class, "root");
+		instantiator.instantiate(target, aParameter);
+	}
+	
+	@Test(expected=InvalidTypeException.class)
+	public void willThrowAnInvalidTypeExceptionIfGivenAnAbstractClass() throws Exception {
+		Parameter aParameter = new Parameter("root.a", "");
+		Target<AbstractClass> target = new Target<AbstractClass>(AbstractClass.class, "root");
+		instantiator.instantiate(target, aParameter);
+	}
+	
+	@Test(expected=InvalidTypeException.class)
+	public void willThrowAnInvalidTypeExceptionIfGivenVoid() throws Exception {
+		Parameter aParameter = new Parameter("root.a", "");
+		Target<Void> target = new Target<Void>(Void.class, "root");
+		instantiator.instantiate(target, aParameter);
+	}
+	
+	abstract static class AbstractClass {
+		
 	}
 	
 	static class OneString {
