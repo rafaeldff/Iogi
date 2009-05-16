@@ -1,19 +1,43 @@
 package iogi;
 
-import java.util.Arrays;
-import java.util.LinkedList;
+import com.google.common.collect.ImmutableList;
 
 public class Parameter {
 	private final String value;
-	private LinkedList<String> nameComponents;
+	private final String name;
+	private final ImmutableList<String> nameComponents;
 
+	/** 
+	 * Primary constructor.
+	 * Prefer calling one of the two-argument constructors to maintain
+	 * consistency between name and nameComponents.
+	 */
+	private Parameter(String value, String name, ImmutableList<String> nameComponents) {
+		this.value = value;
+		this.name = name;
+		this.nameComponents = nameComponents;
+	}
+	
 	public Parameter(String name, String value) {
-		this(value, new LinkedList<String>(Arrays.asList(name.split("\\."))));
+		this(value, computeNameComponents(name));
 	}
 
-	private Parameter(String value, LinkedList<String> nameComponents) {
-		this.value = value;
-		this.nameComponents = nameComponents;
+	private Parameter(String value, ImmutableList<String> nameComponents) {
+		this(value, computeName(nameComponents), nameComponents);
+	}
+	
+	private static ImmutableList<String> computeNameComponents(String name) {
+		return ImmutableList.of(name.split("\\."));
+	}
+
+	private static String computeName(ImmutableList<String> nameComponents) {
+		StringBuilder name1 = new StringBuilder();
+		for (String component : nameComponents) {
+			name1.append(component);
+			name1.append(".");
+		}
+		name1.deleteCharAt(name1.length() - 1);
+		return name1.toString();
 	}
 
 	public String getValue() {
@@ -26,25 +50,18 @@ public class Parameter {
 	}
 
 	public String getFirstNameComponent() {
-		return nameComponents.getFirst();
+		return nameComponents.get(0);
 	}
 
 	public Parameter strip() {
 		if (nameComponents.size() < 2)
 			return null;
 		
-		LinkedList<String> newNameComponents = new LinkedList<String>(nameComponents);
-		newNameComponents.removeFirst();
-		return new Parameter(value, newNameComponents);
+		ImmutableList<String> componentsExceptTheFirst = nameComponents.subList(1, nameComponents.size());
+		return new Parameter(value, componentsExceptTheFirst);
 	}
 	
-	String getName() {
-		StringBuilder name = new StringBuilder();
-		for (String component : nameComponents) {
-			name.append(component);
-			name.append(".");
-		}
-		name.deleteCharAt(name.length() - 1);
-		return name.toString();
+	public String getName() {
+		return name;
 	}
 }
