@@ -16,16 +16,6 @@ public class Parameter {
 		this.nameComponents = nameComponents;
 	}
 
-	public String getName() {
-		StringBuilder name = new StringBuilder();
-		for (String component : nameComponents) {
-			name.append(component);
-			name.append(".");
-		}
-		name.deleteCharAt(name.length() - 1);
-		return name.toString();
-	}
-	
 	public String getValue() {
 		return value;
 	}
@@ -46,5 +36,15 @@ public class Parameter {
 		LinkedList<String> newNameComponents = new LinkedList<String>(nameComponents);
 		newNameComponents.removeFirst();
 		return new Parameter(value, newNameComponents);
+	}
+	
+	String getName() {
+		StringBuilder name = new StringBuilder();
+		for (String component : nameComponents) {
+			name.append(component);
+			name.append(".");
+		}
+		name.deleteCharAt(name.length() - 1);
+		return name.toString();
 	}
 }

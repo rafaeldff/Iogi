@@ -147,7 +147,6 @@ public class InstantiatorTests {
 	}
 	
 	abstract static class AbstractClass {
-		
 	}
 	
 	static class OneString {

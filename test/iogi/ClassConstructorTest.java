@@ -36,6 +36,17 @@ public class ClassConstructorTest {
 	}
 	
 	@Test
+	public void twoClassConstructorsWithTheSameSetOfNamesHaveTheSameHashcode() throws Exception {
+		HashSet<String> set1 = new HashSet<String>(asList("foo", "bar", "baz"));
+		HashSet<String> set2 = new HashSet<String>(asList("foo", "bar", "baz"));
+		
+		ClassConstructor classConstructor1 = new ClassConstructor(set1);
+		ClassConstructor classConstructor2 = new ClassConstructor(set2);
+		
+		assertEquals(classConstructor1.hashCode(), classConstructor2.hashCode());
+	}
+	
+	@Test
 	public void canCreateAClassConstructorFromAConstructor() throws Exception {
 		HashSet<String> parameterNames = new HashSet<String>(asList("one", "two"));
 		ClassConstructor fromNames = new ClassConstructor(parameterNames);

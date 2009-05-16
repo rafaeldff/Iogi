@@ -31,8 +31,8 @@ public class ParameterTest {
 	}
 	
 	@Test
-	public void ifTheParameterNameHasTwoComponentsSplitReturnsAParameterContaining() {
-		Parameter parameter = new Parameter("first.last", "");
-		assertEquals("last", parameter.strip().getName());
+	public void ifTheParameterNameHasTwoComponentsSplitReturnsAParameterContainingTheRestOfTheArguments() {
+		Parameter parameter = new Parameter("head.tail.tail", "");
+		assertEquals("tail.tail", parameter.strip().getName());
 	}
 }
