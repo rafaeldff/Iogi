@@ -11,6 +11,8 @@ import iogi.conversion.TypeConverter;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,7 +40,13 @@ public class Instantiatior {
 	}
 	
 	public <T> T instantiate(Target<T> target, List<Parameter> parameters) {
-		Object object = target.isPrimitiveLike() ?  instantiatePrimitive(target, parameters) : instantiateObject(target, parameters);
+		Object object;
+		if (target.isPrimitiveLike())
+			object = instantiatePrimitive(target, parameters);
+		else if (isList(target))
+			object = instantiateList(target, parameters);
+		else
+			object = instantiateObject(target, parameters);
 		return target.cast(object);
 	}
 
@@ -49,12 +57,13 @@ public class Instantiatior {
 	}
 	
 	private void signalErrorIfTargetIsVoid(Target<?> target) {
-		if (target.getType() ==  Void.class)
+		if (target.getClassType() ==  Void.class)
 			throw new InvalidTypeException("Cannot instantiate Void"); 
 	}
 
 	private <T> Object instantiateObject(Target<T> target, List<Parameter> parameters) {
 		signalErrorIfTargetIsAbstract(target);
+		
 		List<Parameter> relevantParameters = relevantParameters(parameters, target);
 		Set<ClassConstructor> candidateConstructors = target.classConstructors();  
 		
@@ -69,14 +78,14 @@ public class Instantiatior {
 
 	private <T> void signalErrorIfTargetIsAbstract(Target<T> target) {
 		if (!target.isInstantiable())
-			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getType());
+			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
 	}
 
 	private <T> void signalErrorIfNoMatchingConstructorFound(Target<T> target,
 			Set<ClassConstructor> matchingConstructors) {
 		if (matchingConstructors.isEmpty())
 			throw new NoConstructorFoundException("No constructor found for to instantiate a %s named %s",
-					target.getType(), target.getName());
+					target.getClassType(), target.getName());
 	}
 	
 	private List<Parameter> relevantParameters(List<Parameter> parameters, Target<?> target) {
@@ -109,4 +118,23 @@ public class Instantiatior {
 		}
 		throw new NoSuchElementException("Cannot find any parameter named \"" + name + "\"");
 	}
+	
+	private boolean isList(Target<?> target) {
+		return List.class.isAssignableFrom(target.getClassType());
+	}
+	
+	private Object instantiateList(Target<?> target, List<Parameter> parameters) {
+		ParameterizedType listType = (ParameterizedType)target.getType();
+		Type typeArgument = listType.getActualTypeArguments()[0];
+		Target<Object> listElementTarget = new Target<Object>(typeArgument, target.getName());
+		
+		ArrayList<Object> newList = new ArrayList<Object>();
+		for (Parameter parameter : parameters) {
+			Object listElement = instantiate(listElementTarget, parameter);
+			newList.add(listElement);
+		}
+		
+		return newList;
+	}
+	
 }

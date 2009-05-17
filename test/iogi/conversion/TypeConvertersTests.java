@@ -36,6 +36,6 @@ public class TypeConvertersTests {
 	}
 	
 	private <T> Target<T> target(Class<T> type) {
-		return new Target<T>(type, "");
+		return Target.create(type, "");
 	}
 }

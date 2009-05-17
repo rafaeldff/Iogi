@@ -81,7 +81,7 @@ public class ClassConstructor {
 			String valueAsString = arguments.get(name);
 			
 			@SuppressWarnings("unchecked")
-			Target<?> target = new Target(parameterTypes[i], name);
+			Target<?> target = Target.create(parameterTypes[i], name);
 			
 			Object value = converter.convert(valueAsString, target, arguments);
 			argumentValues[i] = value;

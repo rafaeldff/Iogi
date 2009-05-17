@@ -15,7 +15,7 @@ public class Converter {
 
 	public Object convert(String value, Target<?> formalParameterType, Map<String, String> arguments) {
 		for (TypeConverter<?> typeConverter : converters) {
-			if (typeConverter.isAbleToConvertTo(formalParameterType.getType()))
+			if (typeConverter.isAbleToConvertTo(formalParameterType.getClassType()))
 				return typeConverter.convert(value, formalParameterType, arguments);
 		}
 		throw new ConversionException("Cannot handle conversions to " + formalParameterType);

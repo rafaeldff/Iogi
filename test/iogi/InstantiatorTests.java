@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -14,28 +16,28 @@ public class InstantiatorTests {
 	
 	@Test
 	public void canInstantiatePrimitives() {
-		Target<Integer> target = new Target<Integer>(int.class, "any");
+		Target<Integer> target = Target.create(int.class, "any");
 		Integer primitive = instantiator.instantiate(target, new Parameter("any", "25"));
 		assertEquals(25, primitive.intValue());
 	}
 	
 	@Test
 	public void canInstantiatePrimitivesWithWrapperTarget() {
-		Target<Integer> target = new Target<Integer>(Integer.class, "any");
+		Target<Integer> target = Target.create(Integer.class, "any");
 		Integer primitive = instantiator.instantiate(target, new Parameter("any", "25"));
 		assertEquals(25, primitive.intValue());
 	}
 	
 	@Test
 	public void canInstantiateWithOneIntegerArgument() throws Exception {
-		Target<OneIntegerPrimitive> target = new Target<OneIntegerPrimitive>(OneIntegerPrimitive.class, "oneArg");
+		Target<OneIntegerPrimitive> target = Target.create(OneIntegerPrimitive.class, "oneArg");
 		OneIntegerPrimitive object = instantiator.instantiate(target, new Parameter("oneArg.anInteger", "42"));
 		assertEquals(42, object.getAnInteger());
 	}
 	
 	@Test
 	public void canInstantiateWithOneDoubleArgument() throws Exception {
-		Target<OneDoublePrimitive> target = new Target<OneDoublePrimitive>(OneDoublePrimitive.class, "oneArg");
+		Target<OneDoublePrimitive> target = Target.create(OneDoublePrimitive.class, "oneArg");
 		OneDoublePrimitive object = instantiator.instantiate(target, new Parameter("oneArg.aDouble", "42.0"));
 		assertEquals(42.0, object.getADouble(), 0.001);
 	}
@@ -44,7 +46,7 @@ public class InstantiatorTests {
 	public void canInstantiateWithTwoPrimitiveArguments() throws Exception {
 		Parameter first = new Parameter("twoArguments.one", "1");
 		Parameter second = new Parameter("twoArguments.two", "2");
-		Target<TwoArguments> target = new Target<TwoArguments>(TwoArguments.class, "twoArguments");
+		Target<TwoArguments> target = Target.create(TwoArguments.class, "twoArguments");
 		TwoArguments object = instantiator.instantiate(target, Arrays.asList(first, second));
 		assertEquals(1, object.getOne());
 		assertEquals(2, object.getTwo());
@@ -54,7 +56,7 @@ public class InstantiatorTests {
 	public void canUseTheAppropriatedConstructorWhenThereAreMany() {
 		Parameter first = new Parameter("twoConstructors.one", "1");
 		Parameter second = new Parameter("twoConstructors.two", "2");
-		Target<TwoConstructors> target = new Target<TwoConstructors>(TwoConstructors.class, "twoConstructors");
+		Target<TwoConstructors> target = Target.create(TwoConstructors.class, "twoConstructors");
 		TwoConstructors object = instantiator.instantiate(target, first, second);
 		assertNotNull(object);
 	}
@@ -62,7 +64,7 @@ public class InstantiatorTests {
 	@Test
 	public void canInstantiateRecursevly() throws Exception {
 		Parameter param = new Parameter("oneConstructibleArgument.arg.anInteger", "8");
-		Target<OneConstructibleArgument> target = new Target<OneConstructibleArgument>(OneConstructibleArgument.class, "oneConstructibleArgument");
+		Target<OneConstructibleArgument> target = Target.create(OneConstructibleArgument.class, "oneConstructibleArgument");
 		OneConstructibleArgument object = instantiator.instantiate(target, param);
 		assertEquals(8, object.getArg().getAnInteger());
 	}
@@ -71,7 +73,7 @@ public class InstantiatorTests {
 	public void ignoresParametersThatArentRelatedToTheTarget() throws Exception {
 		Parameter relevantParam = new Parameter("relevant.someString", "ok");
 		Parameter irrelevantParam = new Parameter("irrelevant.someString", "not ok");
-		Target<OneString> target = new Target<OneString>(OneString.class, "relevant");
+		Target<OneString> target = Target.create(OneString.class, "relevant");
 		OneString object = instantiator.instantiate(target, relevantParam, irrelevantParam);
 		assertEquals("ok", object.getSomeString());
 	}
@@ -80,7 +82,7 @@ public class InstantiatorTests {
 	public void ignoresParametersThatArentRelatedToTheTargetRegardlessOfOrder() throws Exception {
 		Parameter relevantParam = new Parameter("relevant.someString", "ok");
 		Parameter irrelevantParam = new Parameter("irrelevant.someString", "not ok");
-		Target<OneString> target = new Target<OneString>(OneString.class, "relevant");
+		Target<OneString> target = Target.create(OneString.class, "relevant");
 		
 		OneString instantiatedWithOneOrder = instantiator.instantiate(target, relevantParam, irrelevantParam);
 		assertEquals("ok", instantiatedWithOneOrder.getSomeString());
@@ -93,7 +95,7 @@ public class InstantiatorTests {
 	public void canRecursivelyInstantiateMultipleParameters() throws Exception {
 		Parameter parameter1 = new Parameter("root.one.someString", "a");
 		Parameter parameter2 = new Parameter("root.two.anInteger", "2");
-		Target<TwoConstructibleArguments> target = new Target<TwoConstructibleArguments>(TwoConstructibleArguments.class, "root");
+		Target<TwoConstructibleArguments> target = Target.create(TwoConstructibleArguments.class, "root");
 		
 		TwoConstructibleArguments object = instantiator.instantiate(target, parameter1, parameter2);
 		assertEquals("a", object.getOne().getSomeString());
@@ -103,7 +105,7 @@ public class InstantiatorTests {
 	@Test
 	public void canInstantiateTwoWithTwoLevelsOfRecursiveInstantiation() throws Exception {
 		Parameter parameter = new Parameter("root.level2.arg.anInteger", "42"); 
-		Target<TwoLevelConstructible> target = new Target<TwoLevelConstructible>(TwoLevelConstructible.class, "root");
+		Target<TwoLevelConstructible> target = Target.create(TwoLevelConstructible.class, "root");
 		TwoLevelConstructible object = instantiator.instantiate(target, parameter);
 		assertEquals(42, object.getLevel2().getArg().getAnInteger());
 	}
@@ -112,7 +114,7 @@ public class InstantiatorTests {
 	public void canMixConstructibleAndPrimitiveArguments() throws Exception {
 		Parameter primitiveParameter = new Parameter("root.one", "555");
 		Parameter constructibleParameter = new Parameter("root.two.anInteger", "666");
-		Target<MixedPrimitiveAndConstructibleArguments> target = new Target<MixedPrimitiveAndConstructibleArguments>(MixedPrimitiveAndConstructibleArguments.class, "root");
+		Target<MixedPrimitiveAndConstructibleArguments> target = Target.create(MixedPrimitiveAndConstructibleArguments.class, "root");
 		MixedPrimitiveAndConstructibleArguments object = instantiator.instantiate(target, primitiveParameter, constructibleParameter);
 		assertEquals(555, object.getOne());
 		assertEquals(666, object.getTwo().getAnInteger());
@@ -121,30 +123,49 @@ public class InstantiatorTests {
 	@Test(expected=NoConstructorFoundException.class)
 	public void testWillThrowANoConstructorFoundExceptionIfNoAdequateConstructorIsFound() {
 		Parameter aParameter = new Parameter("root.a", "");
-		Target<OneIntegerPrimitive> target = new Target<OneIntegerPrimitive>(OneIntegerPrimitive.class, "root");
+		Target<OneIntegerPrimitive> target = Target.create(OneIntegerPrimitive.class, "root");
 		instantiator.instantiate(target, aParameter);
 	}
 	
 	@Test(expected=InvalidTypeException.class)
 	public void willThrowAnInvalidTypeExceptionIfGivenAnInterface() throws Exception {
 		Parameter aParameter = new Parameter("root.a", "");
-		Target<CharSequence> target = new Target<CharSequence>(CharSequence.class, "root");
+		Target<CharSequence> target = Target.create(CharSequence.class, "root");
 		instantiator.instantiate(target, aParameter);
 	}
 	
 	@Test(expected=InvalidTypeException.class)
 	public void willThrowAnInvalidTypeExceptionIfGivenAnAbstractClass() throws Exception {
 		Parameter aParameter = new Parameter("root.a", "");
-		Target<AbstractClass> target = new Target<AbstractClass>(AbstractClass.class, "root");
+		Target<AbstractClass> target = Target.create(AbstractClass.class, "root");
 		instantiator.instantiate(target, aParameter);
 	}
 	
 	@Test(expected=InvalidTypeException.class)
 	public void willThrowAnInvalidTypeExceptionIfGivenVoid() throws Exception {
 		Parameter aParameter = new Parameter("root.a", "");
-		Target<Void> target = new Target<Void>(Void.class, "root");
+		Target<Void> target = Target.create(Void.class, "root");
 		instantiator.instantiate(target, aParameter);
 	}
+	
+//	@SuppressWarnings("unchecked")
+	@Test
+	public void canInstantiateAList() throws Exception {
+		Parameter firstParameter = new Parameter("root.someString", "bla");
+		Parameter secondParameter = new Parameter("root.someString", "ble");
+		
+		Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfOneString").getGenericType();
+		
+		Target<List> target = new Target(parameterizedListType, "root");
+		List objects = instantiator.instantiate(target, firstParameter, secondParameter);
+		
+		assertEquals(2, objects.size());
+		OneString first = (OneString)objects.get(0);
+		assertEquals(first.getSomeString(), "bla");
+		OneString second = (OneString)objects.get(1);
+		assertEquals(second.getSomeString(), "ble");
+	}
+	
 	
 	abstract static class AbstractClass {
 	}
@@ -269,5 +290,9 @@ public class InstantiatorTests {
 		public OneIntegerPrimitive getTwo() {
 			return two;
 		}
+	}
+	
+	static class ContainsParameterizedList {
+		List<OneString> listOfOneString;
 	}
 }

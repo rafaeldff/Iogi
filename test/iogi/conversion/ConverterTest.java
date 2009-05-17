@@ -41,7 +41,7 @@ public class ConverterTest {
 			one(typeConverter).convert(with(any(String.class)), with(any(Target.class)), with(any(Map.class)));
 		}});
 		
-		converter.convert("", new Target<Void>(Void.class, ""), null);
+		converter.convert("", Target.create(Void.class, ""), null);
 	}
 	
 	@Test(expected=ConversionException.class)
@@ -53,6 +53,6 @@ public class ConverterTest {
 			will(returnValue(false));
 		}});
 		
-		converter.convert("", new Target<Void>(Void.class, ""), null);
+		converter.convert("", Target.create(Void.class, ""), null);
 	}
 }
