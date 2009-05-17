@@ -124,6 +124,9 @@ public class Instantiatior {
 	}
 	
 	private Object instantiateList(Target<?> target, List<Parameter> parameters) {
+		if (!(target.getType() instanceof ParameterizedType))
+			throw new InvalidTypeException("Expecting a parameterized list type, got raw type \"%s\" instead", target.getType());
+			
 		ParameterizedType listType = (ParameterizedType)target.getType();
 		Type typeArgument = listType.getActualTypeArguments()[0];
 		Target<Object> listElementTarget = new Target<Object>(typeArgument, target.getName());

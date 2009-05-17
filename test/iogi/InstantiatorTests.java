@@ -148,7 +148,7 @@ public class InstantiatorTests {
 		instantiator.instantiate(target, aParameter);
 	}
 	
-//	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Test
 	public void canInstantiateAList() throws Exception {
 		Parameter firstParameter = new Parameter("root.someString", "bla");
@@ -164,6 +164,16 @@ public class InstantiatorTests {
 		assertEquals(first.getSomeString(), "bla");
 		OneString second = (OneString)objects.get(1);
 		assertEquals(second.getSomeString(), "ble");
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test(expected=InvalidTypeException.class)
+	public void ifTargetIsAListButIsNotParameterizedThrowAnInvalidTypeException() throws Exception {
+		 Type rawListType = List.class;
+		 Target<List> target = new Target<List>(rawListType, "foo");
+		 Parameter parameter = new Parameter("foo.bar", "baz");
+		 
+		 instantiator.instantiate(target, parameter);
 	}
 	
 	
