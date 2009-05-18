@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Joiner;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
 
@@ -114,5 +115,10 @@ public class ClassConstructor {
 		} catch (InvocationTargetException e) {
 			throw new IogiException(e);
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "(" + Joiner.on(",").join(names) + ")"; 
 	}
 }

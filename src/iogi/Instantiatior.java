@@ -18,10 +18,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 
@@ -69,7 +71,7 @@ public class Instantiatior {
 		
 		ClassConstructor desiredConstructor = desiredConstructor(relevantParameters);
 		Set<ClassConstructor> matchingConstructors = findMatchingConstructors(candidateConstructors, desiredConstructor);
-		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors);
+		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, desiredConstructor);
 		
 		ClassConstructor firstMatchingConstructor = matchingConstructors.iterator().next();
 		
@@ -82,10 +84,11 @@ public class Instantiatior {
 	}
 
 	private <T> void signalErrorIfNoMatchingConstructorFound(Target<T> target,
-			Set<ClassConstructor> matchingConstructors) {
+			Set<ClassConstructor> matchingConstructors, ClassConstructor desiredConstructor) {
 		if (matchingConstructors.isEmpty())
-			throw new NoConstructorFoundException("No constructor found for to instantiate a %s named %s",
-					target.getClassType(), target.getName());
+			throw new NoConstructorFoundException("No constructor found to instantiate a %s named %s " +
+					"with parameter names %s",
+					target.getClassType(), target.getName(), desiredConstructor);
 	}
 	
 	private List<Parameter> relevantParameters(List<Parameter> parameters, Target<?> target) {
@@ -130,14 +133,38 @@ public class Instantiatior {
 		ParameterizedType listType = (ParameterizedType)target.getType();
 		Type typeArgument = listType.getActualTypeArguments()[0];
 		Target<Object> listElementTarget = new Target<Object>(typeArgument, target.getName());
+		Collection<List<Parameter>> parameterLists = breakList(parameters);
+		System.out.println(parameterLists);
 		
 		ArrayList<Object> newList = new ArrayList<Object>();
-		for (Parameter parameter : parameters) {
-			Object listElement = instantiate(listElementTarget, parameter);
+		for (List<Parameter> parameterListForAnElement : parameterLists) {
+			Object listElement = instantiate(listElementTarget, parameterListForAnElement);
 			newList.add(listElement);
 		}
 		
 		return newList;
 	}
+
+	private int countToFirstRepeatedParameterName(List<Parameter> parameters) {
+		if (parameters.isEmpty())
+			return 0;
+		
+		int count = 1;
+		ListIterator<Parameter> parametersIterator = parameters.listIterator();
+		String firstParameterName = parametersIterator.next().getName();
+		
+		while (parametersIterator.hasNext()) {
+			if (parametersIterator.next().getName().equals(firstParameterName)) {
+				break;
+			}
+			count++;
+		}
+		
+		return count;
+	}
 	
+	private Collection<List<Parameter>> breakList(List<Parameter> parameters) {
+		int listSize = countToFirstRepeatedParameterName(parameters);
+		return Lists.partition(parameters, listSize);
+	}
 }

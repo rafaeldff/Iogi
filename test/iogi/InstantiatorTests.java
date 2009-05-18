@@ -176,6 +176,27 @@ public class InstantiatorTests {
 		 instantiator.instantiate(target, parameter);
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void canInstantiateAListWhoseElementsHaveMoreThanOneConstructorParameter() throws Exception {
+		Parameter p1 = new Parameter("root.one", "1");
+		Parameter p2 = new Parameter("root.two", "2");
+		Parameter p3 = new Parameter("root.one", "11");
+		Parameter p4 = new Parameter("root.two", "22");
+		
+		Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfTwoArguments").getGenericType();
+		
+		Target<List> target = new Target(parameterizedListType, "root");
+		List objects = instantiator.instantiate(target, p1, p2, p3, p4);
+		
+		assertEquals(2, objects.size());
+		TwoArguments first = (TwoArguments)objects.get(0);
+		assertEquals(1, first.getOne());
+		assertEquals(2, first.getTwo());
+		TwoArguments second = (TwoArguments)objects.get(1);
+		assertEquals(11, second.getOne());
+		assertEquals(22, second.getTwo());
+	}
 	
 	abstract static class AbstractClass {
 	}
@@ -304,5 +325,6 @@ public class InstantiatorTests {
 	
 	static class ContainsParameterizedList {
 		List<OneString> listOfOneString;
+		List<TwoArguments> listOfTwoArguments;
 	}
 }
