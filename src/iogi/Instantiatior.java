@@ -130,11 +130,8 @@ public class Instantiatior {
 		if (!(target.getType() instanceof ParameterizedType))
 			throw new InvalidTypeException("Expecting a parameterized list type, got raw type \"%s\" instead", target.getType());
 			
-		ParameterizedType listType = (ParameterizedType)target.getType();
-		Type typeArgument = listType.getActualTypeArguments()[0];
-		Target<Object> listElementTarget = new Target<Object>(typeArgument, target.getName());
+		Target<Object> listElementTarget = findListElementTarget(target);
 		Collection<List<Parameter>> parameterLists = breakList(parameters);
-		System.out.println(parameterLists);
 		
 		ArrayList<Object> newList = new ArrayList<Object>();
 		for (List<Parameter> parameterListForAnElement : parameterLists) {
@@ -143,6 +140,18 @@ public class Instantiatior {
 		}
 		
 		return newList;
+	}
+
+	private Target<Object> findListElementTarget(Target<?> target) {
+		ParameterizedType listType = (ParameterizedType)target.getType();
+		Type typeArgument = listType.getActualTypeArguments()[0];
+		Target<Object> listElementTarget = new Target<Object>(typeArgument, target.getName());
+		return listElementTarget;
+	}
+	
+	private Collection<List<Parameter>> breakList(List<Parameter> parameters) {
+		int listSize = countToFirstRepeatedParameterName(parameters);
+		return Lists.partition(parameters, listSize);
 	}
 
 	private int countToFirstRepeatedParameterName(List<Parameter> parameters) {
@@ -161,10 +170,5 @@ public class Instantiatior {
 		}
 		
 		return count;
-	}
-	
-	private Collection<List<Parameter>> breakList(List<Parameter> parameters) {
-		int listSize = countToFirstRepeatedParameterName(parameters);
-		return Lists.partition(parameters, listSize);
 	}
 }
