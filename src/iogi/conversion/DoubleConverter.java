@@ -1,7 +1,7 @@
 package iogi.conversion;
 
-import java.util.Map;
 
+import iogi.Parameters;
 import iogi.Target;
 
 
@@ -12,7 +12,7 @@ public class DoubleConverter implements TypeConverter<Double> {
 	}
 
 	@Override
-	public Double convert(String stringRepresentation, Target<?> target, Map<String, String> arguments) {
+	public Double convert(String stringRepresentation, Target<?> target, Parameters parameters) {
 		return Double.valueOf(stringRepresentation);
 	}
 

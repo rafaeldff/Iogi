@@ -6,7 +6,6 @@ import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -47,7 +46,7 @@ public class InstantiatorTests {
 		Parameter first = new Parameter("twoArguments.one", "1");
 		Parameter second = new Parameter("twoArguments.two", "2");
 		Target<TwoArguments> target = Target.create(TwoArguments.class, "twoArguments");
-		TwoArguments object = instantiator.instantiate(target, Arrays.asList(first, second));
+		TwoArguments object = instantiator.instantiate(target, new Parameters(first, second));
 		assertEquals(1, object.getOne());
 		assertEquals(2, object.getTwo());
 	}

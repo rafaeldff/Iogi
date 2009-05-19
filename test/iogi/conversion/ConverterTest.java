@@ -1,9 +1,10 @@
 package iogi.conversion;
 
+import iogi.Parameters;
 import iogi.Target;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import org.jmock.Expectations;
@@ -38,7 +39,7 @@ public class ConverterTest {
 			allowing(typeConverter).isAbleToConvertTo(with(any(Class.class)));
 			will(returnValue(true));
 			
-			one(typeConverter).convert(with(any(String.class)), with(any(Target.class)), with(any(Map.class)));
+			one(typeConverter).convert(with(any(String.class)), with(any(Target.class)), new Parameters(with(any(List.class))));
 		}});
 		
 		converter.convert("", Target.create(Void.class, ""), null);

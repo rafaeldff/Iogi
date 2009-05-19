@@ -1,6 +1,5 @@
 package iogi;
 
-
 import static com.google.common.base.Predicates.equalTo;
 import iogi.conversion.Converter;
 import iogi.conversion.DoubleConverter;
@@ -26,8 +25,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-
-
 public class Instantiatior {
 	private List<TypeConverter<?>> typeConverters = ImmutableList.<TypeConverter<?>>builder()
 		.add(new IntegerConverter())
@@ -38,10 +35,11 @@ public class Instantiatior {
 	private Converter converter =  new Converter(typeConverters);
 
 	public <T> T instantiate(Target<T> target, Parameter... parameters) {
-		return instantiate(target, Arrays.asList(parameters));
+		return instantiate(target, new Parameters(Arrays.asList(parameters)));
 	}
 	
-	public <T> T instantiate(Target<T> target, List<Parameter> parameters) {
+	public <T> T instantiate(Target<T> target, Parameters parametersObject) {
+		List<Parameter> parameters = parametersObject.getParametersList();
 		Object object;
 		if (target.isPrimitiveLike())
 			object = instantiatePrimitive(target, parameters);
@@ -135,7 +133,7 @@ public class Instantiatior {
 		
 		ArrayList<Object> newList = new ArrayList<Object>();
 		for (List<Parameter> parameterListForAnElement : parameterLists) {
-			Object listElement = instantiate(listElementTarget, parameterListForAnElement);
+			Object listElement = instantiate(listElementTarget, new Parameters(parameterListForAnElement));
 			newList.add(listElement);
 		}
 		

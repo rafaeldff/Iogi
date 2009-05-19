@@ -1,7 +1,7 @@
 package iogi.conversion;
 
-import java.util.Map;
 
+import iogi.Parameters;
 import iogi.Target;
 
 public class IntegerConverter implements TypeConverter<Integer> {
@@ -12,7 +12,7 @@ public class IntegerConverter implements TypeConverter<Integer> {
 	}
 
 	@Override
-	public Integer convert(String stringRepresentation, Target<?> target, Map<String, String> arguments) {
+	public Integer convert(String stringRepresentation, Target<?> target, Parameters parameters) {
 		return Integer.valueOf(stringRepresentation);
 	}
 
