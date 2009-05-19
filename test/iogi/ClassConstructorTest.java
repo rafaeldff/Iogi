@@ -3,6 +3,7 @@ package iogi;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import iogi.conversion.StringConverter;
+import iogi.reflection.ClassConstructor;
 
 import java.lang.reflect.Constructor;
 import java.util.HashSet;

@@ -1,6 +1,7 @@
 package iogi;
 
 import iogi.exceptions.InvalidTypeException;
+import iogi.reflection.Target;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;

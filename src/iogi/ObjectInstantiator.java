@@ -3,6 +3,8 @@ package iogi;
 import static com.google.common.base.Predicates.equalTo;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
+import iogi.reflection.ClassConstructor;
+import iogi.reflection.Target;
 
 import java.util.HashSet;
 import java.util.Set;

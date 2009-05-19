@@ -2,7 +2,7 @@ package iogi.conversion;
 
 import iogi.Instantiator;
 import iogi.Parameters;
-import iogi.Target;
+import iogi.reflection.Target;
 
 public class StringConverter implements Instantiator<String> {
 

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import iogi.Instantiator;
 import iogi.Parameter;
 import iogi.Parameters;
-import iogi.Target;
+import iogi.reflection.Target;
 
 import java.util.Arrays;
 

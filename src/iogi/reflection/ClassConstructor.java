@@ -1,5 +1,7 @@
-package iogi;
+package iogi.reflection;
 
+import iogi.Instantiator;
+import iogi.Parameters;
 import iogi.exceptions.IogiException;
 
 import java.lang.reflect.Constructor;

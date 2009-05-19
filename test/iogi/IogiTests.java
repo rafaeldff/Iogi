@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
+import iogi.reflection.Target;
 
 import java.lang.reflect.Type;
 import java.util.List;

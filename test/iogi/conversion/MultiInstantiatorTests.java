@@ -3,8 +3,8 @@ package iogi.conversion;
 import iogi.Instantiator;
 import iogi.MultiInstantiator;
 import iogi.Parameters;
-import iogi.Target;
 import iogi.exceptions.InvalidTypeException;
+import iogi.reflection.Target;
 
 import java.util.Collections;
 import java.util.List;

@@ -4,7 +4,7 @@ import iogi.Instantiator;
 import iogi.Iogi;
 import iogi.Parameters;
 import iogi.Primitives;
-import iogi.Target;
+import iogi.reflection.Target;
 
 
 public class ObjectConverter implements Instantiator<Object> {
