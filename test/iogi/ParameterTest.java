@@ -2,6 +2,7 @@ package iogi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import iogi.parameters.Parameter;
 
 import org.junit.Test;
 

@@ -2,7 +2,7 @@ package iogi.conversion;
 
 
 import iogi.Instantiator;
-import iogi.Parameters;
+import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 

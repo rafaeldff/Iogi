@@ -2,8 +2,8 @@ package iogi.conversion;
 
 import iogi.Instantiator;
 import iogi.MultiInstantiator;
-import iogi.Parameters;
 import iogi.exceptions.InvalidTypeException;
+import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 import java.util.Collections;

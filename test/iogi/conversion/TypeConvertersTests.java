@@ -3,8 +3,8 @@ package iogi.conversion;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import iogi.Instantiator;
-import iogi.Parameter;
-import iogi.Parameters;
+import iogi.parameters.Parameter;
+import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 import java.util.Arrays;

@@ -2,8 +2,8 @@ package iogi.conversion;
 
 import iogi.Instantiator;
 import iogi.Iogi;
-import iogi.Parameters;
 import iogi.Primitives;
+import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 

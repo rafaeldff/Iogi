@@ -3,6 +3,8 @@ package iogi;
 import static com.google.common.base.Predicates.equalTo;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
+import iogi.parameters.Parameter;
+import iogi.parameters.Parameters;
 import iogi.reflection.ClassConstructor;
 import iogi.reflection.Target;
 

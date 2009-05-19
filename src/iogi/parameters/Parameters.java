@@ -1,4 +1,4 @@
-package iogi;
+package iogi.parameters;
 
 
 import iogi.reflection.Target;

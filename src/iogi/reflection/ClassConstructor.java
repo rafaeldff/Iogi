@@ -1,8 +1,8 @@
 package iogi.reflection;
 
 import iogi.Instantiator;
-import iogi.Parameters;
 import iogi.exceptions.IogiException;
+import iogi.parameters.Parameters;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
