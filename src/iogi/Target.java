@@ -72,4 +72,11 @@ public class Target<T> {
 	 public Type getType() {
 		return type;
 	}
+
+	public Target<Object> typeArgument(int index) {
+		ParameterizedType thisAsParameterizedType = (ParameterizedType)this.getType();
+		Type[] typeArguments = thisAsParameterizedType.getActualTypeArguments();
+		Type typeArgument = typeArguments[index];
+		return new Target<Object>(typeArgument, this.getName());
+	}
 }

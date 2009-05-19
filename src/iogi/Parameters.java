@@ -38,14 +38,24 @@ public class Parameters {
 		return arguments.get(target.getName());
 	}
 	
-	public List<Parameter> relevantTo(Target<?> target) {
+	public Parameters relevant(Target<?> target) {
 		ArrayList<Parameter> relevant = new ArrayList<Parameter>(getParametersList().size());
 		
 		for (Parameter parameter : getParametersList()) {
 			if (parameter.getFirstNameComponent().equals(target.getName()))
-				relevant.add(parameter.strip());
+				relevant.add(parameter);
 		}
 		
-		return relevant;
+		return new Parameters(relevant);
+	}
+
+	public Parameters strip() {
+		ArrayList<Parameter> striped = new ArrayList<Parameter>(getParametersList().size());
+		
+		for (Parameter parameter : getParametersList()) {
+			striped.add(parameter.strip());
+		}
+		
+		return new Parameters(striped);
 	}
 }

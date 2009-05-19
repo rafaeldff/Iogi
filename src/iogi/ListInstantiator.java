@@ -4,7 +4,6 @@ import iogi.conversion.Instantiator;
 import iogi.exceptions.InvalidTypeException;
 
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,19 +23,33 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 		return List.class.isAssignableFrom(target.getClassType());
 	}
 
-	Target<Object> findListElementTarget(Target<?> target) {
-		ParameterizedType listType = (ParameterizedType)target.getType();
-		Type typeArgument = listType.getActualTypeArguments()[0];
-		Target<Object> listElementTarget = new Target<Object>(typeArgument, target.getName());
-		return listElementTarget;
+	@Override
+	public List<Object> instantiate(Target<?> target, Parameters parameters) {
+		signalErrorIfGivenARawType(target);
+			
+		Target<Object> listElementTarget = target.typeArgument(0);
+		Collection<List<Parameter>> parameterLists = breakList(parameters.relevant(target).getParametersList());
+		
+		ArrayList<Object> newList = new ArrayList<Object>();
+		for (List<Parameter> parameterListForAnElement : parameterLists) {
+			Object listElement = elementInstantiator.instantiate(listElementTarget, new Parameters(parameterListForAnElement));
+			newList.add(listElement);
+		}
+		
+		return newList;
 	}
 
-	Collection<List<Parameter>> breakList(List<Parameter> parameters) {
+	private void signalErrorIfGivenARawType(Target<?> target) {
+		if (!(target.getType() instanceof ParameterizedType))
+			throw new InvalidTypeException("Expecting a parameterized list type, got raw type \"%s\" instead", target.getType());
+	}
+
+	private Collection<List<Parameter>> breakList(List<Parameter> parameters) {
 		int listSize = this.countToFirstRepeatedParameterName(parameters);
 		return Lists.partition(parameters, listSize);
 	}
 
-	int countToFirstRepeatedParameterName(List<Parameter> parameters) {
+	private int countToFirstRepeatedParameterName(List<Parameter> parameters) {
 		if (parameters.isEmpty())
 			return 0;
 		
@@ -52,23 +65,6 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 		}
 		
 		return count;
-	}
-
-	@Override
-	public List<Object> instantiate(Target<?> target, Parameters parameters) {
-		if (!(target.getType() instanceof ParameterizedType))
-			throw new InvalidTypeException("Expecting a parameterized list type, got raw type \"%s\" instead", target.getType());
-			
-		Target<Object> listElementTarget = findListElementTarget(target);
-		Collection<List<Parameter>> parameterLists = breakList(parameters.getParametersList());
-		
-		ArrayList<Object> newList = new ArrayList<Object>();
-		for (List<Parameter> parameterListForAnElement : parameterLists) {
-			Object listElement = elementInstantiator.instantiate(listElementTarget, new Parameters(parameterListForAnElement));
-			newList.add(listElement);
-		}
-		
-		return newList;
 	}
 
 }

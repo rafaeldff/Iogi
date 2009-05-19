@@ -5,9 +5,7 @@ import iogi.conversion.Instantiator;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -27,7 +25,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	public Object instantiate(Target<?> target, Parameters parameters) {
 		signalErrorIfTargetIsAbstract(target);
 		
-		List<Parameter> relevantParameters = parameters.relevantTo(target);
+		Parameters relevantParameters = parameters.relevant(target).strip();
 		Set<ClassConstructor> candidateConstructors = target.classConstructors();  
 		
 		ClassConstructor desiredConstructor = desiredConstructor(relevantParameters);
@@ -44,9 +42,9 @@ public class ObjectInstantiator implements Instantiator<Object> {
 			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
 	}
 
-	private ClassConstructor desiredConstructor(Collection<Parameter> parameters) {
+	private ClassConstructor desiredConstructor(Parameters relevantParameters) {
 		HashSet<String> givenParameterNames = new HashSet<String>();
-		for (Parameter paremeter : parameters) {
+		for (Parameter paremeter : relevantParameters.getParametersList()) {
 			givenParameterNames.add(paremeter.getFirstNameComponent());
 		}
 		return new ClassConstructor(givenParameterNames);

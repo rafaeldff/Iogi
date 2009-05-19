@@ -5,8 +5,8 @@ import iogi.exceptions.IogiException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
@@ -69,17 +69,17 @@ public class ClassConstructor {
 		return true;
 	}
 
-	public Object instantiate(Instantiator<?> instantiator, List<Parameter> parameters) {
-		Class<?>[] parameterTypes = constructor.getParameterTypes();
+	public Object instantiate(Instantiator<?> instantiator, Parameters parameters) {
+		Type[] parameterTypes = constructor.getGenericParameterTypes();
 		String[] parameterNames = paranamer.lookupParameterNames(constructor);
 		Object[] argumentValues = new Object[parameterNames.length];
 		
 		for (int i = 0; i < parameterNames.length; i++) {
 			String name = parameterNames[i];
 			
-			Target<?> target = Target.create(parameterTypes[i], name);
+			Target<?> target = new Target<Object>(parameterTypes[i], name);
 			
-			Object value = instantiator.instantiate(target, new Parameters(parameters));
+			Object value = instantiator.instantiate(target, parameters);
 			argumentValues[i] = value;
 		}
 		
@@ -102,6 +102,6 @@ public class ClassConstructor {
 	
 	@Override
 	public String toString() {
-		return "(" + Joiner.on(",").join(names) + ")"; 
+		return "(" + Joiner.on(", ").join(names) + ")"; 
 	}
 }

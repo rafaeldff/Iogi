@@ -18,17 +18,16 @@ public class Iogi {
 		.add(new DelegateToListInstantiator())
 		.add(new DelegateToObjectInstantiator())
 		.build();
-	private MultiInstantiator multiInstantiator = new MultiInstantiator(all);
-	private ListInstantiator listInstantiator = new ListInstantiator(multiInstantiator);
-	private ObjectInstantiator objectInstantiator = new ObjectInstantiator(multiInstantiator);
+	private MultiInstantiator allInstantiators = new MultiInstantiator(all);
+	private ListInstantiator listInstantiator = new ListInstantiator(allInstantiators);
+	private ObjectInstantiator objectInstantiator = new ObjectInstantiator(allInstantiators);
 	
-
 	public <T> T instantiate(Target<T> target, Parameter... parameters) {
 		return instantiate(target, new Parameters(Arrays.asList(parameters)));
 	}
 	
 	public <T> T instantiate(Target<T> target, Parameters parameters) {
-		Object object = multiInstantiator.instantiate(target, parameters);
+		Object object = allInstantiators.instantiate(target, parameters);
 		return target.cast(object);
 	}
 	

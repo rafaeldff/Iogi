@@ -6,16 +6,16 @@ import com.google.common.collect.ImmutableMap;
 
 public class Primitives {
 	private static final Map<Class<?>, Class<?>> primitiveToObject = ImmutableMap.<Class<?>, Class<?>>builder()
-	.put(Boolean.TYPE, Boolean.class)
-	.put(Character.TYPE, Character.class)
-	.put(Byte.TYPE, Byte.class)
-	.put(Short.TYPE, Short.class)
-	.put(Integer.TYPE, Integer.class)
-	.put(Long.TYPE, Long.class)
-	.put(Float.TYPE, Float.class)
-	.put(Double.TYPE, Double.class)
-	.put(Void.TYPE, Void.class)
-	.build();
+		.put(Boolean.TYPE, Boolean.class)
+		.put(Character.TYPE, Character.class)
+		.put(Byte.TYPE, Byte.class)
+		.put(Short.TYPE, Short.class)
+		.put(Integer.TYPE, Integer.class)
+		.put(Long.TYPE, Long.class)
+		.put(Float.TYPE, Float.class)
+		.put(Double.TYPE, Double.class)
+		.put(Void.TYPE, Void.class)
+		.build();
 
 	private Primitives() {}
 

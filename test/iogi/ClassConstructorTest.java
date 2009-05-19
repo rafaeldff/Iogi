@@ -57,7 +57,7 @@ public class ClassConstructorTest {
 	public void canInstantiateFromArgumentNames() throws Exception {
 		ClassConstructor constructor = new ClassConstructor(fooConstructor); 
 		ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
-		Foo foo = (Foo)constructor.instantiate(primitiveInstantiator, parameters);
+		Foo foo = (Foo)constructor.instantiate(primitiveInstantiator, new Parameters(parameters));
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());
 	}

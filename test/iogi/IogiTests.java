@@ -197,6 +197,25 @@ public class IogiTests {
 		assertEquals(22, second.getTwo());
 	}
 	
+	@Test
+	public void canInstantiateMixingListsAndRegularObjects() throws Exception {
+		Parameter firstParameter = new Parameter("root.list.someString", "bla");
+		Parameter secondParameter = new Parameter("root.list.someString", "ble");
+		Parameter thirdParameter = new Parameter("root.object.someString", "blu");
+		
+		
+		Target<MixedPrimitiveAndList> target = Target.create(MixedPrimitiveAndList.class, "root");
+		MixedPrimitiveAndList root = iogi.instantiate(target, firstParameter, secondParameter, thirdParameter);
+		
+		assertEquals(2, root.getList().size());
+		OneString first = (OneString)root.getList().get(0);
+		assertEquals("bla", first.getSomeString());
+		OneString second = (OneString)root.getList().get(1);
+		assertEquals("ble", second.getSomeString());
+		
+		assertEquals("blu", root.getObject().getSomeString());
+	}
+	
 	abstract static class AbstractClass {
 	}
 	
@@ -319,6 +338,24 @@ public class IogiTests {
 
 		public OneIntegerPrimitive getTwo() {
 			return two;
+		}
+	}
+	
+	static class MixedPrimitiveAndList {
+		private final List<OneString> list;
+		private final OneString object;
+
+		public MixedPrimitiveAndList(List<OneString> list, OneString object) {
+			this.list = list;
+			this.object = object;
+		}
+		
+		public List<OneString> getList() {
+			return list;
+		}
+		
+		public OneString getObject() {
+			return object;
 		}
 	}
 	
