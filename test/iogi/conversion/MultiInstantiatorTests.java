@@ -1,5 +1,6 @@
 package iogi.conversion;
 
+import iogi.Instantiator;
 import iogi.MultiInstantiator;
 import iogi.Parameters;
 import iogi.Target;

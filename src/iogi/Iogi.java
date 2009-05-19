@@ -1,7 +1,6 @@
 package iogi;
 
 import iogi.conversion.DoubleConverter;
-import iogi.conversion.Instantiator;
 import iogi.conversion.IntegerConverter;
 import iogi.conversion.StringConverter;
 

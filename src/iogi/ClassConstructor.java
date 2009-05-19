@@ -1,6 +1,5 @@
 package iogi;
 
-import iogi.conversion.Instantiator;
 import iogi.exceptions.IogiException;
 
 import java.lang.reflect.Constructor;

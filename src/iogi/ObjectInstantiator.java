@@ -1,7 +1,6 @@
 package iogi;
 
 import static com.google.common.base.Predicates.equalTo;
-import iogi.conversion.Instantiator;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
 

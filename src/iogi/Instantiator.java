@@ -1,8 +1,6 @@
-package iogi.conversion;
+package iogi;
 
 
-import iogi.Parameters;
-import iogi.Target;
 
 public interface Instantiator<T> {
 	public boolean isAbleToInstantiate(Target<?> target);

@@ -2,7 +2,6 @@ package iogi;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import iogi.conversion.Instantiator;
 import iogi.conversion.StringConverter;
 
 import java.lang.reflect.Constructor;
