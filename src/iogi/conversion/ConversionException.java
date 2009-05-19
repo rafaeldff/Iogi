@@ -1,16 +1,11 @@
 package iogi.conversion;
 
-import iogi.exceptions.IogiException;
+import iogi.exceptions.InvalidTypeException;
 
-public class ConversionException extends IogiException {
+public class ConversionException extends InvalidTypeException {
 	private static final long serialVersionUID = 1L;
 
 	public ConversionException(String message, Object... args) {
 		super(message, args);
 	}
-
-	public ConversionException(Throwable cause) {
-		super(cause);
-	}
-
 }

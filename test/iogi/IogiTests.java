@@ -10,34 +10,34 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class InstantiatorTests {	
-	private Instantiatior instantiator = new Instantiatior();
+public class IogiTests {	
+	private Iogi iogi = new Iogi();
 	
 	@Test
 	public void canInstantiatePrimitives() {
 		Target<Integer> target = Target.create(int.class, "any");
-		Integer primitive = instantiator.instantiate(target, new Parameter("any", "25"));
+		Integer primitive = iogi.instantiate(target, new Parameter("any", "25"));
 		assertEquals(25, primitive.intValue());
 	}
 	
 	@Test
 	public void canInstantiatePrimitivesWithWrapperTarget() {
 		Target<Integer> target = Target.create(Integer.class, "any");
-		Integer primitive = instantiator.instantiate(target, new Parameter("any", "25"));
+		Integer primitive = iogi.instantiate(target, new Parameter("any", "25"));
 		assertEquals(25, primitive.intValue());
 	}
 	
 	@Test
 	public void canInstantiateWithOneIntegerArgument() throws Exception {
 		Target<OneIntegerPrimitive> target = Target.create(OneIntegerPrimitive.class, "oneArg");
-		OneIntegerPrimitive object = instantiator.instantiate(target, new Parameter("oneArg.anInteger", "42"));
+		OneIntegerPrimitive object = iogi.instantiate(target, new Parameter("oneArg.anInteger", "42"));
 		assertEquals(42, object.getAnInteger());
 	}
 	
 	@Test
 	public void canInstantiateWithOneDoubleArgument() throws Exception {
 		Target<OneDoublePrimitive> target = Target.create(OneDoublePrimitive.class, "oneArg");
-		OneDoublePrimitive object = instantiator.instantiate(target, new Parameter("oneArg.aDouble", "42.0"));
+		OneDoublePrimitive object = iogi.instantiate(target, new Parameter("oneArg.aDouble", "42.0"));
 		assertEquals(42.0, object.getADouble(), 0.001);
 	}
 	
@@ -46,7 +46,7 @@ public class InstantiatorTests {
 		Parameter first = new Parameter("twoArguments.one", "1");
 		Parameter second = new Parameter("twoArguments.two", "2");
 		Target<TwoArguments> target = Target.create(TwoArguments.class, "twoArguments");
-		TwoArguments object = instantiator.instantiate(target, new Parameters(first, second));
+		TwoArguments object = iogi.instantiate(target, first, second);
 		assertEquals(1, object.getOne());
 		assertEquals(2, object.getTwo());
 	}
@@ -56,7 +56,7 @@ public class InstantiatorTests {
 		Parameter first = new Parameter("twoConstructors.one", "1");
 		Parameter second = new Parameter("twoConstructors.two", "2");
 		Target<TwoConstructors> target = Target.create(TwoConstructors.class, "twoConstructors");
-		TwoConstructors object = instantiator.instantiate(target, first, second);
+		TwoConstructors object = iogi.instantiate(target, first, second);
 		assertNotNull(object);
 	}
 	
@@ -64,7 +64,7 @@ public class InstantiatorTests {
 	public void canInstantiateRecursevly() throws Exception {
 		Parameter param = new Parameter("oneConstructibleArgument.arg.anInteger", "8");
 		Target<OneConstructibleArgument> target = Target.create(OneConstructibleArgument.class, "oneConstructibleArgument");
-		OneConstructibleArgument object = instantiator.instantiate(target, param);
+		OneConstructibleArgument object = iogi.instantiate(target, param);
 		assertEquals(8, object.getArg().getAnInteger());
 	}
 	
@@ -73,7 +73,7 @@ public class InstantiatorTests {
 		Parameter relevantParam = new Parameter("relevant.someString", "ok");
 		Parameter irrelevantParam = new Parameter("irrelevant.someString", "not ok");
 		Target<OneString> target = Target.create(OneString.class, "relevant");
-		OneString object = instantiator.instantiate(target, relevantParam, irrelevantParam);
+		OneString object = iogi.instantiate(target, relevantParam, irrelevantParam);
 		assertEquals("ok", object.getSomeString());
 	}
 	
@@ -83,10 +83,10 @@ public class InstantiatorTests {
 		Parameter irrelevantParam = new Parameter("irrelevant.someString", "not ok");
 		Target<OneString> target = Target.create(OneString.class, "relevant");
 		
-		OneString instantiatedWithOneOrder = instantiator.instantiate(target, relevantParam, irrelevantParam);
+		OneString instantiatedWithOneOrder = iogi.instantiate(target, relevantParam, irrelevantParam);
 		assertEquals("ok", instantiatedWithOneOrder.getSomeString());
 		
-		OneString instantiatedWithAnotherOrder = instantiator.instantiate(target, relevantParam, irrelevantParam);
+		OneString instantiatedWithAnotherOrder = iogi.instantiate(target, relevantParam, irrelevantParam);
 		assertEquals("ok", instantiatedWithAnotherOrder.getSomeString());
 	}
 	
@@ -96,7 +96,7 @@ public class InstantiatorTests {
 		Parameter parameter2 = new Parameter("root.two.anInteger", "2");
 		Target<TwoConstructibleArguments> target = Target.create(TwoConstructibleArguments.class, "root");
 		
-		TwoConstructibleArguments object = instantiator.instantiate(target, parameter1, parameter2);
+		TwoConstructibleArguments object = iogi.instantiate(target, parameter1, parameter2);
 		assertEquals("a", object.getOne().getSomeString());
 		assertEquals(2, object.getTwo().getAnInteger());
 	}
@@ -105,7 +105,7 @@ public class InstantiatorTests {
 	public void canInstantiateTwoWithTwoLevelsOfRecursiveInstantiation() throws Exception {
 		Parameter parameter = new Parameter("root.level2.arg.anInteger", "42"); 
 		Target<TwoLevelConstructible> target = Target.create(TwoLevelConstructible.class, "root");
-		TwoLevelConstructible object = instantiator.instantiate(target, parameter);
+		TwoLevelConstructible object = iogi.instantiate(target, parameter);
 		assertEquals(42, object.getLevel2().getArg().getAnInteger());
 	}
 	
@@ -114,7 +114,7 @@ public class InstantiatorTests {
 		Parameter primitiveParameter = new Parameter("root.one", "555");
 		Parameter constructibleParameter = new Parameter("root.two.anInteger", "666");
 		Target<MixedPrimitiveAndConstructibleArguments> target = Target.create(MixedPrimitiveAndConstructibleArguments.class, "root");
-		MixedPrimitiveAndConstructibleArguments object = instantiator.instantiate(target, primitiveParameter, constructibleParameter);
+		MixedPrimitiveAndConstructibleArguments object = iogi.instantiate(target, primitiveParameter, constructibleParameter);
 		assertEquals(555, object.getOne());
 		assertEquals(666, object.getTwo().getAnInteger());
 	}
@@ -123,28 +123,28 @@ public class InstantiatorTests {
 	public void testWillThrowANoConstructorFoundExceptionIfNoAdequateConstructorIsFound() {
 		Parameter aParameter = new Parameter("root.a", "");
 		Target<OneIntegerPrimitive> target = Target.create(OneIntegerPrimitive.class, "root");
-		instantiator.instantiate(target, aParameter);
+		iogi.instantiate(target, aParameter);
 	}
 	
 	@Test(expected=InvalidTypeException.class)
 	public void willThrowAnInvalidTypeExceptionIfGivenAnInterface() throws Exception {
 		Parameter aParameter = new Parameter("root.a", "");
 		Target<CharSequence> target = Target.create(CharSequence.class, "root");
-		instantiator.instantiate(target, aParameter);
+		iogi.instantiate(target, aParameter);
 	}
 	
 	@Test(expected=InvalidTypeException.class)
 	public void willThrowAnInvalidTypeExceptionIfGivenAnAbstractClass() throws Exception {
 		Parameter aParameter = new Parameter("root.a", "");
 		Target<AbstractClass> target = Target.create(AbstractClass.class, "root");
-		instantiator.instantiate(target, aParameter);
+		iogi.instantiate(target, aParameter);
 	}
 	
 	@Test(expected=InvalidTypeException.class)
 	public void willThrowAnInvalidTypeExceptionIfGivenVoid() throws Exception {
 		Parameter aParameter = new Parameter("root.a", "");
 		Target<Void> target = Target.create(Void.class, "root");
-		instantiator.instantiate(target, aParameter);
+		iogi.instantiate(target, aParameter);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -156,7 +156,7 @@ public class InstantiatorTests {
 		Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfOneString").getGenericType();
 		
 		Target<List> target = new Target(parameterizedListType, "root");
-		List objects = instantiator.instantiate(target, firstParameter, secondParameter);
+		List objects = iogi.instantiate(target, firstParameter, secondParameter);
 		
 		assertEquals(2, objects.size());
 		OneString first = (OneString)objects.get(0);
@@ -172,7 +172,7 @@ public class InstantiatorTests {
 		 Target<List> target = new Target<List>(rawListType, "foo");
 		 Parameter parameter = new Parameter("foo.bar", "baz");
 		 
-		 instantiator.instantiate(target, parameter);
+		 iogi.instantiate(target, parameter);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -186,7 +186,7 @@ public class InstantiatorTests {
 		Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfTwoArguments").getGenericType();
 		
 		Target<List> target = new Target(parameterizedListType, "root");
-		List objects = instantiator.instantiate(target, p1, p2, p3, p4);
+		List objects = iogi.instantiate(target, p1, p2, p3, p4);
 		
 		assertEquals(2, objects.size());
 		TwoArguments first = (TwoArguments)objects.get(0);

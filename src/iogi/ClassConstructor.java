@@ -1,14 +1,12 @@
 package iogi;
 
-import iogi.conversion.Converter;
+import iogi.conversion.Instantiator;
 import iogi.exceptions.IogiException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
@@ -71,35 +69,21 @@ public class ClassConstructor {
 		return true;
 	}
 
-	public Object instantiate(Converter converter, List<Parameter> parameters) {
-		Map<String, String> arguments = arguments(parameters);
+	public Object instantiate(Instantiator<?> instantiator, List<Parameter> parameters) {
 		Class<?>[] parameterTypes = constructor.getParameterTypes();
 		String[] parameterNames = paranamer.lookupParameterNames(constructor);
 		Object[] argumentValues = new Object[parameterNames.length];
 		
 		for (int i = 0; i < parameterNames.length; i++) {
 			String name = parameterNames[i];
-			String valueAsString = arguments.get(name);
 			
 			Target<?> target = Target.create(parameterTypes[i], name);
 			
-			Object value = converter.convert(valueAsString, target, parameters);
+			Object value = instantiator.instantiate(target, new Parameters(parameters));
 			argumentValues[i] = value;
 		}
 		
 		return instantiateWithConstructor(argumentValues);
-	}
-	
-	private Map<String, String> arguments(List<Parameter> parameters) {
-		Map<String, String> arguments = new HashMap<String, String>();
-		
-		for (Parameter parameter : parameters) {
-			String argumentName = parameter.getName();
-			String argumentValue = parameter.getValue();
-			arguments.put(argumentName, argumentValue);
-		}
-		
-		return arguments;
 	}
 	
 	private Object instantiateWithConstructor(Object[] values) {

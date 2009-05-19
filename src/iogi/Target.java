@@ -34,14 +34,14 @@ public class Target<T> {
 	
 	public String getName() {
 		return name;
-	}
+	} 
 
 	@SuppressWarnings("unchecked")
 	public boolean isPrimitiveLike() {
 		if (!(type instanceof Class))
 			return false;
 		
-		return Primitives.isPrimitiveLike(getClassType()); 
+		return Primitives.isPrimitiveLike(getClassType()) || getClassType() == String.class; 
 	}
 	
 	public T cast(Object object) {

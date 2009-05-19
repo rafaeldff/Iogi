@@ -1,26 +1,25 @@
 package iogi.conversion;
 
-import iogi.Instantiatior;
+import iogi.Iogi;
 import iogi.Parameters;
 import iogi.Primitives;
 import iogi.Target;
 
 
-public class ObjectConverter implements TypeConverter<Object> {
-	private final Instantiatior instantiator;
+public class ObjectConverter implements Instantiator<Object> {
+	private final Iogi instantiator;
 
-	public ObjectConverter(Instantiatior instantiator) {
+	public ObjectConverter(Iogi instantiator) {
 		this.instantiator = instantiator;
 	}
 	
 	@Override
-	public boolean isAbleToConvertTo(Class<?> type) {
-		return !Primitives.isPrimitiveLike(type);
+	public boolean isAbleToInstantiate(Target<?> target) {
+		return !Primitives.isPrimitiveLike(target.getClassType());
 	}
 
 	@Override
-	public Object convert(String stringRepresentation, Target<?> target, Parameters parameters) {
+	public Object instantiate(Target<?> target, Parameters parameters) {
 		return instantiator.instantiate(target, parameters);
 	}
-
 }

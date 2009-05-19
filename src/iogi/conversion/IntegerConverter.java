@@ -4,16 +4,16 @@ package iogi.conversion;
 import iogi.Parameters;
 import iogi.Target;
 
-public class IntegerConverter implements TypeConverter<Integer> {
+public class IntegerConverter implements Instantiator<Integer> {
 
 	@Override
-	public boolean isAbleToConvertTo(Class<?> type) {
-		return type == int.class || type == Integer.class;
+	public boolean isAbleToInstantiate(Target<?> target) {
+		return target.getClassType() == int.class || target.getClassType() == Integer.class;
 	}
 
 	@Override
-	public Integer convert(String stringRepresentation, Target<?> target, Parameters parameters) {
-		return Integer.valueOf(stringRepresentation);
+	public Integer instantiate(Target<?> target, Parameters parameters) {
+		return Integer.valueOf(parameters.namedAfter(target).getValue());
 	}
 
 }

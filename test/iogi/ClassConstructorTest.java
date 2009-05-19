@@ -2,12 +2,10 @@ package iogi;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import iogi.conversion.Converter;
+import iogi.conversion.Instantiator;
 import iogi.conversion.StringConverter;
-import iogi.conversion.TypeConverter;
 
 import java.lang.reflect.Constructor;
-import java.util.Collections;
 import java.util.HashSet;
 
 import org.junit.Test;
@@ -17,11 +15,11 @@ import com.google.common.collect.ImmutableList;
 
 public class ClassConstructorTest {
 	private Constructor<Foo> fooConstructor;
-	private Converter converter;
+	private Instantiator<?> primitiveInstantiator;
 	
 	public ClassConstructorTest() throws SecurityException, NoSuchMethodException {
 		fooConstructor = Foo.class.getConstructor(String.class, String.class);
-		converter = new Converter(Collections.<TypeConverter<?>>singleton(new StringConverter()));		
+		primitiveInstantiator = new StringConverter();		
 	}
 	
 	@Test
@@ -59,7 +57,7 @@ public class ClassConstructorTest {
 	public void canInstantiateFromArgumentNames() throws Exception {
 		ClassConstructor constructor = new ClassConstructor(fooConstructor); 
 		ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
-		Foo foo = (Foo)constructor.instantiate(converter, parameters);
+		Foo foo = (Foo)constructor.instantiate(primitiveInstantiator, parameters);
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());
 	}
