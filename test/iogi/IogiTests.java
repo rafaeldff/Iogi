@@ -218,10 +218,10 @@ public class IogiTests {
 		assertEquals("blu", root.getObject().getSomeString());
 	}
 	
-	abstract static class AbstractClass {
+	public abstract static class AbstractClass {
 	}
 	
-	static class OneString {
+	public static class OneString {
 		private final String someString;
 
 		public OneString(String someString) {
@@ -233,7 +233,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class OneIntegerPrimitive {
+	public static class OneIntegerPrimitive {
 		private int anInteger;
 
 		public OneIntegerPrimitive(int anInteger) {
@@ -245,7 +245,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class OneDoublePrimitive {
+	public static class OneDoublePrimitive {
 		private double aDouble;
 		
 		public OneDoublePrimitive(double aDouble) {
@@ -257,7 +257,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class TwoArguments {
+	public static class TwoArguments {
 		private int one;
 		private int two;
 
@@ -275,7 +275,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class OneConstructibleArgument {
+	public static class OneConstructibleArgument {
 		private final OneIntegerPrimitive arg;
 
 		public OneConstructibleArgument(OneIntegerPrimitive arg) {
@@ -287,7 +287,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class TwoConstructors {
+	public static class TwoConstructors {
 		public TwoConstructors(int one, int two) {
 		}
 		
@@ -295,7 +295,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class TwoConstructibleArguments {
+	public static class TwoConstructibleArguments {
 		private final OneString one;
 		private final OneIntegerPrimitive two;
 
@@ -313,7 +313,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class TwoLevelConstructible {
+	public static class TwoLevelConstructible {
 		private final OneConstructibleArgument level2;
 
 		public TwoLevelConstructible(OneConstructibleArgument level2) {
@@ -325,7 +325,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class MixedPrimitiveAndConstructibleArguments {
+	public static class MixedPrimitiveAndConstructibleArguments {
 		private final int one;
 		private final OneIntegerPrimitive two;
 
@@ -343,7 +343,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class MixedPrimitiveAndList {
+	public static class MixedPrimitiveAndList {
 		private final List<OneString> list;
 		private final OneString object;
 
@@ -361,7 +361,7 @@ public class IogiTests {
 		}
 	}
 	
-	static class ContainsParameterizedList {
+	public static class ContainsParameterizedList {
 		List<OneString> listOfOneString;
 		List<TwoArguments> listOfTwoArguments;
 	}

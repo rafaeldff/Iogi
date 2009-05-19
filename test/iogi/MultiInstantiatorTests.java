@@ -1,4 +1,4 @@
-package iogi.conversion;
+package iogi;
 
 import iogi.Instantiator;
 import iogi.MultiInstantiator;

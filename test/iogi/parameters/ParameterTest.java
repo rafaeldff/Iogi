@@ -1,4 +1,4 @@
-package iogi;
+package iogi.parameters;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

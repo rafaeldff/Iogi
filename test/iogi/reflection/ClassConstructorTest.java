@@ -1,7 +1,8 @@
-package iogi;
+package iogi.reflection;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import iogi.Instantiator;
 import iogi.conversion.StringConverter;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
