@@ -6,6 +6,7 @@ import iogi.exceptions.NoConstructorFoundException;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.ClassConstructor;
+import iogi.reflection.Primitives;
 import iogi.reflection.Target;
 
 import java.util.HashSet;

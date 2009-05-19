@@ -1,6 +1,5 @@
 package iogi.reflection;
 
-import iogi.Primitives;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;

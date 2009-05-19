@@ -1,4 +1,4 @@
-package iogi;
+package iogi.reflection;
 
 import java.util.Map;
 
