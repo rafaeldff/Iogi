@@ -17,12 +17,10 @@ public class Iogi {
 		.add(new IntegerConverter())
 		.add(new DoubleConverter())
 		.add(new StringConverter())
-		.add(new DelegateToListInstantiator())
-		.add(new DelegateToObjectInstantiator())
+		.add(new ListInstantiator(new DelegateToAllInstantatiors()))
+		.add(new ObjectInstantiator(new DelegateToAllInstantatiors()))
 		.build();
 	private MultiInstantiator allInstantiators = new MultiInstantiator(all);
-	private ListInstantiator listInstantiator = new ListInstantiator(allInstantiators);
-	private ObjectInstantiator objectInstantiator = new ObjectInstantiator(allInstantiators);
 	
 	public <T> T instantiate(Target<T> target, Parameter... parameters) {
 		return instantiate(target, new Parameters(Arrays.asList(parameters)));
@@ -34,34 +32,19 @@ public class Iogi {
 	}
 	
 	/*
-	 *	This is an ugly hack to enable cyclic references between MultiInstantiator and
-	 *  ListInstantiator.
+	 *	This is an ugly hack to enable cyclic references between allInstantiators
+	 * 	and some of its components - like objectInstantiator - that require a 
+	 * 	recursive reference to allInstantiators.
 	 */
-	private final class DelegateToListInstantiator implements Instantiator<List<Object>> {
+	private final class DelegateToAllInstantatiors implements Instantiator<Object> {
 		@Override
-		public List<Object> instantiate(Target<?> target, Parameters parameters) {
-			return listInstantiator.instantiate(target, parameters);
+		public boolean isAbleToInstantiate(Target<?> target) {
+			return allInstantiators.isAbleToInstantiate(target);
 		}
 
 		@Override
-		public boolean isAbleToInstantiate(Target<?> target) {
-			return listInstantiator.isAbleToInstantiate(target);
-		}
-	}
-	
-	/*
-	 *	This is an ugly hack to enable cyclic references between MultiInstantiator and
-	 *  ObjectInstantiator.
-	 */
-	private final class DelegateToObjectInstantiator implements Instantiator<Object> {
-		@Override
 		public Object instantiate(Target<?> target, Parameters parameters) {
-			return objectInstantiator.instantiate(target, parameters);
-		}
-		
-		@Override
-		public boolean isAbleToInstantiate(Target<?> target) {
-			return objectInstantiator.isAbleToInstantiate(target);
+			return allInstantiators.instantiate(target, parameters);
 		}
 	}
 }

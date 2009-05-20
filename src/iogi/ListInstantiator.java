@@ -30,7 +30,7 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 		signalErrorIfGivenARawType(target);
 			
 		Target<Object> listElementTarget = target.typeArgument(0);
-		Collection<List<Parameter>> parameterLists = breakList(parameters.relevant(target).getParametersList());
+		Collection<List<Parameter>> parameterLists = breakList(parameters.relevantTo(target).getParametersList());
 		
 		ArrayList<Object> newList = new ArrayList<Object>();
 		for (List<Parameter> parameterListForAnElement : parameterLists) {

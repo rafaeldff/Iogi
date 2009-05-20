@@ -29,7 +29,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	public Object instantiate(Target<?> target, Parameters parameters) {
 		signalErrorIfTargetIsAbstract(target);
 		
-		Parameters relevantParameters = parameters.relevant(target).strip();
+		Parameters relevantParameters = parameters.relevantTo(target).strip();
 		Set<ClassConstructor> candidateConstructors = target.classConstructors();  
 		
 		ClassConstructor desiredConstructor = desiredConstructor(relevantParameters);

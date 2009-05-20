@@ -40,7 +40,7 @@ public class Parameters {
 		return arguments.get(target.getName());
 	}
 	
-	public Parameters relevant(Target<?> target) {
+	public Parameters relevantTo(Target<?> target) {
 		ArrayList<Parameter> relevant = new ArrayList<Parameter>(getParametersList().size());
 		
 		for (Parameter parameter : getParametersList()) {

@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class IogiTests {	
+public class IogiTests {
 	private Iogi iogi = new Iogi();
 	
 	@Test
