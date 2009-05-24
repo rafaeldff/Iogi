@@ -1,16 +1,18 @@
 package iogi.conversion;
 
+import iogi.Instantiator;
+import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
+public class StringConverter implements Instantiator<String> {
 
-public class StringConverter extends TypeConverter<String> {
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
 		return target.getClassType() == String.class;
 	}
-
+	
 	@Override
-	public String convert(String stringValue) {
-		return stringValue;
+	public String instantiate(Target<?> target, Parameters parameters) {
+		return parameters.namedAfter(target).getValue();
 	}
 }
