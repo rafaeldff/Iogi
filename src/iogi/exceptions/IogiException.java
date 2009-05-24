@@ -10,4 +10,8 @@ public class IogiException extends RuntimeException {
 	public IogiException(Throwable cause) {
 		super(cause);
 	}
+
+	public IogiException(Throwable cause, String message, Object... args) {
+		super(String.format(message, args), cause);
+	}
 }

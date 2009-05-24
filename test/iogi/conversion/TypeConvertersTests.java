@@ -20,15 +20,15 @@ public class TypeConvertersTests {
 	}
 	
 	@Test
-	public void doubleConverterForPrimitive() throws Exception {
+	public void doubleConverterCanConverterToAPrimitiveDoubleTarget() throws Exception {
 		Instantiator<Double> converter = new DoubleConverter(); 
 		Target<Double> target = Target.create(double.class, "foo");
 		assertTrue(converter.isAbleToInstantiate(target));
-		assertEquals(Double.valueOf(2.0), converter.instantiate(target, oneParameter("foo", "2.0")));
+		assertEquals(2.0, (double)converter.instantiate(target, oneParameter("foo", "2.0")), 0.00001);
 	}
 	
 	@Test
-	public void doubleConverterForObject() throws Exception {
+	public void doubleConverterCanConverterToAWrapperDoubleTarget() throws Exception {
 		Instantiator<Double> converter = new DoubleConverter(); 
 		Target<Double> target = Target.create(Double.class, "foo");
 		assertTrue(converter.isAbleToInstantiate(target));
@@ -36,11 +36,35 @@ public class TypeConvertersTests {
 	}
 	
 	@Test
+	public void floatConverter() throws Exception {
+		Instantiator<Float> converter = new FloatConverter(); 
+		Target<Float> target = Target.create(Float.class, "foo");
+		assertTrue(converter.isAbleToInstantiate(target));
+		assertEquals(3.14159f, (float)converter.instantiate(target, oneParameter("foo", "3.14159")), 0.0000001);
+	}
+	
+	@Test
 	public void integerConverter() throws Exception {
-		Instantiator<Integer> converter = new IntegerConverter(); 
 		Target<Integer> target = Target.create(Integer.class, "foo");
+		Instantiator<Integer> converter = new IntegerConverter(); 
 		assertTrue(converter.isAbleToInstantiate(target));
 		assertEquals(Integer.valueOf(2), converter.instantiate(target, oneParameter("foo", "2")));
+	}
+	
+	@Test
+	public void shortConverter() throws Exception {
+		Target<Short> target = Target.create(Short.class, "foo");
+		Instantiator<Short> converter = new ShortConverter(); 
+		assertTrue(converter.isAbleToInstantiate(target));
+		assertEquals(Short.valueOf((short)2), converter.instantiate(target, oneParameter("foo", "2")));
+	}
+	
+	@Test
+	public void longConverter() throws Exception {
+		Target<Long> target = Target.create(Long.class, "foo");
+		Instantiator<Long> converter = new LongConverter(); 
+		assertTrue(converter.isAbleToInstantiate(target));
+		assertEquals(Long.valueOf(2l), converter.instantiate(target, oneParameter("foo", "2")));
 	}
 	
 	@Test
@@ -63,7 +87,7 @@ public class TypeConvertersTests {
 	
 	@Test
 	public void bigDecimalConverter() throws Exception {
-		Instantiator<BigDecimal> converter = new BigDecimalConveter(); 
+		Instantiator<BigDecimal> converter = new BigDecimalConverter(); 
 		Target<BigDecimal> target = Target.create(BigDecimal.class, "param");
 		assertTrue(converter.isAbleToInstantiate(target));
 		assertEquals(BigDecimal.TEN,  converter.instantiate(target, oneParameter("param", "10")));
@@ -103,14 +127,33 @@ public class TypeConvertersTests {
 	}
 	
 	@Test
-	public void enumConverter() throws Exception {
+	public void enumConverterCanConvertLiterals() throws Exception {
 		Instantiator<Stooges> converter = new EnumConverter<Stooges>(); 
 		Target<Stooges> target = Target.create(Stooges.class, "foo");
 		assertTrue(converter.isAbleToInstantiate(target));
 		assertEquals(Stooges.CURLY, converter.instantiate(target, oneParameter("foo", "CURLY")));
 	}
 	
-	//TODO: more enum tests...
+	@Test
+	public void enumConverterCanConvertOrdinals() {
+		Instantiator<Stooges> converter = new EnumConverter<Stooges>();
+		Target<Stooges> target = Target.create(Stooges.class, "foo");
+		assertEquals(Stooges.CURLY, converter.instantiate(target, oneParameter("foo", "1")));
+	}
+	
+	@Test(expected=ConversionException.class)
+	public void enumConverterWillThrowAnExceptionIfGivenAnUnrecognizedString() throws Exception {
+		Instantiator<Stooges> converter = new EnumConverter<Stooges>(); 
+		Target<Stooges> target = Target.create(Stooges.class, "foo");
+		assertEquals(Stooges.CURLY, converter.instantiate(target, oneParameter("foo", "LAUREL")));
+	}
+	
+	@Test(expected=ConversionException.class)
+	public void enumConverterWillThrowAnExceptionIfGivenAnInvalidOrdinal() throws Exception {
+		Instantiator<Stooges> converter = new EnumConverter<Stooges>(); 
+		Target<Stooges> target = Target.create(Stooges.class, "foo");
+		assertEquals(Stooges.CURLY, converter.instantiate(target, oneParameter("foo", "9001")));
+	}
 	
 	static enum Stooges {
 		MOE,

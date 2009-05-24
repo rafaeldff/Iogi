@@ -6,7 +6,7 @@ import iogi.reflection.Target;
 
 import java.math.BigDecimal;
 
-public class BigDecimalConveter implements Instantiator<BigDecimal> {
+public class BigDecimalConverter implements Instantiator<BigDecimal> {
 
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {

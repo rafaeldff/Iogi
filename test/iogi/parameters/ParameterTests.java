@@ -2,12 +2,11 @@ package iogi.parameters;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import iogi.parameters.Parameter;
 
 import org.junit.Test;
 
 
-public class ParameterTest {
+public class ParameterTests {
 	@Test
 	public void ifTheParameterNameDoesntHaveDotsThenGetFirstNameComponentReturnsTheWholeName() throws Exception {
 		 Parameter parameter = new Parameter("wholename", "");
@@ -35,5 +34,15 @@ public class ParameterTest {
 	public void ifTheParameterNameHasTwoComponentsSplitReturnsAParameterContainingTheRestOfTheArguments() {
 		Parameter parameter = new Parameter("head.tail.tail", "");
 		assertEquals("tail.tail", parameter.strip().getName());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void cannotCreateAParameterWithNullName() throws Exception {
+		new Parameter(null, "not null"); 
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void cannotCreateAParameterWithNullValue() throws Exception {
+		new Parameter("not null", null); 
 	}
 }

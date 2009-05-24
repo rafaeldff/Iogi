@@ -8,6 +8,10 @@ public class Parameter {
 	private final String value;
 	private final ImmutableList<String> nameComponents;
 
+	public Parameter(String name, String value) {
+		this(notNull(name, "Parameter name"), notNull(value, "Paramter value"), computeNameComponents(name));
+	}
+	
 	/** 
 	 * Primary constructor.
 	 * Prefer calling one of the two-argument constructors to maintain
@@ -19,12 +23,14 @@ public class Parameter {
 		this.nameComponents = nameComponents;
 	}
 	
-	public Parameter(String name, String value) {
-		this(name, value, computeNameComponents(name));
-	}
-
 	private Parameter(String value, ImmutableList<String> nameComponents) {
 		this(computeName(nameComponents), value, nameComponents);
+	}
+	
+	private static <T> T notNull(T objeto, String name) {
+		if (objeto == null)
+			throw new IllegalArgumentException(name + " cannot be null");
+		return objeto;
 	}
 	
 	private static ImmutableList<String> computeNameComponents(String name) {

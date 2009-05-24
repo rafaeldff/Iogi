@@ -218,6 +218,18 @@ public class IogiTests {
 		assertEquals("blu", root.getObject().getSomeString());
 	}
 	
+	@Test
+	public void emptyIntegerParametersWillBeInstantiatedAsZero() throws Exception {
+		 OneIntegerPrimitive object = iogi.instantiate(Target.create(OneIntegerPrimitive.class, "foo"), new Parameter("foo.anInteger", ""));
+		 assertEquals(0, object.getAnInteger());
+	}
+	
+	@Test
+	public void emptyDoubleParametersWillBeInstantiatedAsZero() throws Exception {
+		OneDoublePrimitive object = iogi.instantiate(Target.create(OneDoublePrimitive.class, "foo"), new Parameter("foo.aDouble", ""));
+		assertEquals(0d, object.getADouble(), 0.00d);
+	}
+	
 	public abstract static class AbstractClass {
 	}
 	

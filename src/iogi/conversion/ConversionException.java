@@ -8,4 +8,8 @@ public class ConversionException extends InvalidTypeException {
 	public ConversionException(String message, Object... args) {
 		super(message, args);
 	}
+	
+	public ConversionException(Throwable cause, String message, Object... args) {
+		super(cause, message, args);
+	}
 }
