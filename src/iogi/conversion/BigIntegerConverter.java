@@ -1,19 +1,15 @@
 package iogi.conversion;
 
-import iogi.Instantiator;
-import iogi.parameters.Parameters;
-import iogi.reflection.Target;
-
 import java.math.BigInteger;
 
-public class BigIntegerConverter implements Instantiator<BigInteger> {
+public class BigIntegerConverter extends TypeConverter<BigInteger> {
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
-		return target.getClassType() == BigInteger.class;
+	public BigInteger convert(String stringValue) {
+		return new BigInteger(stringValue);
 	}
-	
+
 	@Override
-	public BigInteger instantiate(Target<?> target, Parameters parameters) {
-		return new BigInteger(parameters.namedAfter(target).getValue());
+	public Class<BigInteger> targetClass() {
+		return BigInteger.class;
 	}
 }

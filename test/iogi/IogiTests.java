@@ -151,7 +151,7 @@ public class IogiTests {
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void canInstantiateAList() throws Exception {
+	public void canInstantiateAListOfObjects() throws Exception {
 		Parameter firstParameter = new Parameter("root.someString", "bla");
 		Parameter secondParameter = new Parameter("root.someString", "ble");
 		
@@ -165,6 +165,24 @@ public class IogiTests {
 		assertEquals(first.getSomeString(), "bla");
 		OneString second = (OneString)objects.get(1);
 		assertEquals(second.getSomeString(), "ble");
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void canInstantiateAListOfPrimitives() throws Exception {
+		Parameter firstParameter = new Parameter("root", "1");
+		Parameter secondParameter = new Parameter("root", "0");
+		
+		Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfInteger").getGenericType();
+		
+		Target<List> target = new Target(parameterizedListType, "root");
+		List objects = iogi.instantiate(target, firstParameter, secondParameter);
+		
+		assertEquals(2, objects.size());
+		int first = (Integer) objects.get(0);
+		assertEquals(1, first);
+		int second = (Integer)objects.get(1);
+		assertEquals(0, second);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -376,5 +394,6 @@ public class IogiTests {
 	public static class ContainsParameterizedList {
 		List<OneString> listOfOneString;
 		List<TwoArguments> listOfTwoArguments;
+		List<Integer> listOfInteger;
 	}
 }

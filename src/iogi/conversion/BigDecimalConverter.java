@@ -1,20 +1,18 @@
 package iogi.conversion;
 
-import iogi.Instantiator;
-import iogi.parameters.Parameters;
-import iogi.reflection.Target;
-
 import java.math.BigDecimal;
 
-public class BigDecimalConverter implements Instantiator<BigDecimal> {
+public class BigDecimalConverter extends TypeConverter<BigDecimal> {
 
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
-		return target.getClassType() == BigDecimal.class;
+	public Class<BigDecimal> targetClass() {
+		return BigDecimal.class;
 	}
 	
 	@Override
-	public BigDecimal instantiate(Target<?> target, Parameters parameters) {
-		return new BigDecimal(parameters.namedAfter(target).getValue());
+	public BigDecimal convert(String stringValue) {
+		return new BigDecimal(stringValue);
 	}
+
+
 }
