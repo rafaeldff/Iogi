@@ -1,6 +1,6 @@
 package iogi;
 
-import static iogi.conversion.FallbackInstantiator.fallback;
+import static iogi.conversion.FallbackConverter.fallback;
 import iogi.conversion.BigDecimalConverter;
 import iogi.conversion.BigIntegerConverter;
 import iogi.conversion.BooleanConverter;
