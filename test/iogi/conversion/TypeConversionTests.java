@@ -142,25 +142,34 @@ public class TypeConversionTests {
 	
 	@Test
 	public void enumConverterCanConvertLiterals() throws Exception {
-		Stooges object = convertWith(new EnumConverter<Stooges>(), Stooges.class, "CURLY");
+		TypeConverter<Object> instantiator = new EnumConverter();
+		Target<Object> target = new Target<Object>(Stooges.class, "foo");
+		assertTrue(instantiator.isAbleToInstantiate(target));
+		Stooges object = (Stooges) instantiator.instantiate(target, new Parameters(new Parameter("foo", "CURLY")));
 		assertEquals(Stooges.CURLY, object);
 	}
 	
 	@Test
 	public void enumConverterCanConvertOrdinals() {
-		Stooges object = convertWith(new EnumConverter<Stooges>(), Stooges.class, "1");
+		TypeConverter<Object> instantiator = new EnumConverter();
+		Target<Object> target = new Target<Object>(Stooges.class, "foo");
+		Stooges object = (Stooges) instantiator.instantiate(target, new Parameters(new Parameter("foo", "1")));
 		assertEquals(Stooges.CURLY, object);
 	}
 	
 	@Test(expected=ConversionException.class)
 	public void enumConverterWillThrowAnExceptionIfGivenAnUnrecognizedString() throws Exception {
-		convertWith(new EnumConverter<Stooges>(), Stooges.class, "LAUREL");
+		TypeConverter<Object> instantiator = new EnumConverter();
+		Target<Object> target = new Target<Object>(Stooges.class, "foo");
+		instantiator.instantiate(target, new Parameters(new Parameter("foo", "LAUREL")));
 	}
 	
 	@Test(expected=ConversionException.class)
 	public void enumConverterWillThrowAnExceptionIfGivenAnInvalidOrdinal() throws Exception {
+		TypeConverter<Object> instantiator = new EnumConverter();
+		Target<Object> target = new Target<Object>(Stooges.class, "foo");
 		String overNineThousand = "9001";
-		convertWith(new EnumConverter<Stooges>(), Stooges.class, overNineThousand);
+		instantiator.instantiate(target, new Parameters(new Parameter("foo", overNineThousand)));
 	}
 	
 	static enum Stooges {

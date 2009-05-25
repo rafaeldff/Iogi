@@ -2,15 +2,16 @@ package iogi.conversion;
 
 import iogi.reflection.Target;
 
-public class EnumConverter<T extends Enum<T>> extends TypeConverter<T> {
+public class EnumConverter extends TypeConverter<Object> {
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
 		return Enum.class.isAssignableFrom(target.getClassType());
 	}
 	
 	@Override
-	protected T convert(String stringValue, Target<?> to) {
-		Class<T> enumClass = enumClass(to.getClassType());
+	protected Object convert(String stringValue, Target<?> to) {
+		Class<?> enumClass = to.getClassType();
+		ensureTargetIsAnEnum(to);
 		
 		if (isNumber(stringValue))
 			return instantiateFromOrdinal(enumClass, stringValue);
@@ -18,12 +19,9 @@ public class EnumConverter<T extends Enum<T>> extends TypeConverter<T> {
 			return instantiateFromName(enumClass, stringValue);
 	}
 
-	private Class<T> enumClass(Class<?> targetClass) {
-		if (!Enum.class.isAssignableFrom(targetClass))
+	private void ensureTargetIsAnEnum(Target<?> to) {
+		if (!Enum.class.isAssignableFrom(to.getClassType()))
 			throw new IllegalArgumentException();
-		@SuppressWarnings("unchecked")
-		Class<T> targetAsEnumClass = (Class<T>)targetClass;
-		return targetAsEnumClass;
 	}
 
 	private boolean isNumber(String stringValue) {
@@ -33,9 +31,9 @@ public class EnumConverter<T extends Enum<T>> extends TypeConverter<T> {
 		return true;
 	}
 	
-	private T instantiateFromOrdinal(Class<T> enumClass, String ordinalAsString) {
+	private Object instantiateFromOrdinal(Class<?> enumClass, String ordinalAsString) {
 		try {
-			T[] enumConstants = enumClass.getEnumConstants();
+			Object[] enumConstants = enumClass.getEnumConstants();
 			int ordinal = Integer.parseInt(ordinalAsString);
 			return enumConstants[ordinal];
 		} catch (Exception e) {
@@ -44,12 +42,14 @@ public class EnumConverter<T extends Enum<T>> extends TypeConverter<T> {
 		}
 	}
 	
-	private T instantiateFromName(Class<T> enumClass, String name) {
+	@SuppressWarnings("unchecked") //SupressWarnings ok becuase at this point we know type is an Enum
+	private Object instantiateFromName(Class<?> type, String name) {
 		try {
+			Class<? extends Enum> enumClass = (Class<? extends Enum>) type;
 			return Enum.valueOf(enumClass, name);
 		} catch (IllegalArgumentException iae) {
 			throw new ConversionException("Attempted to convert '%s' to an enum value of type '%s'",
-					name, enumClass.getName());
+					name, type.getName());
 		}
 	}
 }

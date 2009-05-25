@@ -12,6 +12,9 @@ import iogi.conversion.CharacterPrimitiveConverter;
 import iogi.conversion.CharacterWrapperConverter;
 import iogi.conversion.DoublePrimitiveConverter;
 import iogi.conversion.DoubleWrapperConverter;
+import iogi.conversion.EnumConverter;
+import iogi.conversion.FloatPrimitiveConverter;
+import iogi.conversion.FloatWrapperConverter;
 import iogi.conversion.IntegerPrimitiveConverter;
 import iogi.conversion.IntegerWrapperConverter;
 import iogi.conversion.StringConverter;
@@ -33,12 +36,16 @@ public class Iogi {
 		.add(fallbackToNull(new CharacterWrapperConverter()))
 		.add(fallbackToNull(new IntegerWrapperConverter()))
 		.add(fallbackToNull(new DoubleWrapperConverter()))
+		.add(fallbackToNull(new EnumConverter()))
+		.add(fallbackToNull(new FloatWrapperConverter()))
+		.add(fallbackToNull(new IntegerWrapperConverter()))
 		.add(fallbackToNull(new StringConverter()))
 		.add(fallbackTo(new BooleanPrimitiveConverter(), false))
 		.add(fallbackTo(new BytePrimitiveConverter(), (byte)0))
 		.add(fallbackTo(new CharacterPrimitiveConverter(), (char)0))
 		.add(fallbackTo(new IntegerPrimitiveConverter(), 0))
 		.add(fallbackTo(new DoublePrimitiveConverter(), 0d))
+		.add(fallbackTo(new FloatPrimitiveConverter(), 0f))
 		.add(new ListInstantiator(new DelegateToAllInstantatiors()))
 		.add(new ObjectInstantiator(new DelegateToAllInstantatiors()))
 		.build();
