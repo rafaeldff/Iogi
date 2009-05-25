@@ -17,6 +17,10 @@ import iogi.conversion.FloatPrimitiveConverter;
 import iogi.conversion.FloatWrapperConverter;
 import iogi.conversion.IntegerPrimitiveConverter;
 import iogi.conversion.IntegerWrapperConverter;
+import iogi.conversion.LongPrimitiveConverter;
+import iogi.conversion.LongWrapperConverter;
+import iogi.conversion.ShortPrimitiveConverter;
+import iogi.conversion.ShortWrapperConverter;
 import iogi.conversion.StringConverter;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
@@ -34,18 +38,22 @@ public class Iogi {
 		.add(fallbackToNull(new BooleanWrapperConverter()))
 		.add(fallbackToNull(new ByteWrapperConverter()))
 		.add(fallbackToNull(new CharacterWrapperConverter()))
-		.add(fallbackToNull(new IntegerWrapperConverter()))
 		.add(fallbackToNull(new DoubleWrapperConverter()))
+		.add(fallbackToNull(new IntegerWrapperConverter()))
 		.add(fallbackToNull(new EnumConverter()))
 		.add(fallbackToNull(new FloatWrapperConverter()))
 		.add(fallbackToNull(new IntegerWrapperConverter()))
+		.add(fallbackToNull(new LongWrapperConverter()))
+		.add(fallbackToNull(new ShortWrapperConverter()))
 		.add(fallbackToNull(new StringConverter()))
 		.add(fallbackTo(new BooleanPrimitiveConverter(), false))
 		.add(fallbackTo(new BytePrimitiveConverter(), (byte)0))
 		.add(fallbackTo(new CharacterPrimitiveConverter(), (char)0))
-		.add(fallbackTo(new IntegerPrimitiveConverter(), 0))
 		.add(fallbackTo(new DoublePrimitiveConverter(), 0d))
 		.add(fallbackTo(new FloatPrimitiveConverter(), 0f))
+		.add(fallbackTo(new IntegerPrimitiveConverter(), 0))
+		.add(fallbackTo(new LongPrimitiveConverter(), 0l))
+		.add(fallbackTo(new ShortPrimitiveConverter(), (short)0))
 		.add(new ListInstantiator(new DelegateToAllInstantatiors()))
 		.add(new ObjectInstantiator(new DelegateToAllInstantatiors()))
 		.build();
