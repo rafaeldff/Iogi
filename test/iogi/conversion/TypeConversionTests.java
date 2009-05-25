@@ -33,7 +33,7 @@ public class TypeConversionTests {
 	
 	@Test
 	public void floatConverterCanConvertPrimitiveFloats() throws Exception {
-		float object = convertWith(new FloatWrapperConverter(), float.class, "3.14159");
+		float object = convertWith(new FloatPrimitiveConverter(), float.class, "3.14159");
 		assertEquals(3.14159f, object, 0.0000001);
 	}
 	
@@ -57,25 +57,25 @@ public class TypeConversionTests {
 	
 	@Test
 	public void shortConverterCanConvertPrimitiveShorts() throws Exception {
-		short object = convertWith(new ShortConverter(), Short.class, "2");
+		short object = convertWith(new ShortPrimitiveConverter(), short.class, "2");
 		assertEquals(2, object);
 	}
 	
 	@Test
 	public void shortConverterCanConvertWrapperShorts() throws Exception {
-		Short object = convertWith(new ShortConverter(), Short.class, "2");
+		Short object = convertWith(new ShortWrapperConverter(), Short.class, "2");
 		assertEquals(Short.valueOf((short)2), object);
 	}
 	
 	@Test
 	public void longConverterCanConverPrimitiveLongs() throws Exception {
-		long object = convertWith(new LongConverter(), long.class, "2");
+		long object = convertWith(new LongPrimitiveConverter(), long.class, "2");
 		assertEquals(2l, object);
 	}
 	
 	@Test
 	public void longConverterCanConverWrapperLongs() throws Exception {
-		Long object = convertWith(new LongConverter(), Long.class, "2");
+		Long object = convertWith(new LongWrapperConverter(), Long.class, "2");
 		assertEquals(Long.valueOf(2l), object);
 	}
 	
