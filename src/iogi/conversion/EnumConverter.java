@@ -1,20 +1,16 @@
 package iogi.conversion;
 
-import iogi.Instantiator;
-import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
-public class EnumConverter<T extends Enum<T>> implements Instantiator<T> {
-
+public class EnumConverter<T extends Enum<T>> extends TypeConverter<T> {
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
 		return Enum.class.isAssignableFrom(target.getClassType());
 	}
 	
 	@Override
-	public T instantiate(Target<?> target, Parameters parameters) {
-		Class<T> enumClass = enumClass(target.getClassType());
-		String stringValue = parameters.namedAfter(target).getValue();
+	protected T convert(String stringValue, Target<?> to) {
+		Class<T> enumClass = enumClass(to.getClassType());
 		
 		if (isNumber(stringValue))
 			return instantiateFromOrdinal(enumClass, stringValue);
@@ -22,11 +18,12 @@ public class EnumConverter<T extends Enum<T>> implements Instantiator<T> {
 			return instantiateFromName(enumClass, stringValue);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Class<T> enumClass(Class<?> targetClass) {
 		if (!Enum.class.isAssignableFrom(targetClass))
 			throw new IllegalArgumentException();
-		return (Class<T>)targetClass;
+		@SuppressWarnings("unchecked")
+		Class<T> targetAsEnumClass = (Class<T>)targetClass;
+		return targetAsEnumClass;
 	}
 
 	private boolean isNumber(String stringValue) {

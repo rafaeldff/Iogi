@@ -1,7 +1,5 @@
-package iogi.conversion;
+package iogi;
 
-import iogi.Instantiator;
-import iogi.Iogi;
 import iogi.parameters.Parameters;
 import iogi.reflection.Primitives;
 import iogi.reflection.Target;
