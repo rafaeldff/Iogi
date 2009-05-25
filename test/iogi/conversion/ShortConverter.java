@@ -1,10 +1,8 @@
 package iogi.conversion;
 
-import iogi.Instantiator;
-import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
-public class ShortConverter implements Instantiator<Short> {
+public class ShortConverter extends TypeConverter<Short> {
 
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
@@ -12,7 +10,7 @@ public class ShortConverter implements Instantiator<Short> {
 	}
 	
 	@Override
-	public Short instantiate(Target<?> target, Parameters parameters) {
-		return Short.parseShort(parameters.namedAfter(target).getValue());
+	protected Short convert(String stringValue, Target<?> to) {
+		return Short.parseShort(stringValue);
 	}
 }

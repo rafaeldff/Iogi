@@ -1,10 +1,8 @@
 package iogi.conversion;
 
-import iogi.Instantiator;
-import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
-public class FloatConverter implements Instantiator<Float> {
+public class FloatConverter extends TypeConverter<Float> {
 
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
@@ -12,8 +10,8 @@ public class FloatConverter implements Instantiator<Float> {
 	}
 	
 	@Override
-	public Float instantiate(Target<?> target, Parameters parameters) {
-		return Float.valueOf(parameters.namedAfter(target).getValue());
+	protected Float convert(String stringValue, Target<?> to) {
+		return Float.valueOf(stringValue);
 	}
 
 }

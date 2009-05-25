@@ -1,9 +1,8 @@
 package iogi.conversion;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import iogi.Instantiator;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
@@ -14,7 +13,7 @@ import java.math.BigInteger;
 import org.junit.Test;
 
 public class TypeConversionTests {
-	private <T> T convertWith(Instantiator<T> instantiator, Class<T> type, String stringValue) {
+	private <T> T convertWith(TypeConverter<T> instantiator, Class<T> type, String stringValue) {
 		Target<T> target = Target.create(type, "foo");
 		assertTrue(instantiator.isAbleToInstantiate(target));
 		return instantiator.instantiate(target, new Parameters(new Parameter("foo", stringValue)));
@@ -22,13 +21,13 @@ public class TypeConversionTests {
 	
 	@Test
 	public void doubleConverterCanConverterPrimitiveDoubles() throws Exception {
-		double object = convertWith(new DoubleConverter(), double.class, "2.0");
+		double object = convertWith(new DoublePrimitiveConverter(), double.class, "2.0");
 		assertEquals(2.0d, object, 0.000001);
 	}
 	
 	@Test
 	public void doubleConverterCanConverterWrapperDoubles() throws Exception {
-		Double object = convertWith(new DoubleConverter(), Double.class, "2.0");
+		Double object = convertWith(new DoubleWrapperConverter(), Double.class, "2.0");
 		assertEquals(new Double(2.0), object);
 	}
 	
@@ -46,13 +45,13 @@ public class TypeConversionTests {
 	
 	@Test
 	public void integerConverterCanConvertPrimitiveIntegers() throws Exception {
-		int object = convertWith(new IntegerConverter(), Integer.class, "2");
+		int object = convertWith(new IntegerPrimitiveConverter(), int.class, "2");
 		assertEquals(2, object);
 	}
 	
 	@Test
 	public void integerConverterCanConvertWrapperIntegers() throws Exception {
-		Integer object = convertWith(new IntegerConverter(), Integer.class, "2");
+		Integer object = convertWith(new IntegerWrapperConverter(), Integer.class, "2");
 		assertEquals(Integer.valueOf(2), object);
 	}
 	
@@ -88,16 +87,16 @@ public class TypeConversionTests {
 	
 	@Test
 	public void booleanConverterCanConvertPrimitiveBooleans() throws Exception {
-		assertTrue(convertWith(new BooleanConverter(), Boolean.class, "true"));
-		assertTrue(convertWith(new BooleanConverter(), Boolean.class, "TRUE"));
-		assertFalse(convertWith(new BooleanConverter(), Boolean.class, "asdfs"));
+		assertSame(true, convertWith(new BooleanPrimitiveConverter(), boolean.class, "true"));
+		assertSame(true, convertWith(new BooleanPrimitiveConverter(), boolean.class, "TRUE"));
+		assertSame(false, convertWith(new BooleanPrimitiveConverter(), boolean.class, "asdfs"));
 	}
 	
 	@Test
 	public void booleanConverterCanConvertWrapperBooleans() throws Exception {
-		assertEquals(Boolean.TRUE, convertWith(new BooleanConverter(), Boolean.class, "true"));
-		assertEquals(Boolean.TRUE, convertWith(new BooleanConverter(), Boolean.class, "TRUE"));
-		assertEquals(Boolean.FALSE, convertWith(new BooleanConverter(), Boolean.class, "asdfs"));
+		assertEquals(Boolean.TRUE, convertWith(new BooleanWrapperConverter(), Boolean.class, "true"));
+		assertEquals(Boolean.TRUE, convertWith(new BooleanWrapperConverter(), Boolean.class, "TRUE"));
+		assertEquals(Boolean.FALSE, convertWith(new BooleanWrapperConverter(), Boolean.class, "asdfs"));
 	}
 	
 	@Test
@@ -114,25 +113,31 @@ public class TypeConversionTests {
 	
 	@Test
 	public void byteConverterCanConvertPrimitveBytes() throws Exception {
-		byte object = convertWith(new ByteConverter(), byte.class, "2");
+		byte object = convertWith(new BytePrimitiveConverter(), byte.class, "2");
 		assertEquals((byte)2, object);
 	}
 	
 	@Test
 	public void byteConverterCanConvertWrapperBytes() throws Exception {
-		Byte object = convertWith(new ByteConverter(), Byte.class, "2");
+		Byte object = convertWith(new ByteWrapperConverter(), Byte.class, "2");
 		assertEquals(Byte.valueOf(object), object);
 	}
 	
 	@Test
 	public void characterConverterConvertsOneCharStrings() throws Exception {
-		char object = convertWith(new CharacterConverter(), Character.class, "A");
+		char object = convertWith(new CharacterWrapperConverter(), Character.class, "A");
+		assertEquals((char)65, object);
+	}
+	
+	@Test
+	public void characterConverterConvertsOneCharStringsToAPrimitiveChar() throws Exception {
+		char object = convertWith(new CharacterPrimitiveConverter(), char.class, "A");
 		assertEquals((char)65, object);
 	}
 	
 	@Test(expected=ConversionException.class)
 	public void characterConverterCannotConvertStringsWithMoreThanOneCharacter() throws Exception {
-		convertWith(new CharacterConverter(), Character.class, "AB");
+		convertWith(new CharacterWrapperConverter(), Character.class, "AB");
 	}
 	
 	@Test

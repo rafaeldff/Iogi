@@ -2,10 +2,10 @@ package iogi.conversion;
 
 import iogi.reflection.Target;
 
-public class BooleanConverter extends TypeConverter<Boolean> {
+public class BooleanWrapperConverter extends TypeConverter<Boolean> {
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
-		return target.getClassType() == Boolean.class || target.getClassType() == boolean.class;
+		return target.getClassType() == Boolean.class;
 	}
 	
 	@Override

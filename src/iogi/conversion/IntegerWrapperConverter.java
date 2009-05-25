@@ -2,10 +2,10 @@ package iogi.conversion;
 
 import iogi.reflection.Target;
 
-public class IntegerConverter extends TypeConverter<Integer> {
+public class IntegerWrapperConverter extends TypeConverter<Integer> {
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
-		return target.getClassType() == int.class || target.getClassType() == Integer.class;
+		return  target.getClassType() == Integer.class;
 	}
 
 	@Override

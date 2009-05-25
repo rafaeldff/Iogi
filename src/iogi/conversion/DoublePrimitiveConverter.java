@@ -2,14 +2,14 @@ package iogi.conversion;
 
 import iogi.reflection.Target;
 
-public class DoubleConverter extends TypeConverter<Double> {
+public class DoublePrimitiveConverter extends TypeConverter<Double> {
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
-		return target.getClassType() == double.class || target.getClassType() == Double.class;
+		return target.getClassType() == double.class;
 	}
 
 	@Override
 	protected Double convert(String stringValue, Target<?> to) {
-		return Double.valueOf(stringValue);
+		return new DoubleWrapperConverter().convert(stringValue, to);
 	}
 }

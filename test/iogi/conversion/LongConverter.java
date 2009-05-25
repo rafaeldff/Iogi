@@ -1,10 +1,8 @@
 package iogi.conversion;
 
-import iogi.Instantiator;
-import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
-public class LongConverter implements Instantiator<Long> {
+public class LongConverter extends TypeConverter<Long> {
 
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
@@ -12,8 +10,8 @@ public class LongConverter implements Instantiator<Long> {
 	}
 	
 	@Override
-	public Long instantiate(Target<?> target, Parameters parameters) {
-		return Long.valueOf(parameters.namedAfter(target).getValue());
+	protected Long convert(String stringValue, Target<?> to) {
+		return Long.valueOf(stringValue);
 	}
 
 }

@@ -3,11 +3,11 @@ package iogi;
 import static iogi.conversion.FallbackConverter.fallback;
 import iogi.conversion.BigDecimalConverter;
 import iogi.conversion.BigIntegerConverter;
-import iogi.conversion.BooleanConverter;
-import iogi.conversion.ByteConverter;
-import iogi.conversion.CharacterConverter;
-import iogi.conversion.DoubleConverter;
-import iogi.conversion.IntegerConverter;
+import iogi.conversion.BooleanWrapperConverter;
+import iogi.conversion.ByteWrapperConverter;
+import iogi.conversion.CharacterWrapperConverter;
+import iogi.conversion.DoubleWrapperConverter;
+import iogi.conversion.IntegerWrapperConverter;
 import iogi.conversion.StringConverter;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
@@ -24,11 +24,11 @@ public class Iogi {
 	private List<Instantiator<?>>  all = new ImmutableList.Builder<Instantiator<?>>()
 		.add(fallback(new BigDecimalConverter(), BigDecimal.ZERO))
 		.add(fallback(new BigIntegerConverter(), BigInteger.ZERO))
-		.add(fallback(new BooleanConverter(), false))
-		.add(fallback(new ByteConverter(), (byte)0))
-		.add(fallback(new CharacterConverter(), (char)0))
-		.add(fallback(new IntegerConverter(), 0))
-		.add(fallback(new DoubleConverter(), 0d))
+		.add(fallback(new BooleanWrapperConverter(), false))
+		.add(fallback(new ByteWrapperConverter(), (byte)0))
+		.add(fallback(new CharacterWrapperConverter(), (char)0))
+		.add(fallback(new IntegerWrapperConverter(), 0))
+		.add(fallback(new DoubleWrapperConverter(), 0d))
 		.add(fallback(new StringConverter(), null))
 		.add(new ListInstantiator(new DelegateToAllInstantatiors()))
 		.add(new ObjectInstantiator(new DelegateToAllInstantatiors()))

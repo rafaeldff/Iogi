@@ -2,10 +2,10 @@ package iogi.conversion;
 
 import iogi.reflection.Target;
 
-public class CharacterConverter extends TypeConverter<Character> {
+public class CharacterWrapperConverter extends TypeConverter<Character> {
 	@Override
 	public boolean isAbleToInstantiate(Target<?> target) {
-		return target.getClassType() == char.class || target.getClassType() == Character.class;
+		return target.getClassType() == Character.class;
 	}
 
 	@Override
