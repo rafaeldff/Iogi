@@ -1,20 +1,24 @@
 package iogi;
 
-import static iogi.conversion.FallbackConverter.fallback;
+import static iogi.conversion.FallbackConverter.fallbackTo;
+import static iogi.conversion.FallbackConverter.fallbackToNull;
 import iogi.conversion.BigDecimalConverter;
 import iogi.conversion.BigIntegerConverter;
+import iogi.conversion.BooleanPrimitiveConverter;
 import iogi.conversion.BooleanWrapperConverter;
+import iogi.conversion.BytePrimitiveConverter;
 import iogi.conversion.ByteWrapperConverter;
+import iogi.conversion.CharacterPrimitiveConverter;
 import iogi.conversion.CharacterWrapperConverter;
+import iogi.conversion.DoublePrimitiveConverter;
 import iogi.conversion.DoubleWrapperConverter;
+import iogi.conversion.IntegerPrimitiveConverter;
 import iogi.conversion.IntegerWrapperConverter;
 import iogi.conversion.StringConverter;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,14 +26,19 @@ import com.google.common.collect.ImmutableList;
 
 public class Iogi {
 	private List<Instantiator<?>>  all = new ImmutableList.Builder<Instantiator<?>>()
-		.add(fallback(new BigDecimalConverter(), BigDecimal.ZERO))
-		.add(fallback(new BigIntegerConverter(), BigInteger.ZERO))
-		.add(fallback(new BooleanWrapperConverter(), false))
-		.add(fallback(new ByteWrapperConverter(), (byte)0))
-		.add(fallback(new CharacterWrapperConverter(), (char)0))
-		.add(fallback(new IntegerWrapperConverter(), 0))
-		.add(fallback(new DoubleWrapperConverter(), 0d))
-		.add(fallback(new StringConverter(), null))
+		.add(fallbackToNull(new BigDecimalConverter()))
+		.add(fallbackToNull(new BigIntegerConverter()))
+		.add(fallbackToNull(new BooleanWrapperConverter()))
+		.add(fallbackToNull(new ByteWrapperConverter()))
+		.add(fallbackToNull(new CharacterWrapperConverter()))
+		.add(fallbackToNull(new IntegerWrapperConverter()))
+		.add(fallbackToNull(new DoubleWrapperConverter()))
+		.add(fallbackToNull(new StringConverter()))
+		.add(fallbackTo(new BooleanPrimitiveConverter(), false))
+		.add(fallbackTo(new BytePrimitiveConverter(), (byte)0))
+		.add(fallbackTo(new CharacterPrimitiveConverter(), (char)0))
+		.add(fallbackTo(new IntegerPrimitiveConverter(), 0))
+		.add(fallbackTo(new DoublePrimitiveConverter(), 0d))
 		.add(new ListInstantiator(new DelegateToAllInstantatiors()))
 		.add(new ObjectInstantiator(new DelegateToAllInstantatiors()))
 		.build();

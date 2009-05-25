@@ -6,7 +6,11 @@ public class FallbackConverter<T> extends TypeConverter<T> {
 	private final TypeConverter<T> delegate;
 	private final T fallbackValue;
 
-	public static <T> FallbackConverter<T> fallback(TypeConverter<T> delegate, T fallbackValue) {
+	public static <T> FallbackConverter<T> fallbackToNull(TypeConverter<T> delegate) {
+		return new FallbackConverter<T>(delegate, null);
+	}
+	
+	public static <T> FallbackConverter<T> fallbackTo(TypeConverter<T> delegate, T fallbackValue) {
 		return new FallbackConverter<T>(delegate, fallbackValue);
 	}
 	
