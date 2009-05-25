@@ -33,13 +33,13 @@ public class TypeConversionTests {
 	
 	@Test
 	public void floatConverterCanConvertPrimitiveFloats() throws Exception {
-		float object = convertWith(new FloatConverter(), Float.class, "3.14159");
+		float object = convertWith(new FloatWrapperConverter(), float.class, "3.14159");
 		assertEquals(3.14159f, object, 0.0000001);
 	}
 	
 	@Test
 	public void floatConverterCanConvertWrapperFloats() throws Exception {
-		Float object = convertWith(new FloatConverter(), Float.class, "3.14159");
+		Float object = convertWith(new FloatWrapperConverter(), Float.class, "3.14159");
 		assertEquals(Float.valueOf(3.14159f), object, 0.0000001);
 	}
 	
