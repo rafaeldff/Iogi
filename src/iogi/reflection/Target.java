@@ -80,4 +80,8 @@ public class Target<T> {
 		Type typeArgument = typeArguments[index];
 		return new Target<Object>(typeArgument, this.getName());
 	}
+
+	public Class<?> arrayElementType() {
+		return getClassType().getComponentType();
+	}
 }

@@ -20,32 +20,57 @@ public class ArrayInstantiator<T> implements Instantiator<T[]> {
 	public boolean isAbleToInstantiate(Target<?> target) {
 		return target.getClassType().isArray();
 	}
-
+	
 	@Override
 	public T[] instantiate(Target<?> target, Parameters parameters) {
-		Class<?> elementClassType = target.getClassType().getComponentType();
-		ListMultimap<String, Parameter> byFirstComponent = parametersByFirstComponent(parameters);
-		int arraySize = byFirstComponent.keySet().size();
-		Object[] newArray = (Object[])Array.newInstance(elementClassType, arraySize);
-		for (int i = 0; i < arraySize; i++) {
-			String firstComponent = target.getName() + "["+i+"]";
-			Parameters elementParameters = new Parameters(byFirstComponent.get(firstComponent));
-			newArray[i] = instantiateElement(Target.create(elementClassType, firstComponent), elementParameters);
-		}
-		@SuppressWarnings("unchecked")
-		T[] arrayOfT = (T[])newArray;
-		return arrayOfT;
+		ParametersByFirstComponent byFirstComponent = new ParametersByFirstComponent(parameters);
+		
+		Object[] newArray = makeNewArray(target, byFirstComponent);
+		
+		populateNewArray(newArray, target, byFirstComponent);
+		
+		return cast(newArray);
 	}
 
-	private ListMultimap<String, Parameter> parametersByFirstComponent(Parameters parameters) {
-		ListMultimap<String, Parameter> firstComponentToParameterMap = ArrayListMultimap.create(); 
-		for (Parameter parameter : parameters.getParametersList()) {
-			firstComponentToParameterMap.put(parameter.getFirstNameComponent(), parameter);
-		}
-		return firstComponentToParameterMap;
+	private Object[] makeNewArray(Target<?> target, ParametersByFirstComponent byFirstComponent) {
+		return (Object[])Array.newInstance(target.arrayElementType(), byFirstComponent.groupCount());
 	}
 
-	private T instantiateElement(Target<?> target, Parameters parameters) {
-		return elementInstantiator.instantiate(target, parameters);
+	private void populateNewArray(Object[] newArray, Target<?> target, ParametersByFirstComponent byFirstComponent) {
+		for (int i = 0; i < newArray.length; i++) {
+			newArray[i] = instantiateElement(target, byFirstComponent, i);
+		}
+	}
+
+	private T instantiateElement(Target<?> target, ParametersByFirstComponent byFirstComponent,	int index) {
+		String firstComponent = target.getName() + "["+index+"]";
+		Target<?> elementTarget = Target.create(target.arrayElementType(), firstComponent);
+		Parameters elementParameters = byFirstComponent.get(firstComponent);
+		return elementInstantiator.instantiate(elementTarget, elementParameters);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private T[] cast(Object[] newArray) {
+		return (T[])newArray;
+	}
+	
+	private static class ParametersByFirstComponent {
+
+		private ListMultimap<String, Parameter> firstComponentToParameterMap;
+		
+		public ParametersByFirstComponent(Parameters parameters) {
+			this.firstComponentToParameterMap = ArrayListMultimap.create(); 
+			for (Parameter parameter : parameters.getParametersList()) {
+				firstComponentToParameterMap.put(parameter.getFirstNameComponent(), parameter);
+			}
+		}
+		
+		public int groupCount() {
+			return firstComponentToParameterMap.keySet().size();
+		}
+
+		public Parameters get(String firstComponent) {
+			return new Parameters(firstComponentToParameterMap.get(firstComponent));
+		}
 	}
 }
