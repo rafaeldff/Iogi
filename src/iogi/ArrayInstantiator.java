@@ -27,9 +27,7 @@ public class ArrayInstantiator<T> implements Instantiator<T[]> {
 	
 		ArrayFactory factory = new ArrayFactory(target, byFirstComponent);
 		
-		factory.populateNewArray(target);
-		
-		return factory.arrayAsT();
+		return factory.arrayOfT();
 	}
 
 	private static class ParametersByFirstComponent {
@@ -52,27 +50,39 @@ public class ArrayInstantiator<T> implements Instantiator<T[]> {
 	}
 	
 	private class ArrayFactory {
-		private Object[] array;
 		private final ParametersByFirstComponent byFirstComponent;
+		private final Target<?> target;
 
 		public ArrayFactory(Target<?> target, ParametersByFirstComponent byFirstComponent) {
+			this.target = target;
 			this.byFirstComponent = byFirstComponent;
-			array = (Object[])Array.newInstance(target.arrayElementType(), byFirstComponent.groupCount());
 		}
 
-		protected void populateNewArray(Target<?> target) {
-			for (int i = 0; i < array.length; i++) {
-				String firstComponent = target.getName() + "["+i+"]";
-				Target<?> elementTarget = Target.create(target.arrayElementType(), firstComponent);
-				Parameters elementParameters = byFirstComponent.get(firstComponent);
-				array[i] = elementInstantiator.instantiate(elementTarget, elementParameters);
-			}
-		}
-		
 		@SuppressWarnings("unchecked")
-		public T[] arrayAsT() {
-			return (T[])this.array;
+		public T[] arrayOfT() {
+			Object[] newArray = populateNewArray();
+			return (T[])newArray;
+		}
+
+		private Object[] populateNewArray() {
+			Object[] array = makeArray();
+			
+			for (int i = 0; i < array.length; i++) {
+				array[i] = instantiateArrayElement(i);
+			}
+			
+			return array;
+		}
+
+		private Object[] makeArray() {
+			return (Object[])Array.newInstance(target.arrayElementType(), byFirstComponent.groupCount());
 		}
 		
+		private T instantiateArrayElement(int i) {
+			String firstComponent = target.getName() + "["+i+"]";
+			Target<?> elementTarget = Target.create(target.arrayElementType(), firstComponent);
+			Parameters elementParameters = byFirstComponent.get(firstComponent);
+			return elementInstantiator.instantiate(elementTarget, elementParameters);
+		}
 	}
 }
