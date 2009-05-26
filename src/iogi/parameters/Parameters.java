@@ -60,4 +60,9 @@ public class Parameters {
 		
 		return new Parameters(striped);
 	}
+	
+	@Override
+	public String toString() {
+		return "Parameters" + parametersList.toString();
+	}
 }

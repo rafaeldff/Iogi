@@ -54,6 +54,7 @@ public class Iogi {
 		.add(fallbackTo(new IntegerPrimitiveConverter(), 0))
 		.add(fallbackTo(new LongPrimitiveConverter(), 0l))
 		.add(fallbackTo(new ShortPrimitiveConverter(), (short)0))
+		.add(new ArrayInstantiator<Object>(new DelegateToAllInstantatiors()))
 		.add(new ListInstantiator(new DelegateToAllInstantatiors()))
 		.add(new ObjectInstantiator(new DelegateToAllInstantatiors()))
 		.build();
