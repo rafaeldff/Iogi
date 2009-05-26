@@ -24,38 +24,15 @@ public class ArrayInstantiator<T> implements Instantiator<T[]> {
 	@Override
 	public T[] instantiate(Target<?> target, Parameters parameters) {
 		ParametersByFirstComponent byFirstComponent = new ParametersByFirstComponent(parameters);
-		
-		Object[] newArray = makeNewArray(target, byFirstComponent);
-		
-		populateNewArray(newArray, target, byFirstComponent);
-		
-		return cast(newArray);
-	}
-
-	private Object[] makeNewArray(Target<?> target, ParametersByFirstComponent byFirstComponent) {
-		return (Object[])Array.newInstance(target.arrayElementType(), byFirstComponent.groupCount());
-	}
-
-	private void populateNewArray(Object[] newArray, Target<?> target, ParametersByFirstComponent byFirstComponent) {
-		for (int i = 0; i < newArray.length; i++) {
-			newArray[i] = instantiateElement(target, byFirstComponent, i);
-		}
-	}
-
-	private T instantiateElement(Target<?> target, ParametersByFirstComponent byFirstComponent,	int index) {
-		String firstComponent = target.getName() + "["+index+"]";
-		Target<?> elementTarget = Target.create(target.arrayElementType(), firstComponent);
-		Parameters elementParameters = byFirstComponent.get(firstComponent);
-		return elementInstantiator.instantiate(elementTarget, elementParameters);
-	}
 	
-	@SuppressWarnings("unchecked")
-	private T[] cast(Object[] newArray) {
-		return (T[])newArray;
+		ArrayFactory factory = new ArrayFactory(target, byFirstComponent);
+		
+		factory.populateNewArray(target);
+		
+		return factory.arrayAsT();
 	}
-	
+
 	private static class ParametersByFirstComponent {
-
 		private ListMultimap<String, Parameter> firstComponentToParameterMap;
 		
 		public ParametersByFirstComponent(Parameters parameters) {
@@ -72,5 +49,30 @@ public class ArrayInstantiator<T> implements Instantiator<T[]> {
 		public Parameters get(String firstComponent) {
 			return new Parameters(firstComponentToParameterMap.get(firstComponent));
 		}
+	}
+	
+	private class ArrayFactory {
+		private Object[] array;
+		private final ParametersByFirstComponent byFirstComponent;
+
+		public ArrayFactory(Target<?> target, ParametersByFirstComponent byFirstComponent) {
+			this.byFirstComponent = byFirstComponent;
+			array = (Object[])Array.newInstance(target.arrayElementType(), byFirstComponent.groupCount());
+		}
+
+		protected void populateNewArray(Target<?> target) {
+			for (int i = 0; i < array.length; i++) {
+				String firstComponent = target.getName() + "["+i+"]";
+				Target<?> elementTarget = Target.create(target.arrayElementType(), firstComponent);
+				Parameters elementParameters = byFirstComponent.get(firstComponent);
+				array[i] = elementInstantiator.instantiate(elementTarget, elementParameters);
+			}
+		}
+		
+		@SuppressWarnings("unchecked")
+		public T[] arrayAsT() {
+			return (T[])this.array;
+		}
+		
 	}
 }
