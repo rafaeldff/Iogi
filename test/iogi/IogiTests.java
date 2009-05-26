@@ -11,7 +11,6 @@ import iogi.reflection.Target;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class IogiTests {
@@ -265,7 +264,6 @@ public class IogiTests {
 	}
 	
 	@Test
-	@Ignore("TODO")
 	public void canInstantiateAnArrayOfPrimitiveIntegers() throws Exception {
 		Target<int[]> target = Target.create(int[].class, "arr");
 		int[] array = iogi.instantiate(target, new Parameter("arr[0]", "99"), new Parameter("arr[1]", "98"));
@@ -306,7 +304,7 @@ public class IogiTests {
 		assertEquals("10", rootObject.getArray()[0].getSomeString());
 		assertEquals("20", rootObject.getArray()[1].getSomeString());
 	}
-	
+
 	public abstract static class AbstractClass {
 	}
 	

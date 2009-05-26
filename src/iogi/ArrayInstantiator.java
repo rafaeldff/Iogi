@@ -11,10 +11,10 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-public class ArrayInstantiator<T> implements Instantiator<T[]> {
-	private final Instantiator<T> elementInstantiator;
+public class ArrayInstantiator implements Instantiator<Object> {
+	private final Instantiator<Object> elementInstantiator;
 
-	public ArrayInstantiator(Instantiator<T> elementInstantiator) {
+	public ArrayInstantiator(Instantiator<Object> elementInstantiator) {
 		this.elementInstantiator = elementInstantiator;
 	}
 	
@@ -24,7 +24,7 @@ public class ArrayInstantiator<T> implements Instantiator<T[]> {
 	}
 	
 	@Override
-	public T[] instantiate(Target<?> target, Parameters parameters) {
+	public Object instantiate(Target<?> target, Parameters parameters) {
 		ParametersByFirstComponent byFirstComponent = new ParametersByFirstComponent(parameters, target);
 	
 		ArrayFactory factory = new ArrayFactory(target, byFirstComponent);
@@ -69,27 +69,25 @@ public class ArrayInstantiator<T> implements Instantiator<T[]> {
 			this.byFirstComponent = byFirstComponent;
 		}
 
-		@SuppressWarnings("unchecked")
-		public T[] arrayOfT() {
-			Object[] newArray = populateNewArray();
-			return (T[])newArray;
+		public Object arrayOfT() {
+			return populateNewArray();
 		}
 
-		private Object[] populateNewArray() {
-			Object[] array = makeArray();
+		private Object populateNewArray() {
+			Object array = makeArray();
 			
-			for (int i = 0; i < array.length; i++) {
-				array[i] = instantiateArrayElement(i);
+			for (int i = 0; i <  Array.getLength(array); i++) {
+				Array.set(array, i, instantiateArrayElement(i));
 			}
 			
 			return array;
 		}
 
-		private Object[] makeArray() {
-			return (Object[])Array.newInstance(target.arrayElementType(), byFirstComponent.groupCount());
+		private Object makeArray() {
+			return Array.newInstance(target.arrayElementType(), byFirstComponent.groupCount());
 		}
 		
-		private T instantiateArrayElement(int i) {
+		private Object instantiateArrayElement(int i) {
 			String firstComponent = target.getName();
 			Target<?> elementTarget = Target.create(target.arrayElementType(), firstComponent);
 			Parameters elementParameters = byFirstComponent.get(firstComponent + "["+i+"]");
