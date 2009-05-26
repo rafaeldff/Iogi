@@ -26,7 +26,7 @@ public class Parameters {
 		Map<String, Parameter> arguments = new HashMap<String, Parameter>();
 		
 		for (Parameter parameter : parameters) {
-			arguments.put(parameter.getName(), parameter);
+			arguments.put(parameter.getFirstNameComponent(), parameter);
 		}
 		
 		return arguments;

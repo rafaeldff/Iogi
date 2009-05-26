@@ -50,7 +50,7 @@ public class Parameter {
 	}
 	
 	public String getFirstNameComponent() {
-		return nameComponents.get(0);
+		return nameComponents.get(0).replaceAll("\\[\\d+\\]", "");
 	}
 
 	public Parameter strip() {
@@ -64,5 +64,9 @@ public class Parameter {
 	@Override
 	public String toString() {
 		return String.format("Parameter(%s -> %s)", getName(), getValue());
+	}
+
+	public String getFirstNameComponentWithDecoration() {
+		return name.split("\\.")[0];
 	}
 }

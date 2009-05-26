@@ -11,6 +11,7 @@ import iogi.reflection.Target;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class IogiTests {
@@ -225,8 +226,8 @@ public class IogiTests {
 		Parameter thirdParameter = new Parameter("root.object.someString", "blu");
 		
 		
-		Target<MixedPrimitiveAndList> target = Target.create(MixedPrimitiveAndList.class, "root");
-		MixedPrimitiveAndList root = iogi.instantiate(target, firstParameter, secondParameter, thirdParameter);
+		Target<MixedObjectAndList> target = Target.create(MixedObjectAndList.class, "root");
+		MixedObjectAndList root = iogi.instantiate(target, firstParameter, secondParameter, thirdParameter);
 		
 		assertEquals(2, root.getList().size());
 		OneString first = (OneString)root.getList().get(0);
@@ -257,10 +258,18 @@ public class IogiTests {
 	}
 	
 	@Test
-	public void canInstantiateAnArrayOfIntegers() throws Exception {
+	public void canInstantiateAnArrayOfIntegerWrappers() throws Exception {
 		Target<Integer[]> target = Target.create(Integer[].class, "arr");
 		Integer[] array = iogi.instantiate(target, new Parameter("arr[0]", "99"), new Parameter("arr[1]", "98"));
 		assertArrayEquals(new Integer[] {99, 98}, array);
+	}
+	
+	@Test
+	@Ignore("TODO")
+	public void canInstantiateAnArrayOfPrimitiveIntegers() throws Exception {
+		Target<int[]> target = Target.create(int[].class, "arr");
+		int[] array = iogi.instantiate(target, new Parameter("arr[0]", "99"), new Parameter("arr[1]", "98"));
+		assertArrayEquals(new int[] {99, 98}, array);
 	}
 	
 	@Test
@@ -283,6 +292,19 @@ public class IogiTests {
 		assertEquals(11, array[0].getTwo());
 		assertEquals(20, array[1].getOne());
 		assertEquals(21, array[1].getTwo());
+	}
+	
+	@Test
+	public void canMixArraysWithNonArraysAsParametersForAConstructor() throws Exception {
+		Target<MixedObjectAndArray> target = Target.create(MixedObjectAndArray.class, "root");
+		MixedObjectAndArray rootObject = iogi.instantiate(target, 
+				new Parameter("root.array[0].someString", "10"), 
+				new Parameter("root.array[1].someString", "20"),
+				new Parameter("root.object.someString", "00")); 
+		
+		assertEquals("00", rootObject.getObject().getSomeString());
+		assertEquals("10", rootObject.getArray()[0].getSomeString());
+		assertEquals("20", rootObject.getArray()[1].getSomeString());
 	}
 	
 	public abstract static class AbstractClass {
@@ -410,11 +432,11 @@ public class IogiTests {
 		}
 	}
 	
-	public static class MixedPrimitiveAndList {
+	public static class MixedObjectAndList {
 		private final List<OneString> list;
 		private final OneString object;
 
-		public MixedPrimitiveAndList(List<OneString> list, OneString object) {
+		public MixedObjectAndList(List<OneString> list, OneString object) {
 			this.list = list;
 			this.object = object;
 		}
@@ -423,6 +445,24 @@ public class IogiTests {
 			return list;
 		}
 		
+		public OneString getObject() {
+			return object;
+		}
+	}
+	
+	public static class MixedObjectAndArray {
+		private final OneString[] array;
+		private final OneString object;
+
+		public MixedObjectAndArray(OneString[] array, OneString object) {
+			this.array = array;
+			this.object = object;
+		}
+
+		public OneString[] getArray() {
+			return array;
+		}
+
 		public OneString getObject() {
 			return object;
 		}
