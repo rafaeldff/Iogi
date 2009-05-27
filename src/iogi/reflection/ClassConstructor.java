@@ -52,31 +52,6 @@ public class ClassConstructor {
 		return names;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((names == null) ? 0 : names.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ClassConstructor other = (ClassConstructor) obj;
-		if (names == null) {
-			if (other.names != null)
-				return false;
-		} else if (!names.equals(other.names))
-			return false;
-		return true;
-	}
-
 	public Object instantiate(Instantiator<?> instantiator, Parameters parameters) {
 		Type[] parameterTypes = constructor.getGenericParameterTypes();
 		String[] parameterNames = namesInOrder();
