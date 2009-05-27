@@ -1,7 +1,7 @@
 package iogi;
 
-import static com.google.common.base.Predicates.equalTo;
 import iogi.exceptions.InvalidTypeException;
+import iogi.exceptions.IogiException;
 import iogi.exceptions.NoConstructorFoundException;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
@@ -9,10 +9,14 @@ import iogi.reflection.ClassConstructor;
 import iogi.reflection.Primitives;
 import iogi.reflection.Target;
 
-import java.util.HashSet;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
+import com.google.common.base.Joiner;
 
 public class ObjectInstantiator implements Instantiator<Object> {
 	private Instantiator<Object> argumentInstantiator;
@@ -32,13 +36,16 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		Parameters relevantParameters = parameters.relevantTo(target).strip();
 		Set<ClassConstructor> candidateConstructors = target.classConstructors();  
 		
-		ClassConstructor desiredConstructor = desiredConstructor(relevantParameters);
-		Set<ClassConstructor> matchingConstructors = findMatchingConstructors(candidateConstructors, desiredConstructor);
-		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, desiredConstructor);
+		Set<ClassConstructor> matchingConstructors = relevantParameters.compatible(candidateConstructors);
+		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
 		
 		ClassConstructor firstMatchingConstructor = matchingConstructors.iterator().next();
 		
-		return firstMatchingConstructor.instantiate(argumentInstantiator, relevantParameters);
+		Object object = firstMatchingConstructor.instantiate(argumentInstantiator, relevantParameters);
+		populateRemainingAttributes(object, firstMatchingConstructor, relevantParameters);
+		
+		
+		return object;
 	}
 
 	private <T> void signalErrorIfTargetIsAbstract(Target<T> target) {
@@ -46,23 +53,45 @@ public class ObjectInstantiator implements Instantiator<Object> {
 			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
 	}
 
-	private ClassConstructor desiredConstructor(Parameters relevantParameters) {
-		HashSet<String> givenParameterNames = new HashSet<String>();
-		for (Parameter paremeter : relevantParameters.getParametersList()) {
-			givenParameterNames.add(paremeter.getFirstNameComponent());
-		}
-		return new ClassConstructor(givenParameterNames);
-	}
-
-	private Set<ClassConstructor> findMatchingConstructors(Set<ClassConstructor> candidateConstructors, ClassConstructor targetConstructor) {
-		return Sets.filter(candidateConstructors, equalTo(targetConstructor));
-	}
-
-	private <T> void signalErrorIfNoMatchingConstructorFound(Target<T> target, Set<ClassConstructor> matchingConstructors, ClassConstructor desiredConstructor) {
-		if (matchingConstructors.isEmpty())
+	private <T> void signalErrorIfNoMatchingConstructorFound(Target<?> target, Set<ClassConstructor> matchingConstructors, Parameters relevantParameters) {
+		if (matchingConstructors.isEmpty()) {
+			String parameterList =  "(" + Joiner.on(", ").join(relevantParameters.getParametersList()) + ")";
 			throw new NoConstructorFoundException("No constructor found to instantiate a %s named %s " +
 					"with parameter names %s",
-					target.getClassType(), target.getName(), desiredConstructor);
+					target.getClassType(), target.getName(), parameterList);
+		}
+	}
+	
+	private void populateRemainingAttributes(Object object, ClassConstructor constructor, Parameters parameters) {
+		try {
+			BeanInfo beanInfo = Introspector.getBeanInfo(object.getClass());
+			PropertyDescriptor[] beanProperties = beanInfo.getPropertyDescriptors();
+			Parameters remainingParameters = parameters.notUsedBy(constructor);
+			
+			for (PropertyDescriptor property : beanProperties) {
+				String propertyName = property.getName();
+				Target<?> target = Target.create(property.getPropertyType(), propertyName);
+				Parameter parameterNamedAfterProperty = remainingParameters.namedAfter(target);
+				if (parameterNamedAfterProperty != null) {
+					Object argument = argumentInstantiator.instantiate(target, remainingParameters);
+					setArgument(object, property, argument);
+				}
+			}
+			
+		} catch (IntrospectionException e) {
+			throw new IogiException(e);
+		}
 	}
 
+	private Object setArgument(Object object, PropertyDescriptor property, Object argument) {
+		try {
+			return property.getWriteMethod().invoke(object, argument);
+		} catch (IllegalArgumentException e) {
+			throw new IogiException(e);
+		} catch (IllegalAccessException e) {
+			throw new IogiException(e);
+		} catch (InvocationTargetException e) {
+			throw new IogiException(e);
+		}
+	}
 }

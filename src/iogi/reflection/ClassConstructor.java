@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
 
@@ -43,6 +45,10 @@ public class ClassConstructor {
 			parameterNames.add(parameterName);
 		}
 		return parameterNames;
+	}
+	
+	public Set<String> getNames() {
+		return names;
 	}
 
 	@Override
@@ -105,4 +111,15 @@ public class ClassConstructor {
 	public String toString() {
 		return "(" + Joiner.on(", ").join(names) + ")"; 
 	}
+
+	public Set<ClassConstructor> compatible(Set<ClassConstructor> candidates) {
+		return Sets.filter(candidates, namesAreContainedInThis);
+	}
+
+	private Predicate<? super ClassConstructor> namesAreContainedInThis = new Predicate<ClassConstructor>(){
+		@Override
+		public boolean apply(ClassConstructor input) {
+			return names.containsAll(input.names);
+		}
+	};
 }
