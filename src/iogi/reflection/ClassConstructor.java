@@ -42,7 +42,8 @@ public class ClassConstructor {
 		HashSet<String> parameterNames = new HashSet<String>();
 		String[] lookedUpNames = paranamer.lookupParameterNames(constructor);
 		for (String parameterName : lookedUpNames) {
-			parameterNames.add(parameterName);
+			if (!parameterName.isEmpty()) //To account for http://jira.codehaus.org/browse/PARANAMER-10
+				parameterNames.add(parameterName);
 		}
 		return parameterNames;
 	}
@@ -78,7 +79,7 @@ public class ClassConstructor {
 
 	public Object instantiate(Instantiator<?> instantiator, Parameters parameters) {
 		Type[] parameterTypes = constructor.getGenericParameterTypes();
-		String[] parameterNames = paranamer.lookupParameterNames(constructor);
+		String[] parameterNames = namesInOrder();
 		Object[] argumentValues = new Object[parameterNames.length];
 		
 		for (int i = 0; i < parameterNames.length; i++) {
@@ -92,7 +93,16 @@ public class ClassConstructor {
 		
 		return instantiateWithConstructor(argumentValues);
 	}
-	
+
+	private String[] namesInOrder() {
+		String[] foundByParanamer = paranamer.lookupParameterNames(constructor);
+		
+		if (foundByParanamer.length == 1 && foundByParanamer[0].isEmpty())
+			return new String[] {}; //To account for http://jira.codehaus.org/browse/PARANAMER-10
+		
+		return foundByParanamer;
+	}
+
 	private Object instantiateWithConstructor(Object[] values) {
 		try {
 			return constructor.newInstance(values);

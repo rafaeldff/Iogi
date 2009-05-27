@@ -122,6 +122,26 @@ public class IogiTests {
 		assertEquals(666, object.getTwo().getAnInteger());
 	}
 	
+	@Test
+	public void willCallSettersForPropertiesThatCouldNotBeFilledByAConstructor() throws Exception {
+		 Parameter oneProperty = new Parameter("root.oneProperty", "5");
+		 Parameter oneArg = new Parameter("root.oneArg", "3.14");
+		 Target<OneArgOneProperty> target = Target.create(OneArgOneProperty.class, "root");
+		 OneArgOneProperty object = iogi.instantiate(target, oneProperty, oneArg);
+		 assertEquals((double)object.getOneArg(), 3.14, 0.01);
+		 assertEquals(object.getOneProperty(), 5);
+	}
+	
+	@Test
+	public void ifThereIsNoConstructorWithArgumentsWillCallTheDefaultConstructorAndFillPropertiesThroughSetters()  throws Exception {
+		Parameter one = new Parameter("root.one", "9001");
+		Parameter two = new Parameter("root.two", "9002");
+		Target<TwoProperties> target = Target.create(TwoProperties.class, "root");
+		TwoProperties object = iogi.instantiate(target, one, two);
+		assertEquals(object.getOne(), 9001);
+		assertEquals(object.getTwo(), 9002);
+	}
+	
 	@Test(expected=NoConstructorFoundException.class)
 	public void testWillThrowANoConstructorFoundExceptionIfNoAdequateConstructorIsFound() {
 		Parameter aParameter = new Parameter("root.a", "");
@@ -304,6 +324,7 @@ public class IogiTests {
 		assertEquals("10", rootObject.getArray()[0].getSomeString());
 		assertEquals("20", rootObject.getArray()[1].getSomeString());
 	}
+	
 
 	public abstract static class AbstractClass {
 	}
@@ -463,6 +484,51 @@ public class IogiTests {
 
 		public OneString getObject() {
 			return object;
+		}
+	}
+	
+	public static class OneArgOneProperty {
+		private final Double oneArg;
+		private int oneProperty;
+
+		public OneArgOneProperty(Double oneArg) {
+			this.oneArg = oneArg;
+		}
+
+		public int getOneProperty() {
+			return oneProperty;
+		}
+
+		public void setOneProperty(int oneProperty) {
+			this.oneProperty = oneProperty;
+		}
+
+		public Double getOneArg() {
+			return oneArg;
+		}
+	}
+	
+	public static class TwoProperties {
+		private int one;
+		private int two;
+		
+		public TwoProperties() {
+		}
+		
+		public int getOne() {
+			return one;
+		}
+		
+		public void setOne(int one) {
+			this.one = one;
+		}
+		
+		public int getTwo() {
+			return two;
+		}
+		
+		public void setTwo(int two) {
+			this.two = two;
 		}
 	}
 	

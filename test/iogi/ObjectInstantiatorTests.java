@@ -73,8 +73,4 @@ public class ObjectInstantiatorTests {
 			this.propertyValue = propertyValue;
 		}
 	}
-	
-	
-	
-	
 }
