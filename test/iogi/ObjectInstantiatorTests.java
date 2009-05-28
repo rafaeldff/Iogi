@@ -2,6 +2,7 @@ package iogi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
@@ -51,6 +52,28 @@ public class ObjectInstantiatorTests {
 		ConstructorAndProperty object = (ConstructorAndProperty) objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
 		assertEquals("x", object.getConstructorArg());
 		assertEquals("x", object.getPropertyValue());
+	}
+	
+	@Test
+	public void ifThereIsMoreThanOneCompatibleConstructorPickTheLargestOne() throws Exception {
+		 Target<TwoCompatibleConstructors> target = Target.create(TwoCompatibleConstructors.class, "root");
+		 Parameter a = new Parameter("root.a", "x");
+		 Parameter b = new Parameter("root.b", "x");
+		 Parameter c = new Parameter("root.c", "x");
+		 Parameter irrelevant = new Parameter("root.irrelevant", "x");
+		 
+		 ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator);
+		 TwoCompatibleConstructors object = (TwoCompatibleConstructors) objectInstantiator.instantiate(target, new Parameters(a, b, c, irrelevant));
+		 assertTrue(object.largestWasCalled);
+	}
+	
+	public static class TwoCompatibleConstructors {
+		boolean largestWasCalled = false;
+		public TwoCompatibleConstructors(String a, String b) {
+		}
+		public TwoCompatibleConstructors(String a, String b, String c) {
+			largestWasCalled = true;
+		}
 	}
 	
 	public static class ConstructorAndProperty {

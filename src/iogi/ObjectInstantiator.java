@@ -14,9 +14,14 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 public class ObjectInstantiator implements Instantiator<Object> {
 	private Instantiator<Object> argumentInstantiator;
@@ -39,11 +44,11 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		Set<ClassConstructor> matchingConstructors = relevantParameters.compatible(candidateConstructors);
 		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
 		
-		ClassConstructor firstMatchingConstructor = matchingConstructors.iterator().next();
+		List<ClassConstructor> orderedMatchingConstructors = fromLargestToSmallest(matchingConstructors);
+		ClassConstructor largestMatchingConstructor = orderedMatchingConstructors.iterator().next();
 		
-		Object object = firstMatchingConstructor.instantiate(argumentInstantiator, relevantParameters);
-		populateRemainingAttributes(object, firstMatchingConstructor, relevantParameters);
-		
+		Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters);
+		populateRemainingAttributes(object, largestMatchingConstructor, relevantParameters);
 		
 		return object;
 	}
@@ -60,6 +65,16 @@ public class ObjectInstantiator implements Instantiator<Object> {
 					"with parameter names %s",
 					target.getClassType(), target.getName(), parameterList);
 		}
+	}
+	
+	private List<ClassConstructor> fromLargestToSmallest(Set<ClassConstructor> matchingConstructors) {
+		ArrayList<ClassConstructor> constructors = Lists.newArrayList(matchingConstructors);
+		Collections.sort(constructors, new Comparator<ClassConstructor>(){
+			public int compare(ClassConstructor first, ClassConstructor second) {
+				return first.size() < second.size() ? 1 : (first.size() == second.size() ? 0 : -1);
+			}
+		});
+		return Collections.unmodifiableList(constructors);
 	}
 	
 	private void populateRemainingAttributes(Object object, ClassConstructor constructor, Parameters parameters) {

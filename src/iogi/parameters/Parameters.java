@@ -30,13 +30,13 @@ public class Parameters {
 	}
 	
 	private Multimap<String, Parameter> groupByFirstNameComponent(List<Parameter> parameters) {
-		Multimap<String, Parameter> arguments = LinkedHashMultimap.create();
+		Multimap<String, Parameter> firstNameComponentToParameterMap = LinkedHashMultimap.create();
 		
 		for (Parameter parameter : parameters) {
-			arguments.put(parameter.getFirstNameComponent(), parameter);
+			firstNameComponentToParameterMap.put(parameter.getFirstNameComponent(), parameter);
 		}
 		
-		return arguments;
+		return firstNameComponentToParameterMap;
 	}
 
 	public List<Parameter> getParametersList() {
@@ -45,11 +45,14 @@ public class Parameters {
 
 	public Parameter namedAfter(Target<?> target) {
 		Collection<Parameter> named = parametersByFirstNameComponent.get(target.getName());
+		assertFoundOnlyOneTarget(target, named);
+		return named.isEmpty() ? null : named.iterator().next();
+	}
+
+	private void assertFoundOnlyOneTarget(Target<?> target, Collection<Parameter> named) {
 		if (named.size() > 1)
 			throw new IllegalStateException(
 					"Expecting only one parameter named after " + target + ", found instead " + named);
-		
-		return named.isEmpty() ? null : named.iterator().next();
 	}
 	
 	public Parameters relevantTo(Target<?> target) {

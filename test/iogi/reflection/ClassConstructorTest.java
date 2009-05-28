@@ -32,6 +32,12 @@ public class ClassConstructorTest {
 		assertEquals("b", foo.getTwo());
 	}
 	
+	@Test
+	public void sizeIsTheNumberOfArguments() throws Exception {
+		ClassConstructor constructor = new ClassConstructor(fooConstructor); 
+		assertEquals(2, constructor.size());
+	}
+	
 	public static class Foo {
 		private final String one;
 		private final String two;
