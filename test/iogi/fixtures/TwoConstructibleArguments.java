@@ -1,0 +1,22 @@
+/**
+ * 
+ */
+package iogi.fixtures;
+
+public class TwoConstructibleArguments {
+	private final OneString one;
+	private final OneIntegerPrimitive two;
+
+	public TwoConstructibleArguments(OneString one, OneIntegerPrimitive two) {
+		this.one = one;
+		this.two = two;
+	}
+
+	public OneString getOne() {
+		return one;
+	}
+
+	public OneIntegerPrimitive getTwo() {
+		return two;
+	}
+}

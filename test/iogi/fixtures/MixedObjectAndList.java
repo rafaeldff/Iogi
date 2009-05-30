@@ -1,0 +1,25 @@
+/**
+ * 
+ */
+package iogi.fixtures;
+
+
+import java.util.List;
+
+public class MixedObjectAndList {
+	private final List<OneString> list;
+	private final OneString object;
+
+	public MixedObjectAndList(List<OneString> list, OneString object) {
+		this.list = list;
+		this.object = object;
+	}
+	
+	public List<OneString> getList() {
+		return list;
+	}
+	
+	public OneString getObject() {
+		return object;
+	}
+}

@@ -3,8 +3,22 @@ package iogi;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import iogi.collections.ListInstantiatorTests.ContainsParameterizedList;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
+import iogi.fixtures.AbstractClass;
+import iogi.fixtures.MixedObjectAndList;
+import iogi.fixtures.MixedPrimitiveAndConstructibleArguments;
+import iogi.fixtures.OneArgOneProperty;
+import iogi.fixtures.OneConstructibleArgument;
+import iogi.fixtures.OneDoublePrimitive;
+import iogi.fixtures.OneIntegerPrimitive;
+import iogi.fixtures.OneString;
+import iogi.fixtures.TwoArguments;
+import iogi.fixtures.TwoConstructibleArguments;
+import iogi.fixtures.TwoConstructors;
+import iogi.fixtures.TwoLevelConstructible;
+import iogi.fixtures.TwoProperties;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
 
@@ -323,218 +337,5 @@ public class IogiTests {
 		assertEquals("00", rootObject.getObject().getSomeString());
 		assertEquals("10", rootObject.getArray()[0].getSomeString());
 		assertEquals("20", rootObject.getArray()[1].getSomeString());
-	}
-	
-
-	public abstract static class AbstractClass {
-	}
-	
-	public static class OneString {
-		private final String someString;
-
-		public OneString(String someString) {
-			this.someString = someString;
-		}
-		
-		public String getSomeString() {
-			return someString;
-		}
-	}
-	
-	public static class OneIntegerPrimitive {
-		private int anInteger;
-
-		public OneIntegerPrimitive(int anInteger) {
-			this.anInteger = anInteger;
-		}
-		
-		public int getAnInteger() {
-			return anInteger;
-		}
-	}
-	
-	public static class OneDoublePrimitive {
-		private double aDouble;
-		
-		public OneDoublePrimitive(double aDouble) {
-			this.aDouble = aDouble;
-		}
-		
-		public double getADouble() {
-			return aDouble;
-		}
-	}
-	
-	public static class TwoArguments {
-		private int one;
-		private int two;
-
-		public TwoArguments(int one, int two) {
-			this.one = one;
-			this.two = two;
-		}
-
-		public int getOne() {
-			return one;
-		}
-
-		public int getTwo() {
-			return two;
-		}
-	}
-	
-	public static class OneConstructibleArgument {
-		private final OneIntegerPrimitive arg;
-
-		public OneConstructibleArgument(OneIntegerPrimitive arg) {
-			this.arg = arg;
-		}
-		
-		public OneIntegerPrimitive getArg() {
-			return arg;
-		}
-	}
-	
-	public static class TwoConstructors {
-		public TwoConstructors(int one, int two) {
-		}
-		
-		public TwoConstructors(String a, String b) {
-		}
-	}
-	
-	public static class TwoConstructibleArguments {
-		private final OneString one;
-		private final OneIntegerPrimitive two;
-
-		public TwoConstructibleArguments(OneString one, OneIntegerPrimitive two) {
-			this.one = one;
-			this.two = two;
-		}
-
-		public OneString getOne() {
-			return one;
-		}
-
-		public OneIntegerPrimitive getTwo() {
-			return two;
-		}
-	}
-	
-	public static class TwoLevelConstructible {
-		private final OneConstructibleArgument level2;
-
-		public TwoLevelConstructible(OneConstructibleArgument level2) {
-			this.level2 = level2;
-		}
-		
-		public OneConstructibleArgument getLevel2() {
-			return level2;
-		}
-	}
-	
-	public static class MixedPrimitiveAndConstructibleArguments {
-		private final int one;
-		private final OneIntegerPrimitive two;
-
-		public MixedPrimitiveAndConstructibleArguments(int one,  OneIntegerPrimitive two) {
-			this.one = one;
-			this.two = two;
-		}
-
-		public int getOne() {
-			return one;
-		}
-
-		public OneIntegerPrimitive getTwo() {
-			return two;
-		}
-	}
-	
-	public static class MixedObjectAndList {
-		private final List<OneString> list;
-		private final OneString object;
-
-		public MixedObjectAndList(List<OneString> list, OneString object) {
-			this.list = list;
-			this.object = object;
-		}
-		
-		public List<OneString> getList() {
-			return list;
-		}
-		
-		public OneString getObject() {
-			return object;
-		}
-	}
-	
-	public static class MixedObjectAndArray {
-		private final OneString[] array;
-		private final OneString object;
-
-		public MixedObjectAndArray(OneString[] array, OneString object) {
-			this.array = array;
-			this.object = object;
-		}
-
-		public OneString[] getArray() {
-			return array;
-		}
-
-		public OneString getObject() {
-			return object;
-		}
-	}
-	
-	public static class OneArgOneProperty {
-		private final Double oneArg;
-		private int oneProperty;
-
-		public OneArgOneProperty(Double oneArg) {
-			this.oneArg = oneArg;
-		}
-
-		public int getOneProperty() {
-			return oneProperty;
-		}
-
-		public void setOneProperty(int oneProperty) {
-			this.oneProperty = oneProperty;
-		}
-
-		public Double getOneArg() {
-			return oneArg;
-		}
-	}
-	
-	public static class TwoProperties {
-		private int one;
-		private int two;
-		
-		public TwoProperties() {
-		}
-		
-		public int getOne() {
-			return one;
-		}
-		
-		public void setOne(int one) {
-			this.one = one;
-		}
-		
-		public int getTwo() {
-			return two;
-		}
-		
-		public void setTwo(int two) {
-			this.two = two;
-		}
-	}
-	
-	public static class ContainsParameterizedList {
-		List<OneString> listOfOneString;
-		List<TwoArguments> listOfTwoArguments;
-		List<Integer> listOfInteger;
 	}
 }
