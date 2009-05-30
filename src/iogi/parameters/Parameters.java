@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public class Parameters {
 	private final List<Parameter> parametersList;
-	private final Multimap<String, Parameter> parametersByFirstNameComponent;
+	private final ListMultimap<String, Parameter> parametersByFirstNameComponent;
 	
 	public Parameters(Parameter... parameters) {
 		this(Arrays.asList(parameters));
@@ -29,8 +29,8 @@ public class Parameters {
 		this.parametersByFirstNameComponent = groupByFirstNameComponent(parametersList);
 	}
 	
-	private Multimap<String, Parameter> groupByFirstNameComponent(List<Parameter> parameters) {
-		Multimap<String, Parameter> firstNameComponentToParameterMap = LinkedHashMultimap.create();
+	private ListMultimap<String, Parameter> groupByFirstNameComponent(List<Parameter> parameters) {
+		ListMultimap<String, Parameter> firstNameComponentToParameterMap = ArrayListMultimap.create(); 
 		
 		for (Parameter parameter : parameters) {
 			firstNameComponentToParameterMap.put(parameter.getFirstNameComponent(), parameter);
@@ -56,14 +56,7 @@ public class Parameters {
 	}
 	
 	public Parameters relevantTo(Target<?> target) {
-		ArrayList<Parameter> relevant = new ArrayList<Parameter>(getParametersList().size());
-		
-		for (Parameter parameter : getParametersList()) {
-			if (parameter.getFirstNameComponent().equals(target.getName()))
-				relevant.add(parameter);
-		}
-		
-		return new Parameters(relevant);
+		return new Parameters(parametersByFirstNameComponent.get(target.getName()));
 	}
 
 	public Parameters strip() {

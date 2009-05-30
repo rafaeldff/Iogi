@@ -2,13 +2,13 @@ package iogi;
 
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
-import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.ClassConstructor;
 import iogi.reflection.Primitives;
 import iogi.reflection.Target;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,8 +78,8 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	private void populateRemainingProperties(Object object, ClassConstructor constructor, Parameters parameters) {
 		Parameters remainingParameters = parameters.notUsedBy(constructor);
 		for (Setter setter : settersIn(object)) {
-			Target<?> target = Target.create(setter.type(), setter.propertyName());
-			Parameter parameterNamedAfterProperty = remainingParameters.namedAfter(target);
+			Target<?> target = new Target<Object>(setter.type(), setter.propertyName());
+			Parameters parameterNamedAfterProperty = remainingParameters.relevantTo(target);
 			if (parameterNamedAfterProperty != null) {
 				Object argument = argumentInstantiator.instantiate(target, remainingParameters);
 				setter.set(argument);
@@ -114,8 +114,8 @@ public class ObjectInstantiator implements Instantiator<Object> {
 			return propertyName;
 		}
 		
-		public Class<?> type() {
-			return setter.getParameterTypes()[0];
+		public Type type() {
+			return setter.getGenericParameterTypes()[0];
 		}
 	}
 }

@@ -9,6 +9,7 @@ import iogi.fixtures.MixedPrimitiveAndConstructibleArguments;
 import iogi.fixtures.OneArgOneProperty;
 import iogi.fixtures.OneConstructibleArgument;
 import iogi.fixtures.OneDoublePrimitive;
+import iogi.fixtures.OneGenericListProperty;
 import iogi.fixtures.OneIntegerPrimitive;
 import iogi.fixtures.OneString;
 import iogi.fixtures.TwoArguments;
@@ -18,6 +19,8 @@ import iogi.fixtures.TwoLevelConstructible;
 import iogi.fixtures.TwoProperties;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
+
+import java.util.List;
 
 import org.junit.Test;
 
@@ -136,6 +139,19 @@ public class ObjectInstantiationTests {
 		assertEquals(object.getTwo(), 9002);
 	}
 	
+	@Test
+	public void canInstantiateAndSetAList() throws Exception {
+		Parameter one = new Parameter("root.list.anInteger", "-1");
+		Parameter two = new Parameter("root.list.anInteger", "-2");
+
+		Target<OneGenericListProperty> target = Target.create(OneGenericListProperty.class, "root");
+		List<OneIntegerPrimitive> list = iogi.instantiate(target, one, two).getList();
+		
+		assertEquals(2, list.size());
+		assertEquals(-1, list.get(0).getAnInteger());
+		assertEquals(-2, list.get(1).getAnInteger());
+	}
+	
 	@Test(expected=NoConstructorFoundException.class)
 	public void testWillThrowANoConstructorFoundExceptionIfNoAdequateConstructorIsFound() {
 		Parameter aParameter = new Parameter("root.a", "");
@@ -163,8 +179,6 @@ public class ObjectInstantiationTests {
 		Target<Void> target = Target.create(Void.class, "root");
 		iogi.instantiate(target, aParameter);
 	}
-	
-	
 	
 	@Test
 	public void emptyIntegerParametersWillBeInstantiatedAsZero() throws Exception {

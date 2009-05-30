@@ -91,7 +91,7 @@ public class ParametersTests {
 		ClassConstructor constructor = new ClassConstructor(Sets.newHashSet("bar", "baz"));
 		
 		Parameters notUsed = parameters.notUsedBy(constructor);
-		assertEquals(parametersNamed("foo", "fizzle"), notUsed);
+		assertThat(notUsed.getParametersList(), containsInAnyOrder(new Parameter("foo", ""), new Parameter("fizzle", "")));
 	}
 	
 	private Parameters parametersNamed(String... names) {
