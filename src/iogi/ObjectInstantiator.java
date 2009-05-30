@@ -1,7 +1,6 @@
 package iogi;
 
 import iogi.exceptions.InvalidTypeException;
-import iogi.exceptions.IogiException;
 import iogi.exceptions.NoConstructorFoundException;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
@@ -9,16 +8,15 @@ import iogi.reflection.ClassConstructor;
 import iogi.reflection.Primitives;
 import iogi.reflection.Target;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+
+import net.vidageek.mirror.dsl.Mirror;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -48,7 +46,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		ClassConstructor largestMatchingConstructor = orderedMatchingConstructors.iterator().next();
 		
 		Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters);
-		populateRemainingAttributes(object, largestMatchingConstructor, relevantParameters);
+		populateRemainingProperties(object, largestMatchingConstructor, relevantParameters);
 		
 		return object;
 	}
@@ -77,36 +75,47 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		return Collections.unmodifiableList(constructors);
 	}
 	
-	private void populateRemainingAttributes(Object object, ClassConstructor constructor, Parameters parameters) {
-		try {
-			BeanInfo beanInfo = Introspector.getBeanInfo(object.getClass());
-			PropertyDescriptor[] beanProperties = beanInfo.getPropertyDescriptors();
-			Parameters remainingParameters = parameters.notUsedBy(constructor);
-			
-			for (PropertyDescriptor property : beanProperties) {
-				String propertyName = property.getName();
-				Target<?> target = Target.create(property.getPropertyType(), propertyName);
-				Parameter parameterNamedAfterProperty = remainingParameters.namedAfter(target);
-				if (parameterNamedAfterProperty != null) {
-					Object argument = argumentInstantiator.instantiate(target, remainingParameters);
-					setArgument(object, property, argument);
-				}
+	private void populateRemainingProperties(Object object, ClassConstructor constructor, Parameters parameters) {
+		Parameters remainingParameters = parameters.notUsedBy(constructor);
+		for (Setter setter : settersIn(object)) {
+			Target<?> target = Target.create(setter.type(), setter.propertyName());
+			Parameter parameterNamedAfterProperty = remainingParameters.namedAfter(target);
+			if (parameterNamedAfterProperty != null) {
+				Object argument = argumentInstantiator.instantiate(target, remainingParameters);
+				setter.set(argument);
 			}
-			
-		} catch (IntrospectionException e) {
-			throw new IogiException(e);
 		}
 	}
+	
+	private Collection<Setter> settersIn(Object object) {
+		ArrayList<Setter> foundSetters = new ArrayList<Setter>();
+		for (Method setterMethod: new Mirror().on(object.getClass()).reflectAll().setters()) {
+			foundSetters.add(new Setter(setterMethod, object));
+		}
+		return foundSetters;
+	}
 
-	private Object setArgument(Object object, PropertyDescriptor property, Object argument) {
-		try {
-			return property.getWriteMethod().invoke(object, argument);
-		} catch (IllegalArgumentException e) {
-			throw new IogiException(e);
-		} catch (IllegalAccessException e) {
-			throw new IogiException(e);
-		} catch (InvocationTargetException e) {
-			throw new IogiException(e);
+	private static class Setter {
+		private final Method setter;
+		private final Object object;
+		
+		public Setter(Method setter, Object object) {
+			this.setter = setter;
+			this.object = object;
+		}
+		
+		public void set(Object argument) {
+			new Mirror().on(object).invoke().method(setter).withArgs(argument);
+		}
+		
+		public String propertyName() {
+			String capitalizedPropertyName = setter.getName().substring(3);
+			String propertyName = capitalizedPropertyName.substring(0, 1).toLowerCase() + capitalizedPropertyName.substring(1);
+			return propertyName;
+		}
+		
+		public Class<?> type() {
+			return setter.getParameterTypes()[0];
 		}
 	}
 }

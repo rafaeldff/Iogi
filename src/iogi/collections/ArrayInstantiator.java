@@ -1,5 +1,6 @@
-package iogi;
+package iogi.collections;
 
+import iogi.Instantiator;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;

@@ -1,14 +1,14 @@
 package iogi.reflection;
 
 import iogi.Instantiator;
-import iogi.exceptions.IogiException;
 import iogi.parameters.Parameters;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
+
+import net.vidageek.mirror.dsl.Mirror;
 
 import com.google.common.base.Joiner;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
@@ -64,7 +64,7 @@ public class ClassConstructor {
 			argumentValues[i] = value;
 		}
 		
-		return instantiateWithConstructor(argumentValues);
+		return new Mirror().on(constructor.getDeclaringClass()).invoke().constructor(constructor).withArgs(argumentValues);
 	}
 
 	private String[] namesInOrder() {
@@ -76,20 +76,6 @@ public class ClassConstructor {
 		return foundByParanamer;
 	}
 
-	private Object instantiateWithConstructor(Object[] values) {
-		try {
-			return constructor.newInstance(values);
-		} catch (IllegalArgumentException e) {
-			throw new IogiException(e);
-		} catch (InstantiationException e) {
-			throw new IogiException(e);
-		} catch (IllegalAccessException e) {
-			throw new IogiException(e);
-		} catch (InvocationTargetException e) {
-			throw new IogiException(e);
-		}
-	}
-	
 	@Override
 	public String toString() {
 		return "(" + Joiner.on(", ").join(names) + ")"; 

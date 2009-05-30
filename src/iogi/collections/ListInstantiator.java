@@ -1,5 +1,6 @@
-package iogi;
+package iogi.collections;
 
+import iogi.Instantiator;
 import iogi.exceptions.InvalidTypeException;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
