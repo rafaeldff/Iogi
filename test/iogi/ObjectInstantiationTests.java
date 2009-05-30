@@ -1,13 +1,10 @@
 package iogi;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import iogi.collections.ListInstantiatorTests.ContainsParameterizedList;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
 import iogi.fixtures.AbstractClass;
-import iogi.fixtures.MixedObjectAndList;
 import iogi.fixtures.MixedPrimitiveAndConstructibleArguments;
 import iogi.fixtures.OneArgOneProperty;
 import iogi.fixtures.OneConstructibleArgument;
@@ -22,12 +19,9 @@ import iogi.fixtures.TwoProperties;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
 
-import java.lang.reflect.Type;
-import java.util.List;
-
 import org.junit.Test;
 
-public class IogiTests {
+public class ObjectInstantiationTests {
 	private Iogi iogi = new Iogi();
 	
 	@Test
@@ -184,92 +178,7 @@ public class IogiTests {
 		iogi.instantiate(target, aParameter);
 	}
 	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void canInstantiateAListOfObjects() throws Exception {
-		Parameter firstParameter = new Parameter("root.someString", "bla");
-		Parameter secondParameter = new Parameter("root.someString", "ble");
-		
-		Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfOneString").getGenericType();
-		
-		Target<List> target = new Target(parameterizedListType, "root");
-		List objects = iogi.instantiate(target, firstParameter, secondParameter);
-		
-		assertEquals(2, objects.size());
-		OneString first = (OneString)objects.get(0);
-		assertEquals(first.getSomeString(), "bla");
-		OneString second = (OneString)objects.get(1);
-		assertEquals(second.getSomeString(), "ble");
-	}
 	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void canInstantiateAListOfPrimitives() throws Exception {
-		Parameter firstParameter = new Parameter("root", "1");
-		Parameter secondParameter = new Parameter("root", "0");
-		
-		Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfInteger").getGenericType();
-		
-		Target<List> target = new Target(parameterizedListType, "root");
-		List objects = iogi.instantiate(target, firstParameter, secondParameter);
-		
-		assertEquals(2, objects.size());
-		int first = (Integer) objects.get(0);
-		assertEquals(1, first);
-		int second = (Integer)objects.get(1);
-		assertEquals(0, second);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Test(expected=InvalidTypeException.class)
-	public void ifTargetIsAListButIsNotParameterizedThrowAnInvalidTypeException() throws Exception {
-		 Type rawListType = List.class;
-		 Target<List> target = new Target<List>(rawListType, "foo");
-		 Parameter parameter = new Parameter("foo.bar", "baz");
-		 
-		 iogi.instantiate(target, parameter);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void canInstantiateAListWhoseElementsHaveMoreThanOneConstructorParameter() throws Exception {
-		Parameter p1 = new Parameter("root.one", "1");
-		Parameter p2 = new Parameter("root.two", "2");
-		Parameter p3 = new Parameter("root.one", "11");
-		Parameter p4 = new Parameter("root.two", "22");
-		
-		Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfTwoArguments").getGenericType();
-		
-		Target<List> target = new Target(parameterizedListType, "root");
-		List objects = iogi.instantiate(target, p1, p2, p3, p4);
-		
-		assertEquals(2, objects.size());
-		TwoArguments first = (TwoArguments)objects.get(0);
-		assertEquals(1, first.getOne());
-		assertEquals(2, first.getTwo());
-		TwoArguments second = (TwoArguments)objects.get(1);
-		assertEquals(11, second.getOne());
-		assertEquals(22, second.getTwo());
-	}
-	
-	@Test
-	public void canInstantiateMixingListsAndRegularObjects() throws Exception {
-		Parameter firstParameter = new Parameter("root.list.someString", "bla");
-		Parameter secondParameter = new Parameter("root.list.someString", "ble");
-		Parameter thirdParameter = new Parameter("root.object.someString", "blu");
-		
-		
-		Target<MixedObjectAndList> target = Target.create(MixedObjectAndList.class, "root");
-		MixedObjectAndList root = iogi.instantiate(target, firstParameter, secondParameter, thirdParameter);
-		
-		assertEquals(2, root.getList().size());
-		OneString first = (OneString)root.getList().get(0);
-		assertEquals("bla", first.getSomeString());
-		OneString second = (OneString)root.getList().get(1);
-		assertEquals("ble", second.getSomeString());
-		
-		assertEquals("blu", root.getObject().getSomeString());
-	}
 	
 	@Test
 	public void emptyIntegerParametersWillBeInstantiatedAsZero() throws Exception {
@@ -281,61 +190,5 @@ public class IogiTests {
 	public void emptyDoubleParametersWillBeInstantiatedAsZero() throws Exception {
 		OneDoublePrimitive object = iogi.instantiate(Target.create(OneDoublePrimitive.class, "foo"), new Parameter("foo.aDouble", ""));
 		assertEquals(0d, object.getADouble(), 0.00d);
-	}
-	
-	@Test
-	public void canInstantiateAnArrayOfStrings() throws Exception {
-		Target<String[]> target = Target.create(String[].class, "arr");
-		String[] array = iogi.instantiate(target, new Parameter("arr[0]", "one"), new Parameter("arr[1]", "two"));
-		assertArrayEquals(new String[] {"one", "two"}, array);
-	}
-	
-	@Test
-	public void canInstantiateAnArrayOfIntegerWrappers() throws Exception {
-		Target<Integer[]> target = Target.create(Integer[].class, "arr");
-		Integer[] array = iogi.instantiate(target, new Parameter("arr[0]", "99"), new Parameter("arr[1]", "98"));
-		assertArrayEquals(new Integer[] {99, 98}, array);
-	}
-	
-	@Test
-	public void canInstantiateAnArrayOfPrimitiveIntegers() throws Exception {
-		Target<int[]> target = Target.create(int[].class, "arr");
-		int[] array = iogi.instantiate(target, new Parameter("arr[0]", "99"), new Parameter("arr[1]", "98"));
-		assertArrayEquals(new int[] {99, 98}, array);
-	}
-	
-	@Test
-	public void canInstantiateAnArrayOfObjects() throws Exception {
-		Target<OneIntegerPrimitive[]> target = Target.create(OneIntegerPrimitive[].class, "arr");
-		OneIntegerPrimitive[] array = iogi.instantiate(target, new Parameter("arr[0].anInteger", "99"), new Parameter("arr[1].anInteger", "98"));
-		assertEquals(99, array[0].getAnInteger());
-		assertEquals(98, array[1].getAnInteger());
-	}
-	
-	@Test
-	public void canInstantiateAnArrayOfObjectsWithMoreThanOneConstructorParameter() throws Exception {
-		Target<TwoArguments[]> target = Target.create(TwoArguments[].class, "arr");
-		TwoArguments[] array = iogi.instantiate(target, 
-				new Parameter("arr[0].one", "10"), 
-				new Parameter("arr[0].two", "11"), 
-				new Parameter("arr[1].one", "20"), 
-				new Parameter("arr[1].two", "21"));
-		assertEquals(10, array[0].getOne());
-		assertEquals(11, array[0].getTwo());
-		assertEquals(20, array[1].getOne());
-		assertEquals(21, array[1].getTwo());
-	}
-	
-	@Test
-	public void canMixArraysWithNonArraysAsParametersForAConstructor() throws Exception {
-		Target<MixedObjectAndArray> target = Target.create(MixedObjectAndArray.class, "root");
-		MixedObjectAndArray rootObject = iogi.instantiate(target, 
-				new Parameter("root.array[0].someString", "10"), 
-				new Parameter("root.array[1].someString", "20"),
-				new Parameter("root.object.someString", "00")); 
-		
-		assertEquals("00", rootObject.getObject().getSomeString());
-		assertEquals("10", rootObject.getArray()[0].getSomeString());
-		assertEquals("20", rootObject.getArray()[1].getSomeString());
 	}
 }
