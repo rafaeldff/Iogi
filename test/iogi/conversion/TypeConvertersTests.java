@@ -12,7 +12,7 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
-public class TypeConversionTests {
+public class TypeConvertersTests {
 	private <T> T convertWith(TypeConverter<T> instantiator, Class<T> type, String stringValue) {
 		Target<T> target = Target.create(type, "foo");
 		assertTrue(instantiator.isAbleToInstantiate(target));
