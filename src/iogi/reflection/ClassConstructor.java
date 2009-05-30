@@ -1,16 +1,22 @@
 package iogi.reflection;
 
+import iogi.DependencyProvider;
 import iogi.Instantiator;
 import iogi.parameters.Parameters;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.vidageek.mirror.dsl.Mirror;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
 
@@ -50,23 +56,55 @@ public class ClassConstructor {
 		return names;
 	}
 
-	public Object instantiate(Instantiator<?> instantiator, Parameters parameters) {
-		Type[] parameterTypes = constructor.getGenericParameterTypes();
-		String[] parameterNames = namesInOrder();
-		Object[] argumentValues = new Object[parameterNames.length];
+	public Object instantiate(Instantiator<?> instantiator, Parameters parameters, DependencyProvider dependencyProvider) {
+		List<Object> argumentValues = Lists.newArrayList();
+		Collection<Target<?>> needDependency = notFulfilledBy(parameters);
 		
-		for (int i = 0; i < parameterNames.length; i++) {
-			String name = parameterNames[i];
+		for (Target<?> target : parameterTargets()) {
+			Object value;
+			if (needDependency.contains(target))
+				value = dependencyProvider.provide(target);
+			else
+				value = instantiator.instantiate(target, parameters);
 			
-			Target<?> target = new Target<Object>(parameterTypes[i], name);
-			
-			Object value = instantiator.instantiate(target, parameters);
-			argumentValues[i] = value;
+			argumentValues.add(value);
 		}
-		
-		return new Mirror().on(constructor.getDeclaringClass()).invoke().constructor(constructor).withArgs(argumentValues);
+
+		return new Mirror().on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
 	}
 
+	private Class<?> declaringClass() {
+		return constructor.getDeclaringClass();
+	}
+
+	public int size() {
+		return names.size();
+	}
+
+	public Collection<Target<?>> notFulfilledBy(Parameters parameters) {
+		ArrayList<Target<?>> unfulfilled = Lists.newArrayList();
+		
+		for (Target<?> target : parameterTargets()) {
+			if (parameters.relevantTo(target).getParametersList().isEmpty())
+				unfulfilled.add(target);
+		}
+		
+		return unfulfilled;
+	}
+	
+	private List<Target<?>> parameterTargets() {
+		Type[] parameterTypes = constructor.getGenericParameterTypes();
+		String[] parameterNames = namesInOrder();
+		
+		ArrayList<Target<?>> targets = Lists.newArrayList();
+		for (int i = 0; i < parameterNames.length; i++) {
+			String name = parameterNames[i];
+			targets.add(new Target<Object>(parameterTypes[i], name));
+		}
+		
+		return Collections.unmodifiableList(targets);
+	}	
+	
 	private String[] namesInOrder() {
 		String[] foundByParanamer = paranamer.lookupParameterNames(constructor);
 		
@@ -75,13 +113,10 @@ public class ClassConstructor {
 		
 		return foundByParanamer;
 	}
-
+	
+	
 	@Override
 	public String toString() {
 		return "(" + Joiner.on(", ").join(names) + ")"; 
-	}
-
-	public int size() {
-		return names.size();
 	}
 }

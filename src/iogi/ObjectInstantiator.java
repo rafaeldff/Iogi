@@ -23,9 +23,11 @@ import com.google.common.collect.Lists;
 
 public class ObjectInstantiator implements Instantiator<Object> {
 	private Instantiator<Object> argumentInstantiator;
+	private final DependencyProvider dependencyProvider;
 	
-	public ObjectInstantiator(Instantiator<Object> argumentInstantiator) {
+	public ObjectInstantiator(Instantiator<Object> argumentInstantiator, DependencyProvider dependencyProvider) {
 		this.argumentInstantiator = argumentInstantiator;
+		this.dependencyProvider = dependencyProvider;
 	}
 
 	@Override
@@ -39,16 +41,37 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		Parameters relevantParameters = parameters.relevantTo(target).strip();
 		Set<ClassConstructor> candidateConstructors = target.classConstructors();  
 		
-		Set<ClassConstructor> matchingConstructors = relevantParameters.compatible(candidateConstructors);
+		Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, fromLargestToSmallest(candidateConstructors));
 		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
 		
 		List<ClassConstructor> orderedMatchingConstructors = fromLargestToSmallest(matchingConstructors);
 		ClassConstructor largestMatchingConstructor = orderedMatchingConstructors.iterator().next();
 		
-		Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters);
+		Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependencyProvider);
 		populateRemainingProperties(object, largestMatchingConstructor, relevantParameters);
 		
 		return object;
+	}
+
+	private Collection<ClassConstructor> compatible(Parameters relevantParameters, Collection<ClassConstructor> candidates) {
+		ArrayList<ClassConstructor> compatibleConstructors = Lists.newArrayList();
+		for (ClassConstructor candidate : candidates) {
+			Collection<Target<?>> notFulfilled = candidate.notFulfilledBy(relevantParameters);
+			
+			if (canObtainDependenciesFor(notFulfilled)) {
+				compatibleConstructors.add(candidate);
+			}
+		}
+		
+		return compatibleConstructors;
+	}
+
+	private boolean canObtainDependenciesFor(Collection<Target<?>> targets) {
+		for (Target<?> target : targets) {
+			if (!dependencyProvider.canProvide(target))
+				return false;
+		}
+		return true;
 	}
 
 	private <T> void signalErrorIfTargetIsAbstract(Target<T> target) {
@@ -56,7 +79,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
 	}
 
-	private <T> void signalErrorIfNoMatchingConstructorFound(Target<?> target, Set<ClassConstructor> matchingConstructors, Parameters relevantParameters) {
+	private <T> void signalErrorIfNoMatchingConstructorFound(Target<?> target, Collection<ClassConstructor> matchingConstructors, Parameters relevantParameters) {
 		if (matchingConstructors.isEmpty()) {
 			String parameterList =  "(" + Joiner.on(", ").join(relevantParameters.getParametersList()) + ")";
 			throw new NoConstructorFoundException("No constructor found to instantiate a %s named %s " +
@@ -65,7 +88,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		}
 	}
 	
-	private List<ClassConstructor> fromLargestToSmallest(Set<ClassConstructor> matchingConstructors) {
+	private List<ClassConstructor> fromLargestToSmallest(Collection<ClassConstructor> matchingConstructors) {
 		ArrayList<ClassConstructor> constructors = Lists.newArrayList(matchingConstructors);
 		Collections.sort(constructors, new Comparator<ClassConstructor>(){
 			public int compare(ClassConstructor first, ClassConstructor second) {
@@ -81,7 +104,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 			Target<?> target = new Target<Object>(setter.type(), setter.propertyName());
 			Parameters parameterNamedAfterProperty = remainingParameters.relevantTo(target);
 			if (parameterNamedAfterProperty != null) {
-				Object argument = argumentInstantiator.instantiate(target, remainingParameters);
+				Object argument = argumentInstantiator.instantiate(target, parameterNamedAfterProperty);
 				setter.set(argument);
 			}
 		}

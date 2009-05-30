@@ -2,6 +2,7 @@ package iogi.collections;
 
 import static org.junit.Assert.assertEquals;
 import iogi.Iogi;
+import iogi.NullDependencyProvider;
 import iogi.exceptions.InvalidTypeException;
 import iogi.fixtures.MixedObjectAndList;
 import iogi.fixtures.OneString;
@@ -16,7 +17,7 @@ import org.junit.Test;
 
 
 public class ListInstantiatonTests {
-	private Iogi iogi = new Iogi();
+	private Iogi iogi = new Iogi(new NullDependencyProvider());
 	
 	public static class ContainsParameterizedList {
 		List<OneString> listOfOneString;

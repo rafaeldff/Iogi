@@ -25,7 +25,7 @@ import java.util.List;
 import org.junit.Test;
 
 public class ObjectInstantiationTests {
-	private Iogi iogi = new Iogi();
+	private Iogi iogi = new Iogi(new NullDependencyProvider());
 	
 	@Test
 	public void canInstantiateWithOneIntegerArgument() throws Exception {
@@ -190,5 +190,44 @@ public class ObjectInstantiationTests {
 	public void emptyDoubleParametersWillBeInstantiatedAsZero() throws Exception {
 		OneDoublePrimitive object = iogi.instantiate(Target.create(OneDoublePrimitive.class, "foo"), new Parameter("foo.aDouble", ""));
 		assertEquals(0d, object.getADouble(), 0.00d);
+	}
+	
+	@Test
+	public void willCallDependenciesProviderForConstructorParametersItCantInstantiate() throws Exception {
+		Parameter parameterForInstantiableArg = new Parameter("root.instantiable", "instantiable ok");
+		Target<HasDependency> target = Target.create(HasDependency.class, "root");
+		
+		Iogi iogi = new Iogi(new DependencyProvider() {
+			public Object provide(Target<?> target) {
+				return "uninstantiable ok";
+			}
+
+			@Override
+			public boolean canProvide(Target<?> target) {
+				return target.getName().equals("uninstantiable");
+			}
+		});
+		
+		HasDependency object = iogi.instantiate(target, parameterForInstantiableArg);
+		assertEquals("instantiable ok", object.getInstantiable());
+		assertEquals("uninstantiable ok", object.getUninstantiable());
+	}
+	
+	public static class HasDependency {
+		private final String instantiable;
+		private final String uninstantiable;
+
+		public HasDependency(String instantiable, String uninstantiable) {
+			this.instantiable = instantiable;
+			this.uninstantiable = uninstantiable;
+		}
+		
+		public String getInstantiable() {
+			return instantiable;
+		}
+		
+		public String getUninstantiable() {
+			return uninstantiable;
+		}
 	}
 }

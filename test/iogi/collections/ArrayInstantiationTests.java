@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import iogi.Iogi;
 import iogi.MixedObjectAndArray;
+import iogi.NullDependencyProvider;
 import iogi.fixtures.OneIntegerPrimitive;
 import iogi.fixtures.TwoArguments;
 import iogi.parameters.Parameter;
@@ -12,7 +13,7 @@ import iogi.reflection.Target;
 import org.junit.Test;
 
 public class ArrayInstantiationTests {
-	private Iogi iogi = new Iogi();
+	private Iogi iogi = new Iogi(new NullDependencyProvider());
 	
 	@Test
 	public void canInstantiateAnArrayOfStrings() throws Exception {

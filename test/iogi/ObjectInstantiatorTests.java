@@ -37,7 +37,7 @@ public class ObjectInstantiatorTests {
 		Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
 		Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
 		
-		ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator);
+		ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
 		Object object = objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
 		assertNotNull(object);
 	}
@@ -48,7 +48,7 @@ public class ObjectInstantiatorTests {
 		Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
 		Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
 		
-		ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator);
+		ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
 		ConstructorAndProperty object = (ConstructorAndProperty) objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
 		assertEquals("x", object.getConstructorArg());
 		assertEquals("x", object.getPropertyValue());
@@ -62,7 +62,7 @@ public class ObjectInstantiatorTests {
 		 Parameter c = new Parameter("root.c", "x");
 		 Parameter irrelevant = new Parameter("root.irrelevant", "x");
 		 
-		 ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator);
+		 ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
 		 TwoCompatibleConstructors object = (TwoCompatibleConstructors) objectInstantiator.instantiate(target, new Parameters(a, b, c, irrelevant));
 		 assertTrue(object.largestWasCalled);
 	}

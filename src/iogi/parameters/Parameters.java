@@ -7,12 +7,13 @@ import iogi.reflection.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -45,11 +46,11 @@ public class Parameters {
 
 	public Parameter namedAfter(Target<?> target) {
 		Collection<Parameter> named = parametersByFirstNameComponent.get(target.getName());
-		assertFoundOnlyOneTarget(target, named);
+		assertFoundAtMostOneTarget(target, named);
 		return named.isEmpty() ? null : named.iterator().next();
 	}
 
-	private void assertFoundOnlyOneTarget(Target<?> target, Collection<Parameter> named) {
+	private void assertFoundAtMostOneTarget(Target<?> target, Collection<Parameter> named) {
 		if (named.size() > 1)
 			throw new IllegalStateException(
 					"Expecting only one parameter named after " + target + ", found instead " + named);
@@ -69,14 +70,14 @@ public class Parameters {
 		return new Parameters(striped);
 	}
 	
-	public Set<ClassConstructor> compatible(Set<ClassConstructor> candidates) {
-		Predicate<? super ClassConstructor> namesAreContainedInThis = new Predicate<ClassConstructor>(){
-			public boolean apply(ClassConstructor input) {
-				return firstComponents().containsAll(input.getNames());
-			}
-		};
+	public Collection<ClassConstructor> compatible(Collection<ClassConstructor> candidates) {
+		List<ClassConstructor> compatible = Lists.newArrayList();
 		
-		return Sets.filter(candidates, namesAreContainedInThis);
+		for (ClassConstructor candidate : candidates)
+			if (firstComponents().containsAll(candidate.getNames()))
+				compatible.add(candidate);
+			
+		return Collections.unmodifiableList(compatible);
 	}
 
 	private Set<String> firstComponents() {
