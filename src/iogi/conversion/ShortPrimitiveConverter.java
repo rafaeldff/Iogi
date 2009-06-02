@@ -5,12 +5,12 @@ import iogi.reflection.Target;
 public class ShortPrimitiveConverter extends TypeConverter<Short> {
 
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == short.class;
 	}
 
 	@Override
-	protected Short convert(String stringValue, Target<?> to) {
+	protected Short convert(final String stringValue, final Target<?> to) {
 		return new ShortWrapperConverter().convert(stringValue, to);
 	}
 

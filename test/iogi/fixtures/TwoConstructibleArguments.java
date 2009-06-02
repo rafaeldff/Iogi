@@ -7,7 +7,7 @@ public class TwoConstructibleArguments {
 	private final OneString one;
 	private final OneIntegerPrimitive two;
 
-	public TwoConstructibleArguments(OneString one, OneIntegerPrimitive two) {
+	public TwoConstructibleArguments(final OneString one, final OneIntegerPrimitive two) {
 		this.one = one;
 		this.two = two;
 	}

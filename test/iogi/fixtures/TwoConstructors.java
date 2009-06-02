@@ -4,9 +4,9 @@
 package iogi.fixtures;
 
 public class TwoConstructors {
-	public TwoConstructors(int one, int two) {
+	public TwoConstructors(final int one, final int two) {
 	}
 	
-	public TwoConstructors(String a, String b) {
+	public TwoConstructors(final String a, final String b) {
 	}
 }

@@ -17,7 +17,7 @@ import org.junit.Test;
 
 
 public class MultiInstantiatorTests {
-	private Mockery context = new Mockery();
+	private final Mockery context = new Mockery();
 	private Instantiator<?> mockSubInstantiator;
 	private List<Instantiator<?>> theMockInstantiator;
 	
@@ -34,7 +34,7 @@ public class MultiInstantiatorTests {
 	
 	@Test
 	public void multiInstantiatorWillUseAnAbleInstantiator() throws Exception {
-		MultiInstantiator multiInstantiator = new MultiInstantiator(theMockInstantiator);
+		final MultiInstantiator multiInstantiator = new MultiInstantiator(theMockInstantiator);
 		
 		context.checking(new Expectations() {{
 			allowing(mockSubInstantiator).isAbleToInstantiate(with(any(Target.class)));
@@ -48,7 +48,7 @@ public class MultiInstantiatorTests {
 	
 	@Test(expected=InvalidTypeException.class)
 	public void ifNoAbleInstantiatorIsFoundWillThrowAnException() {
-		MultiInstantiator mutliInstantiator = new MultiInstantiator(theMockInstantiator);
+		final MultiInstantiator mutliInstantiator = new MultiInstantiator(theMockInstantiator);
 		
 		context.checking(new Expectations() {{
 			allowing(mockSubInstantiator).isAbleToInstantiate(with(any(Target.class)));

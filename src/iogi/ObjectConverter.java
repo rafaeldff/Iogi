@@ -8,17 +8,17 @@ import iogi.reflection.Target;
 public class ObjectConverter implements Instantiator<Object> {
 	private final Iogi instantiator;
 
-	public ObjectConverter(Iogi instantiator) {
+	public ObjectConverter(final Iogi instantiator) {
 		this.instantiator = instantiator;
 	}
 	
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target) {
 		return !Primitives.isPrimitiveLike(target.getClassType());
 	}
 
 	@Override
-	public Object instantiate(Target<?> target, Parameters parameters) {
+	public Object instantiate(final Target<?> target, final Parameters parameters) {
 		return instantiator.instantiate(target, parameters);
 	}
 }

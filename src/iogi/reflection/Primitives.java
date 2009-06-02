@@ -23,12 +23,12 @@ public class Primitives {
 	 * @param type
 	 * @return true iff type represents a primitive (like int.class) or a primitive wrapper (like Integer.class)
 	 */
-	public static boolean isPrimitiveLike(Class<?> type) {
+	public static boolean isPrimitiveLike(final Class<?> type) {
 		return primitiveToObject.keySet().contains(type) || primitiveToObject.values().contains(type);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T primitiveCast(Object object, Class<T> type) {
+	public static <T> T primitiveCast(final Object object, final Class<T> type) {
 		return (T) primitiveToObject.get(type).cast(object);
 	}
 	

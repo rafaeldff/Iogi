@@ -4,12 +4,12 @@ import iogi.reflection.Target;
 
 public class IntegerWrapperConverter extends TypeConverter<Integer> {
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target) {
 		return  target.getClassType() == Integer.class;
 	}
 
 	@Override
-	protected Integer convert(String stringValue, Target<?> to) {
+	protected Integer convert(final String stringValue, final Target<?> to) {
 		return Integer.valueOf(stringValue);
 	}
 }

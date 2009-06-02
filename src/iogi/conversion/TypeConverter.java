@@ -9,15 +9,15 @@ public abstract class TypeConverter<T> implements Instantiator<T> {
 	protected abstract T convert(String stringValue, Target<?> to);
 	
 	@Override
-	public final T instantiate(Target<?> target, Parameters parameters) {
-		String stringValue = parameters.namedAfter(target).getValue();
+	public final T instantiate(final Target<?> target, final Parameters parameters) {
+		final String stringValue = parameters.namedAfter(target).getValue();
 		try {
 			return convert(stringValue, target);
 		} 
-		catch (ConversionException e) {
+		catch (final ConversionException e) {
 			throw e;
 		} 
-		catch (Exception e) {
+		catch (final Exception e) {
 			throw new ConversionException(e, "Exception when trying to convert '%s' to a '%s' named '%s'", stringValue, target.getType(), target.getName());
 		}
 	}

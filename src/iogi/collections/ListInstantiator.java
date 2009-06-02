@@ -17,48 +17,48 @@ import com.google.common.collect.Lists;
 public class ListInstantiator implements Instantiator<List<Object>> {
 	private final Instantiator<Object> elementInstantiator;
 
-	public ListInstantiator(Instantiator<Object> objectInstantiator) {
+	public ListInstantiator(final Instantiator<Object> objectInstantiator) {
 		this.elementInstantiator = objectInstantiator;
 	}
 
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target) {
 		return List.class.isAssignableFrom(target.getClassType());
 	}
 
 	@Override
-	public List<Object> instantiate(Target<?> target, Parameters parameters) {
+	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
 		signalErrorIfGivenARawType(target);
 			
-		Target<Object> listElementTarget = target.typeArgument(0);
-		Collection<List<Parameter>> parameterLists = breakList(parameters.relevantTo(target).getParametersList());
+		final Target<Object> listElementTarget = target.typeArgument(0);
+		final Collection<List<Parameter>> parameterLists = breakList(parameters.relevantTo(target).getParametersList());
 		
-		ArrayList<Object> newList = new ArrayList<Object>();
-		for (List<Parameter> parameterListForAnElement : parameterLists) {
-			Object listElement = elementInstantiator.instantiate(listElementTarget, new Parameters(parameterListForAnElement));
+		final ArrayList<Object> newList = new ArrayList<Object>();
+		for (final List<Parameter> parameterListForAnElement : parameterLists) {
+			final Object listElement = elementInstantiator.instantiate(listElementTarget, new Parameters(parameterListForAnElement));
 			newList.add(listElement);
 		}
 		
 		return newList;
 	}
 
-	private void signalErrorIfGivenARawType(Target<?> target) {
+	private void signalErrorIfGivenARawType(final Target<?> target) {
 		if (!(target.getType() instanceof ParameterizedType))
 			throw new InvalidTypeException("Expecting a parameterized list type, got raw type \"%s\" instead", target.getType());
 	}
 
-	private Collection<List<Parameter>> breakList(List<Parameter> parameters) {
-		int listSize = this.countToFirstRepeatedParameterName(parameters);
+	private Collection<List<Parameter>> breakList(final List<Parameter> parameters) {
+		final int listSize = this.countToFirstRepeatedParameterName(parameters);
 		return Lists.partition(parameters, listSize);
 	}
 
-	private int countToFirstRepeatedParameterName(List<Parameter> parameters) {
+	private int countToFirstRepeatedParameterName(final List<Parameter> parameters) {
 		if (parameters.isEmpty())
 			return 0;
 		
 		int count = 1;
-		ListIterator<Parameter> parametersIterator = parameters.listIterator();
-		String firstParameterName = parametersIterator.next().getName();
+		final ListIterator<Parameter> parametersIterator = parameters.listIterator();
+		final String firstParameterName = parametersIterator.next().getName();
 		
 		while (parametersIterator.hasNext()) {
 			if (parametersIterator.next().getName().equals(firstParameterName)) {

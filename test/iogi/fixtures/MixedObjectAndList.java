@@ -10,7 +10,7 @@ public class MixedObjectAndList {
 	private final List<OneString> list;
 	private final OneString object;
 
-	public MixedObjectAndList(List<OneString> list, OneString object) {
+	public MixedObjectAndList(final List<OneString> list, final OneString object) {
 		this.list = list;
 		this.object = object;
 	}

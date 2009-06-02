@@ -4,9 +4,9 @@
 package iogi.fixtures;
 
 public class OneDoublePrimitive {
-	private double aDouble;
+	private final double aDouble;
 	
-	public OneDoublePrimitive(double aDouble) {
+	public OneDoublePrimitive(final double aDouble) {
 		this.aDouble = aDouble;
 	}
 	

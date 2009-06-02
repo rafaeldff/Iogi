@@ -8,15 +8,15 @@ import java.util.Collection;
 
 public class MultiInstantiator implements Instantiator<Object> {
 
-	private Collection<Instantiator<?>> instantiators;
+	private final Collection<Instantiator<?>> instantiators;
 	
-	public MultiInstantiator(Collection<Instantiator<?>> instantiators) {
+	public MultiInstantiator(final Collection<Instantiator<?>> instantiators) {
 		this.instantiators = instantiators;
 	}
 
 	@Override
-	public Object instantiate(Target<?> target, Parameters parameters) {
-		for (Instantiator<?> instantiator : instantiators) {
+	public Object instantiate(final Target<?> target, final Parameters parameters) {
+		for (final Instantiator<?> instantiator : instantiators) {
 			if (instantiator.isAbleToInstantiate(target))
 				return instantiator.instantiate(target, parameters);
 		}
@@ -24,8 +24,8 @@ public class MultiInstantiator implements Instantiator<Object> {
 	}
 
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
-		for (Instantiator<?> instantiator : instantiators) {
+	public boolean isAbleToInstantiate(final Target<?> target) {
+		for (final Instantiator<?> instantiator : instantiators) {
 			if (instantiator.isAbleToInstantiate(target))
 				return true;
 		}

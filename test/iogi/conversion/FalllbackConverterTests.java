@@ -18,7 +18,7 @@ import org.junit.Test;
 public class FalllbackConverterTests {
 	private Mockery context;
 	private TypeConverter<Object> delegateConverter;
-	private Object anything = new Object();
+	private final Object anything = new Object();
 	
 	@SuppressWarnings("unchecked")
 	@Before
@@ -42,7 +42,7 @@ public class FalllbackConverterTests {
 			will(returnValue(true));
 		}});
 		
-		Instantiator<Object> fallbackInstantiator = new FallbackConverter<Object>(delegateConverter, anything);
+		final Instantiator<Object> fallbackInstantiator = new FallbackConverter<Object>(delegateConverter, anything);
 		assertTrue(fallbackInstantiator.isAbleToInstantiate(target));
 	}
 	
@@ -55,7 +55,7 @@ public class FalllbackConverterTests {
 			will(returnValue(false));
 		}});
 		
-		Instantiator<Object> fallbackInstantiator = new FallbackConverter<Object>(delegateConverter, anything);
+		final Instantiator<Object> fallbackInstantiator = new FallbackConverter<Object>(delegateConverter, anything);
 		assertFalse(fallbackInstantiator.isAbleToInstantiate(target));
 	}
 	
@@ -68,7 +68,7 @@ public class FalllbackConverterTests {
 			one(delegateConverter).convert("bar", target);
 		}});
 		
-		Instantiator<Object> fallbackInstantiator = new FallbackConverter<Object>(delegateConverter, anything);
+		final Instantiator<Object> fallbackInstantiator = new FallbackConverter<Object>(delegateConverter, anything);
 		fallbackInstantiator.instantiate(target, parameters);
 	}
 	
@@ -77,8 +77,8 @@ public class FalllbackConverterTests {
 		final Target<Object> target = Target.create(Object.class, "foo");
 		final Parameters parameters = new Parameters(new Parameter("foo", ""));
 		
-		Object fallbackValue = new Object();
-		Instantiator<Object> fallbackInstantiator = new FallbackConverter<Object>(delegateConverter, fallbackValue);
+		final Object fallbackValue = new Object();
+		final Instantiator<Object> fallbackInstantiator = new FallbackConverter<Object>(delegateConverter, fallbackValue);
 		assertEquals(fallbackValue, fallbackInstantiator.instantiate(target, parameters));
 	}
 }

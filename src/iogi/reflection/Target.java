@@ -9,14 +9,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Target<T> {
-	public static <T> Target<T> create(Class<T> type, String name) {
+	public static <T> Target<T> create(final Class<T> type, final String name) {
 		return new Target<T>(type, name);
 	}
 
 	private final Type type;
 	private final String name;
 	
-	public Target(Type type, String name) {
+	public Target(final Type type, final String name) {
 		this.type = type;
 		this.name = name;
 	}
@@ -26,7 +26,7 @@ public class Target<T> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Class<T> findRawClassType(Type type) {
+	private Class<T> findRawClassType(final Type type) {
 		if (type instanceof ParameterizedType)
 			return findRawClassType(((ParameterizedType)type).getRawType());
 		else
@@ -45,7 +45,7 @@ public class Target<T> {
 		return Primitives.isPrimitiveLike(getClassType()) || getClassType() == String.class; 
 	}
 	
-	public T cast(Object object) {
+	public T cast(final Object object) {
 		if (getClassType().isPrimitive())
 			return Primitives.primitiveCast(object, getClassType());
 			
@@ -59,8 +59,8 @@ public class Target<T> {
 	}
 	
 	public Set<ClassConstructor> classConstructors() {
-		HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
-		for (Constructor<?> constructor : getClassType().getConstructors()) {
+		final HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
+		for (final Constructor<?> constructor : getClassType().getConstructors()) {
 			classConstructors.add(new ClassConstructor(constructor));
 		}
 		return classConstructors;
@@ -74,10 +74,10 @@ public class Target<T> {
 		return type;
 	}
 
-	public Target<Object> typeArgument(int index) {
-		ParameterizedType thisAsParameterizedType = (ParameterizedType)this.getType();
-		Type[] typeArguments = thisAsParameterizedType.getActualTypeArguments();
-		Type typeArgument = typeArguments[index];
+	public Target<Object> typeArgument(final int index) {
+		final ParameterizedType thisAsParameterizedType = (ParameterizedType)this.getType();
+		final Type[] typeArguments = thisAsParameterizedType.getActualTypeArguments();
+		final Type typeArgument = typeArguments[index];
 		return new Target<Object>(typeArgument, this.getName());
 	}
 
@@ -99,14 +99,14 @@ public class Target<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Target<?> other = (Target<?>) obj;
+		final Target<?> other = (Target<?>) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;

@@ -33,54 +33,54 @@ public class ObjectInstantiatorTests {
 
 	@Test
 	public void canInstantiateIfNoAppropriateConstructorIsFound() throws Exception {
-		Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class,  "root");
-		Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
-		Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
+		final Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class,  "root");
+		final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
+		final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
 		
-		ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
-		Object object = objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
+		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
+		final Object object = objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
 		assertNotNull(object);
 	}
 	
 	@Test
 	public void willFallbackToSetterIfNoAppropriateConstructorIsFound() throws Exception {
-		Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class,  "root");
-		Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
-		Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
+		final Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class,  "root");
+		final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
+		final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
 		
-		ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
-		ConstructorAndProperty object = (ConstructorAndProperty) objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
+		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
+		final ConstructorAndProperty object = (ConstructorAndProperty) objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
 		assertEquals("x", object.getConstructorArg());
 		assertEquals("x", object.getPropertyValue());
 	}
 	
 	@Test
 	public void ifThereIsMoreThanOneCompatibleConstructorPickTheLargestOne() throws Exception {
-		 Target<TwoCompatibleConstructors> target = Target.create(TwoCompatibleConstructors.class, "root");
-		 Parameter a = new Parameter("root.a", "x");
-		 Parameter b = new Parameter("root.b", "x");
-		 Parameter c = new Parameter("root.c", "x");
-		 Parameter irrelevant = new Parameter("root.irrelevant", "x");
+		 final Target<TwoCompatibleConstructors> target = Target.create(TwoCompatibleConstructors.class, "root");
+		 final Parameter a = new Parameter("root.a", "x");
+		 final Parameter b = new Parameter("root.b", "x");
+		 final Parameter c = new Parameter("root.c", "x");
+		 final Parameter irrelevant = new Parameter("root.irrelevant", "x");
 		 
-		 ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
-		 TwoCompatibleConstructors object = (TwoCompatibleConstructors) objectInstantiator.instantiate(target, new Parameters(a, b, c, irrelevant));
+		 final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
+		 final TwoCompatibleConstructors object = (TwoCompatibleConstructors) objectInstantiator.instantiate(target, new Parameters(a, b, c, irrelevant));
 		 assertTrue(object.largestWasCalled);
 	}
 	
 	public static class TwoCompatibleConstructors {
 		boolean largestWasCalled = false;
-		public TwoCompatibleConstructors(String a, String b) {
+		public TwoCompatibleConstructors(final String a, final String b) {
 		}
-		public TwoCompatibleConstructors(String a, String b, String c) {
+		public TwoCompatibleConstructors(final String a, final String b, final String c) {
 			largestWasCalled = true;
 		}
 	}
 	
 	public static class ConstructorAndProperty {
-		private String constructorArg;
+		private final String constructorArg;
 		private String propertyValue;
 		
-		public ConstructorAndProperty(String constructorArg) {
+		public ConstructorAndProperty(final String constructorArg) {
 			this.constructorArg = constructorArg;
 		}
 		
@@ -92,7 +92,7 @@ public class ObjectInstantiatorTests {
 			return propertyValue;
 		}
 		
-		public void setPropertyValue(String propertyValue) {
+		public void setPropertyValue(final String propertyValue) {
 			this.propertyValue = propertyValue;
 		}
 	}

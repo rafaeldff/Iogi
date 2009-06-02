@@ -14,7 +14,7 @@ public class TwoProperties {
 		return one;
 	}
 	
-	public void setOne(int one) {
+	public void setOne(final int one) {
 		this.one = one;
 	}
 	
@@ -22,7 +22,7 @@ public class TwoProperties {
 		return two;
 	}
 	
-	public void setTwo(int two) {
+	public void setTwo(final int two) {
 		this.two = two;
 	}
 }

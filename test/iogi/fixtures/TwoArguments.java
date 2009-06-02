@@ -4,10 +4,10 @@
 package iogi.fixtures;
 
 public class TwoArguments {
-	private int one;
-	private int two;
+	private final int one;
+	private final int two;
 
-	public TwoArguments(int one, int two) {
+	public TwoArguments(final int one, final int two) {
 		this.one = one;
 		this.two = two;
 	}

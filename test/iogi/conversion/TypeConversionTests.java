@@ -9,19 +9,19 @@ import iogi.reflection.Target;
 import org.junit.Test;
 
 public class TypeConversionTests {
-	private Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider());
 	
 	@Test
 	public void canInstantiatePrimitives() {
-		Target<Integer> target = Target.create(int.class, "any");
-		Integer primitive = iogi.instantiate(target, new Parameter("any", "25"));
+		final Target<Integer> target = Target.create(int.class, "any");
+		final Integer primitive = iogi.instantiate(target, new Parameter("any", "25"));
 		assertEquals(25, primitive.intValue());
 	}
 	
 	@Test
 	public void canInstantiatePrimitivesWithWrapperTarget() {
-		Target<Integer> target = Target.create(Integer.class, "any");
-		Integer primitive = iogi.instantiate(target, new Parameter("any", "25"));
+		final Target<Integer> target = Target.create(Integer.class, "any");
+		final Integer primitive = iogi.instantiate(target, new Parameter("any", "25"));
 		assertEquals(25, primitive.intValue());
 	}
 }

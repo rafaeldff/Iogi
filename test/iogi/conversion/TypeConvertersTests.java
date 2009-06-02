@@ -13,75 +13,75 @@ import java.math.BigInteger;
 import org.junit.Test;
 
 public class TypeConvertersTests {
-	private <T> T convertWith(TypeConverter<T> instantiator, Class<T> type, String stringValue) {
-		Target<T> target = Target.create(type, "foo");
+	private <T> T convertWith(final TypeConverter<T> instantiator, final Class<T> type, final String stringValue) {
+		final Target<T> target = Target.create(type, "foo");
 		assertTrue(instantiator.isAbleToInstantiate(target));
 		return instantiator.instantiate(target, new Parameters(new Parameter("foo", stringValue)));
 	}
 	
 	@Test
 	public void doubleConverterCanConverterPrimitiveDoubles() throws Exception {
-		double object = convertWith(new DoublePrimitiveConverter(), double.class, "2.0");
+		final double object = convertWith(new DoublePrimitiveConverter(), double.class, "2.0");
 		assertEquals(2.0d, object, 0.000001);
 	}
 	
 	@Test
 	public void doubleConverterCanConverterWrapperDoubles() throws Exception {
-		Double object = convertWith(new DoubleWrapperConverter(), Double.class, "2.0");
+		final Double object = convertWith(new DoubleWrapperConverter(), Double.class, "2.0");
 		assertEquals(new Double(2.0), object);
 	}
 	
 	@Test
 	public void floatConverterCanConvertPrimitiveFloats() throws Exception {
-		float object = convertWith(new FloatPrimitiveConverter(), float.class, "3.14159");
+		final float object = convertWith(new FloatPrimitiveConverter(), float.class, "3.14159");
 		assertEquals(3.14159f, object, 0.0000001);
 	}
 	
 	@Test
 	public void floatConverterCanConvertWrapperFloats() throws Exception {
-		Float object = convertWith(new FloatWrapperConverter(), Float.class, "3.14159");
+		final Float object = convertWith(new FloatWrapperConverter(), Float.class, "3.14159");
 		assertEquals(Float.valueOf(3.14159f), object, 0.0000001);
 	}
 	
 	@Test
 	public void integerConverterCanConvertPrimitiveIntegers() throws Exception {
-		int object = convertWith(new IntegerPrimitiveConverter(), int.class, "2");
+		final int object = convertWith(new IntegerPrimitiveConverter(), int.class, "2");
 		assertEquals(2, object);
 	}
 	
 	@Test
 	public void integerConverterCanConvertWrapperIntegers() throws Exception {
-		Integer object = convertWith(new IntegerWrapperConverter(), Integer.class, "2");
+		final Integer object = convertWith(new IntegerWrapperConverter(), Integer.class, "2");
 		assertEquals(Integer.valueOf(2), object);
 	}
 	
 	@Test
 	public void shortConverterCanConvertPrimitiveShorts() throws Exception {
-		short object = convertWith(new ShortPrimitiveConverter(), short.class, "2");
+		final short object = convertWith(new ShortPrimitiveConverter(), short.class, "2");
 		assertEquals(2, object);
 	}
 	
 	@Test
 	public void shortConverterCanConvertWrapperShorts() throws Exception {
-		Short object = convertWith(new ShortWrapperConverter(), Short.class, "2");
+		final Short object = convertWith(new ShortWrapperConverter(), Short.class, "2");
 		assertEquals(Short.valueOf((short)2), object);
 	}
 	
 	@Test
 	public void longConverterCanConverPrimitiveLongs() throws Exception {
-		long object = convertWith(new LongPrimitiveConverter(), long.class, "2");
+		final long object = convertWith(new LongPrimitiveConverter(), long.class, "2");
 		assertEquals(2l, object);
 	}
 	
 	@Test
 	public void longConverterCanConverWrapperLongs() throws Exception {
-		Long object = convertWith(new LongWrapperConverter(), Long.class, "2");
+		final Long object = convertWith(new LongWrapperConverter(), Long.class, "2");
 		assertEquals(Long.valueOf(2l), object);
 	}
 	
 	@Test
 	public void stringConverterWillReturnTheParameterValueString() throws Exception {
-		String object = convertWith(new StringConverter(), String.class, "foozble");
+		final String object = convertWith(new StringConverter(), String.class, "foozble");
 		assertEquals("foozble", object);
 	}
 	
@@ -107,31 +107,31 @@ public class TypeConvertersTests {
 	
 	@Test
 	public void bigIntegerConverter() throws Exception {
-		BigInteger object = convertWith(new BigIntegerConverter(), BigInteger.class,  "10");
+		final BigInteger object = convertWith(new BigIntegerConverter(), BigInteger.class,  "10");
 		assertEquals(BigInteger.TEN,  object);
 	}
 	
 	@Test
 	public void byteConverterCanConvertPrimitveBytes() throws Exception {
-		byte object = convertWith(new BytePrimitiveConverter(), byte.class, "2");
+		final byte object = convertWith(new BytePrimitiveConverter(), byte.class, "2");
 		assertEquals((byte)2, object);
 	}
 	
 	@Test
 	public void byteConverterCanConvertWrapperBytes() throws Exception {
-		Byte object = convertWith(new ByteWrapperConverter(), Byte.class, "2");
+		final Byte object = convertWith(new ByteWrapperConverter(), Byte.class, "2");
 		assertEquals(Byte.valueOf(object), object);
 	}
 	
 	@Test
 	public void characterConverterConvertsOneCharStrings() throws Exception {
-		char object = convertWith(new CharacterWrapperConverter(), Character.class, "A");
+		final char object = convertWith(new CharacterWrapperConverter(), Character.class, "A");
 		assertEquals((char)65, object);
 	}
 	
 	@Test
 	public void characterConverterConvertsOneCharStringsToAPrimitiveChar() throws Exception {
-		char object = convertWith(new CharacterPrimitiveConverter(), char.class, "A");
+		final char object = convertWith(new CharacterPrimitiveConverter(), char.class, "A");
 		assertEquals((char)65, object);
 	}
 	
@@ -142,33 +142,33 @@ public class TypeConvertersTests {
 	
 	@Test
 	public void enumConverterCanConvertLiterals() throws Exception {
-		TypeConverter<Object> instantiator = new EnumConverter();
-		Target<Object> target = new Target<Object>(Stooges.class, "foo");
+		final TypeConverter<Object> instantiator = new EnumConverter();
+		final Target<Object> target = new Target<Object>(Stooges.class, "foo");
 		assertTrue(instantiator.isAbleToInstantiate(target));
-		Stooges object = (Stooges) instantiator.instantiate(target, new Parameters(new Parameter("foo", "CURLY")));
+		final Stooges object = (Stooges) instantiator.instantiate(target, new Parameters(new Parameter("foo", "CURLY")));
 		assertEquals(Stooges.CURLY, object);
 	}
 	
 	@Test
 	public void enumConverterCanConvertOrdinals() {
-		TypeConverter<Object> instantiator = new EnumConverter();
-		Target<Object> target = new Target<Object>(Stooges.class, "foo");
-		Stooges object = (Stooges) instantiator.instantiate(target, new Parameters(new Parameter("foo", "1")));
+		final TypeConverter<Object> instantiator = new EnumConverter();
+		final Target<Object> target = new Target<Object>(Stooges.class, "foo");
+		final Stooges object = (Stooges) instantiator.instantiate(target, new Parameters(new Parameter("foo", "1")));
 		assertEquals(Stooges.CURLY, object);
 	}
 	
 	@Test(expected=ConversionException.class)
 	public void enumConverterWillThrowAnExceptionIfGivenAnUnrecognizedString() throws Exception {
-		TypeConverter<Object> instantiator = new EnumConverter();
-		Target<Object> target = new Target<Object>(Stooges.class, "foo");
+		final TypeConverter<Object> instantiator = new EnumConverter();
+		final Target<Object> target = new Target<Object>(Stooges.class, "foo");
 		instantiator.instantiate(target, new Parameters(new Parameter("foo", "LAUREL")));
 	}
 	
 	@Test(expected=ConversionException.class)
 	public void enumConverterWillThrowAnExceptionIfGivenAnInvalidOrdinal() throws Exception {
-		TypeConverter<Object> instantiator = new EnumConverter();
-		Target<Object> target = new Target<Object>(Stooges.class, "foo");
-		String overNineThousand = "9001";
+		final TypeConverter<Object> instantiator = new EnumConverter();
+		final Target<Object> target = new Target<Object>(Stooges.class, "foo");
+		final String overNineThousand = "9001";
 		instantiator.instantiate(target, new Parameters(new Parameter("foo", overNineThousand)));
 	}
 	

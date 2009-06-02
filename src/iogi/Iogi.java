@@ -34,10 +34,10 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 public class Iogi {
-	private MultiInstantiator allInstantiators;
+	private final MultiInstantiator allInstantiators;
 	
-	public Iogi(DependencyProvider dependencyProvider) {
-		List<Instantiator<?>>  all = new ImmutableList.Builder<Instantiator<?>>()
+	public Iogi(final DependencyProvider dependencyProvider) {
+		final List<Instantiator<?>>  all = new ImmutableList.Builder<Instantiator<?>>()
 			.add(fallbackToNull(new BigDecimalConverter()))
 			.add(fallbackToNull(new BigIntegerConverter()))
 			.add(fallbackToNull(new BooleanWrapperConverter()))
@@ -67,12 +67,12 @@ public class Iogi {
 		this.allInstantiators = new MultiInstantiator(all);
 	}
 	
-	public <T> T instantiate(Target<T> target, Parameter... parameters) {
+	public <T> T instantiate(final Target<T> target, final Parameter... parameters) {
 		return instantiate(target, new Parameters(Arrays.asList(parameters)));
 	}
 	
-	public <T> T instantiate(Target<T> target, Parameters parameters) {
-		Object object = allInstantiators.instantiate(target, parameters);
+	public <T> T instantiate(final Target<T> target, final Parameters parameters) {
+		final Object object = allInstantiators.instantiate(target, parameters);
 		return target.cast(object);
 	}
 	
@@ -83,12 +83,12 @@ public class Iogi {
 	 */
 	private final class DelegateToAllInstantatiors implements Instantiator<Object> {
 		@Override
-		public boolean isAbleToInstantiate(Target<?> target) {
+		public boolean isAbleToInstantiate(final Target<?> target) {
 			return allInstantiators.isAbleToInstantiate(target);
 		}
 
 		@Override
-		public Object instantiate(Target<?> target, Parameters parameters) {
+		public Object instantiate(final Target<?> target, final Parameters parameters) {
 			return allInstantiators.instantiate(target, parameters);
 		}
 	}

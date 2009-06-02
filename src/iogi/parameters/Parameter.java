@@ -8,7 +8,7 @@ public class Parameter {
 	private final String value;
 	private final ImmutableList<String> nameComponents;
 
-	public Parameter(String name, String value) {
+	public Parameter(final String name, final String value) {
 		this(notNull(name, "Parameter name"), notNull(value, "Paramter value"), computeNameComponents(name));
 	}
 	
@@ -17,27 +17,27 @@ public class Parameter {
 	 * Prefer calling one of the two-argument constructors to maintain
 	 * consistency between name and nameComponents.
 	 */
-	private Parameter(String name, String value, ImmutableList<String> nameComponents) {
+	private Parameter(final String name, final String value, final ImmutableList<String> nameComponents) {
 		this.name = name;
 		this.value = value;
 		this.nameComponents = nameComponents;
 	}
 	
-	private Parameter(String value, ImmutableList<String> nameComponents) {
+	private Parameter(final String value, final ImmutableList<String> nameComponents) {
 		this(computeName(nameComponents), value, nameComponents);
 	}
 	
-	private static <T> T notNull(T objeto, String name) {
+	private static <T> T notNull(final T objeto, final String name) {
 		if (objeto == null)
 			throw new IllegalArgumentException(name + " cannot be null");
 		return objeto;
 	}
 	
-	private static ImmutableList<String> computeNameComponents(String name) {
+	private static ImmutableList<String> computeNameComponents(final String name) {
 		return ImmutableList.of(name.split("\\."));
 	}
 
-	private static String computeName(ImmutableList<String> nameComponents) {
+	private static String computeName(final ImmutableList<String> nameComponents) {
 		return Joiner.on(".").join(nameComponents);
 	}
 
@@ -57,7 +57,7 @@ public class Parameter {
 		if (nameComponents.size() < 2)
 			return null;
 		
-		ImmutableList<String> componentsExceptTheFirst = nameComponents.subList(1, nameComponents.size());
+		final ImmutableList<String> componentsExceptTheFirst = nameComponents.subList(1, nameComponents.size());
 		return new Parameter(value, componentsExceptTheFirst);
 	}
 	
@@ -80,14 +80,14 @@ public class Parameter {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Parameter other = (Parameter) obj;
+		final Parameter other = (Parameter) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;

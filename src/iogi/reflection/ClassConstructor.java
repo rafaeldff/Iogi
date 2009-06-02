@@ -29,23 +29,23 @@ public class ClassConstructor {
 	private final Set<String> names;
 	private final Constructor<?> constructor;
 	
-	private ClassConstructor(Constructor<?> constructor, Set<String> parameterNames) {
+	private ClassConstructor(final Constructor<?> constructor, final Set<String> parameterNames) {
 		this.constructor = constructor;
 		this.names = parameterNames;
 	}
 	
-	public ClassConstructor(Constructor<?> constructor) {
+	public ClassConstructor(final Constructor<?> constructor) {
 		this(constructor, parameterNames(constructor));
 	}
 	
-	public ClassConstructor(Set<String> parameterNames) {
+	public ClassConstructor(final Set<String> parameterNames) {
 		this(null, parameterNames);
 	}
 	
-	private static Set<String> parameterNames(Constructor<?> constructor) {
-		HashSet<String> parameterNames = new HashSet<String>();
-		String[] lookedUpNames = paranamer.lookupParameterNames(constructor);
-		for (String parameterName : lookedUpNames) {
+	private static Set<String> parameterNames(final Constructor<?> constructor) {
+		final HashSet<String> parameterNames = new HashSet<String>();
+		final String[] lookedUpNames = paranamer.lookupParameterNames(constructor);
+		for (final String parameterName : lookedUpNames) {
 			if (!parameterName.isEmpty()) //To account for http://jira.codehaus.org/browse/PARANAMER-10
 				parameterNames.add(parameterName);
 		}
@@ -56,11 +56,11 @@ public class ClassConstructor {
 		return names;
 	}
 
-	public Object instantiate(Instantiator<?> instantiator, Parameters parameters, DependencyProvider dependencyProvider) {
-		List<Object> argumentValues = Lists.newArrayList();
-		Collection<Target<?>> needDependency = notFulfilledBy(parameters);
+	public Object instantiate(final Instantiator<?> instantiator, final Parameters parameters, final DependencyProvider dependencyProvider) {
+		final List<Object> argumentValues = Lists.newArrayList();
+		final Collection<Target<?>> needDependency = notFulfilledBy(parameters);
 		
-		for (Target<?> target : parameterTargets()) {
+		for (final Target<?> target : parameterTargets()) {
 			Object value;
 			if (needDependency.contains(target))
 				value = dependencyProvider.provide(target);
@@ -81,10 +81,10 @@ public class ClassConstructor {
 		return names.size();
 	}
 
-	public Collection<Target<?>> notFulfilledBy(Parameters parameters) {
-		ArrayList<Target<?>> unfulfilled = Lists.newArrayList();
+	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {
+		final ArrayList<Target<?>> unfulfilled = Lists.newArrayList();
 		
-		for (Target<?> target : parameterTargets()) {
+		for (final Target<?> target : parameterTargets()) {
 			if (parameters.relevantTo(target).getParametersList().isEmpty())
 				unfulfilled.add(target);
 		}
@@ -93,12 +93,12 @@ public class ClassConstructor {
 	}
 	
 	private List<Target<?>> parameterTargets() {
-		Type[] parameterTypes = constructor.getGenericParameterTypes();
-		String[] parameterNames = namesInOrder();
+		final Type[] parameterTypes = constructor.getGenericParameterTypes();
+		final String[] parameterNames = namesInOrder();
 		
-		ArrayList<Target<?>> targets = Lists.newArrayList();
+		final ArrayList<Target<?>> targets = Lists.newArrayList();
 		for (int i = 0; i < parameterNames.length; i++) {
-			String name = parameterNames[i];
+			final String name = parameterNames[i];
 			targets.add(new Target<Object>(parameterTypes[i], name));
 		}
 		
@@ -106,7 +106,7 @@ public class ClassConstructor {
 	}	
 	
 	private String[] namesInOrder() {
-		String[] foundByParanamer = paranamer.lookupParameterNames(constructor);
+		final String[] foundByParanamer = paranamer.lookupParameterNames(constructor);
 		
 		if (foundByParanamer.length == 1 && foundByParanamer[0].isEmpty())
 			return new String[] {}; //To account for http://jira.codehaus.org/browse/PARANAMER-10

@@ -17,18 +17,18 @@ public class TypeConverterTests {
 		final Object stubConverted = new Object();
 		class MockTypeConverter extends TypeConverter<Object> {
 			@Override
-			protected Object convert(String stringValue, Target<?> to) {
+			protected Object convert(final String stringValue, final Target<?> to) {
 				return stubConverted;
 			}
 			
 			@Override
-			public boolean isAbleToInstantiate(Target<?> target) {
+			public boolean isAbleToInstantiate(final Target<?> target) {
 				return false;
 			}
 		}
 
-		MockTypeConverter typeConverter = new MockTypeConverter();
-		Object instantiated = typeConverter.instantiate(Target.create(String.class, ""), new Parameters(new Parameter("", "")));
+		final MockTypeConverter typeConverter = new MockTypeConverter();
+		final Object instantiated = typeConverter.instantiate(Target.create(String.class, ""), new Parameters(new Parameter("", "")));
 		assertEquals(stubConverted, instantiated);
 	}
 	
@@ -37,21 +37,21 @@ public class TypeConverterTests {
 		final ArithmeticException expectedWrappedException = new ArithmeticException();
 		class MockTypeConverter extends TypeConverter<Fizzble> {
 			@Override
-			protected Fizzble convert(String stringValue, Target<?> to) {
+			protected Fizzble convert(final String stringValue, final Target<?> to) {
 				throw expectedWrappedException;
 			}
 			
 			@Override
-			public boolean isAbleToInstantiate(Target<?> target) {
+			public boolean isAbleToInstantiate(final Target<?> target) {
 				return false;
 			}
 		}
-		MockTypeConverter typeConverter = new MockTypeConverter();
+		final MockTypeConverter typeConverter = new MockTypeConverter();
 		try {
 			typeConverter.instantiate(Target.create(Fizzble.class, "foo"), new Parameters(new Parameter("foo", "oops")));
 			fail();
 		}
-		catch(ConversionException thrownException) {
+		catch(final ConversionException thrownException) {
 			assertEquals(expectedWrappedException, thrownException.getCause());
 			assertThat(thrownException.getMessage(),  both(containsString("Fizzble")).and(containsString("foo")).and(containsString("oops")));
 		}
@@ -62,21 +62,21 @@ public class TypeConverterTests {
 		final ConversionException expectedWrappedException = new ConversionException("");
 		class MockTypeConverter extends TypeConverter<Fizzble> {
 			@Override
-			protected Fizzble convert(String stringValue, Target<?> to) {
+			protected Fizzble convert(final String stringValue, final Target<?> to) {
 				throw expectedWrappedException;
 			}
 			
 			@Override
-			public boolean isAbleToInstantiate(Target<?> target) {
+			public boolean isAbleToInstantiate(final Target<?> target) {
 				return false;
 			}
 		}
-		MockTypeConverter typeConverter = new MockTypeConverter();
+		final MockTypeConverter typeConverter = new MockTypeConverter();
 		try {
 			typeConverter.instantiate(Target.create(Fizzble.class, "foo"), new Parameters(new Parameter("foo", "oops")));
 			fail();
 		}
-		catch(Exception thrownException) {
+		catch(final Exception thrownException) {
 			assertEquals(expectedWrappedException, thrownException);
 		}
 	}

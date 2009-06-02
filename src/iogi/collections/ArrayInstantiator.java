@@ -15,20 +15,20 @@ import com.google.common.collect.ListMultimap;
 public class ArrayInstantiator implements Instantiator<Object> {
 	private final Instantiator<Object> elementInstantiator;
 
-	public ArrayInstantiator(Instantiator<Object> elementInstantiator) {
+	public ArrayInstantiator(final Instantiator<Object> elementInstantiator) {
 		this.elementInstantiator = elementInstantiator;
 	}
 	
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType().isArray();
 	}
 	
 	@Override
-	public Object instantiate(Target<?> target, Parameters parameters) {
-		ParametersByIndex parametersByIndex = new ParametersByIndex(parameters, target);
+	public Object instantiate(final Target<?> target, final Parameters parameters) {
+		final ParametersByIndex parametersByIndex = new ParametersByIndex(parameters, target);
 	
-		ArrayFactory factory = new ArrayFactory(target, parametersByIndex);
+		final ArrayFactory factory = new ArrayFactory(target, parametersByIndex);
 		
 		return factory.getArray();
 	}
@@ -37,19 +37,19 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		private final Pattern firstComponentPattern;
 		private final ListMultimap<Integer, Parameter> firstComponentToParameterMap;
 		
-		public ParametersByIndex(Parameters parameters, Target<?> target) {
+		public ParametersByIndex(final Parameters parameters, final Target<?> target) {
 			this.firstComponentPattern = Pattern.compile(target.getName() + "\\[(\\d+)\\]");
 			this.firstComponentToParameterMap = ArrayListMultimap.create();
 			
-			for (Parameter parameter : parameters.getParametersList()) {
-				Integer index = extractIndexOrReturnNull(parameter);
+			for (final Parameter parameter : parameters.getParametersList()) {
+				final Integer index = extractIndexOrReturnNull(parameter);
 				if (index != null) 
 					firstComponentToParameterMap.put(index, parameter);
 			}
 		}
 		
-		private Integer extractIndexOrReturnNull(Parameter parameter) {
-			Matcher matcher = firstComponentPattern.matcher(parameter.getFirstNameComponentWithDecoration());			
+		private Integer extractIndexOrReturnNull(final Parameter parameter) {
+			final Matcher matcher = firstComponentPattern.matcher(parameter.getFirstNameComponentWithDecoration());			
 			return matcher.find() ? Integer.valueOf(matcher.group(1)) : null;
 		}
 
@@ -57,7 +57,7 @@ public class ArrayInstantiator implements Instantiator<Object> {
 			return firstComponentToParameterMap.keySet().size();
 		}
 
-		public Parameters get(int index) {
+		public Parameters get(final int index) {
 			return new Parameters(firstComponentToParameterMap.get(index));
 		}
 	}
@@ -66,13 +66,13 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		private final ParametersByIndex parametersByIndex;
 		private final Target<?> arrayTarget;
 
-		public ArrayFactory(Target<?> target, ParametersByIndex parametersByIndex) {
+		public ArrayFactory(final Target<?> target, final ParametersByIndex parametersByIndex) {
 			this.arrayTarget = target;
 			this.parametersByIndex = parametersByIndex;
 		}
 
 		public Object getArray() {
-			Object array = makeArray();
+			final Object array = makeArray();
 			
 			for (int i = 0; i <  Array.getLength(array); i++) {
 				Array.set(array, i, instantiateArrayElement(i));
@@ -85,8 +85,8 @@ public class ArrayInstantiator implements Instantiator<Object> {
 			return Array.newInstance(arrayTarget.arrayElementType(), parametersByIndex.groupCount());
 		}
 		
-		private Object instantiateArrayElement(int index) {
-			Target<?> elementTarget = arrayTarget.arrayElementTarget();
+		private Object instantiateArrayElement(final int index) {
+			final Target<?> elementTarget = arrayTarget.arrayElementTarget();
 			return elementInstantiator.instantiate(elementTarget, parametersByIndex.get(index));
 		}
 	}

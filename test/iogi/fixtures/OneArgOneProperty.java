@@ -7,7 +7,7 @@ public class OneArgOneProperty {
 	private final Double oneArg;
 	private int oneProperty;
 
-	public OneArgOneProperty(Double oneArg) {
+	public OneArgOneProperty(final Double oneArg) {
 		this.oneArg = oneArg;
 	}
 
@@ -15,7 +15,7 @@ public class OneArgOneProperty {
 		return oneProperty;
 	}
 
-	public void setOneProperty(int oneProperty) {
+	public void setOneProperty(final int oneProperty) {
 		this.oneProperty = oneProperty;
 	}
 

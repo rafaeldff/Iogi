@@ -17,8 +17,8 @@ import com.google.common.collect.ImmutableList;
 
 
 public class ClassConstructorTests {
-	private Constructor<Foo> fooConstructor;
-	private Instantiator<?> primitiveInstantiator;
+	private final Constructor<Foo> fooConstructor;
+	private final Instantiator<?> primitiveInstantiator;
 	
 	public ClassConstructorTests() throws SecurityException, NoSuchMethodException {
 		fooConstructor = Foo.class.getConstructor(String.class, String.class);
@@ -27,25 +27,25 @@ public class ClassConstructorTests {
 	
 	@Test
 	public void canInstantiateFromArgumentNames() throws Exception {
-		ClassConstructor constructor = new ClassConstructor(fooConstructor); 
-		ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
-		Foo foo = (Foo)constructor.instantiate(primitiveInstantiator, new Parameters(parameters), new NullDependencyProvider());
+		final ClassConstructor constructor = new ClassConstructor(fooConstructor); 
+		final ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
+		final Foo foo = (Foo)constructor.instantiate(primitiveInstantiator, new Parameters(parameters), new NullDependencyProvider());
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());
 	}
 	
 	@Test
 	public void sizeIsTheNumberOfArguments() throws Exception {
-		ClassConstructor constructor = new ClassConstructor(fooConstructor); 
+		final ClassConstructor constructor = new ClassConstructor(fooConstructor); 
 		assertEquals(2, constructor.size());
 	}
 	
 	@Test
 	public void notFulfilledByParametersWillReturnTargetsForParametersWhoseNamesArentFoundInTheParameters() throws Exception {
-		ClassConstructor constructor = new ClassConstructor(fooConstructor); 
-		Parameter aParameter = new Parameter("two", "");
+		final ClassConstructor constructor = new ClassConstructor(fooConstructor); 
+		final Parameter aParameter = new Parameter("two", "");
 		
-		Collection<Target<?>> unfulfilled = constructor.notFulfilledBy(new Parameters(aParameter));
+		final Collection<Target<?>> unfulfilled = constructor.notFulfilledBy(new Parameters(aParameter));
 		
 		assertEquals(1, unfulfilled.size());
 		assertEquals(Target.create(String.class, "one"), unfulfilled.iterator().next());
@@ -55,7 +55,7 @@ public class ClassConstructorTests {
 		private final String one;
 		private final String two;
 
-		public Foo(String one, String two) {
+		public Foo(final String one, final String two) {
 			this.one = one;
 			this.two = two;
 		}

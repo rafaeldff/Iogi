@@ -21,19 +21,19 @@ public class Parameters {
 	private final List<Parameter> parametersList;
 	private final ListMultimap<String, Parameter> parametersByFirstNameComponent;
 	
-	public Parameters(Parameter... parameters) {
+	public Parameters(final Parameter... parameters) {
 		this(Arrays.asList(parameters));
 	}
 
-	public Parameters(List<Parameter> parametersList) {
+	public Parameters(final List<Parameter> parametersList) {
 		this.parametersList = parametersList;
 		this.parametersByFirstNameComponent = groupByFirstNameComponent(parametersList);
 	}
 	
-	private ListMultimap<String, Parameter> groupByFirstNameComponent(List<Parameter> parameters) {
-		ListMultimap<String, Parameter> firstNameComponentToParameterMap = ArrayListMultimap.create(); 
+	private ListMultimap<String, Parameter> groupByFirstNameComponent(final List<Parameter> parameters) {
+		final ListMultimap<String, Parameter> firstNameComponentToParameterMap = ArrayListMultimap.create(); 
 		
-		for (Parameter parameter : parameters) {
+		for (final Parameter parameter : parameters) {
 			firstNameComponentToParameterMap.put(parameter.getFirstNameComponent(), parameter);
 		}
 		
@@ -44,36 +44,36 @@ public class Parameters {
 		return parametersList;
 	}
 
-	public Parameter namedAfter(Target<?> target) {
-		Collection<Parameter> named = parametersByFirstNameComponent.get(target.getName());
+	public Parameter namedAfter(final Target<?> target) {
+		final Collection<Parameter> named = parametersByFirstNameComponent.get(target.getName());
 		assertFoundAtMostOneTarget(target, named);
 		return named.isEmpty() ? null : named.iterator().next();
 	}
 
-	private void assertFoundAtMostOneTarget(Target<?> target, Collection<Parameter> named) {
+	private void assertFoundAtMostOneTarget(final Target<?> target, final Collection<Parameter> named) {
 		if (named.size() > 1)
 			throw new IllegalStateException(
 					"Expecting only one parameter named after " + target + ", found instead " + named);
 	}
 	
-	public Parameters relevantTo(Target<?> target) {
+	public Parameters relevantTo(final Target<?> target) {
 		return new Parameters(parametersByFirstNameComponent.get(target.getName()));
 	}
 
 	public Parameters strip() {
-		ArrayList<Parameter> striped = new ArrayList<Parameter>(getParametersList().size());
+		final ArrayList<Parameter> striped = new ArrayList<Parameter>(getParametersList().size());
 		
-		for (Parameter parameter : getParametersList()) {
+		for (final Parameter parameter : getParametersList()) {
 			striped.add(parameter.strip());
 		}
 		
 		return new Parameters(striped);
 	}
 	
-	public Collection<ClassConstructor> compatible(Collection<ClassConstructor> candidates) {
-		List<ClassConstructor> compatible = Lists.newArrayList();
+	public Collection<ClassConstructor> compatible(final Collection<ClassConstructor> candidates) {
+		final List<ClassConstructor> compatible = Lists.newArrayList();
 		
-		for (ClassConstructor candidate : candidates)
+		for (final ClassConstructor candidate : candidates)
 			if (firstComponents().containsAll(candidate.getNames()))
 				compatible.add(candidate);
 			
@@ -84,11 +84,11 @@ public class Parameters {
 		return this.parametersByFirstNameComponent.keySet();
 	}
 
-	public Parameters notUsedBy(ClassConstructor aConstructor) {
-		SetView<String> namesNotUsedBy = Sets.difference(firstComponents(), aConstructor.getNames());
-		List<Parameter> unusedParameters = new ArrayList<Parameter>();
+	public Parameters notUsedBy(final ClassConstructor aConstructor) {
+		final SetView<String> namesNotUsedBy = Sets.difference(firstComponents(), aConstructor.getNames());
+		final List<Parameter> unusedParameters = new ArrayList<Parameter>();
 		
-		for (String name : namesNotUsedBy) {
+		for (final String name : namesNotUsedBy) {
 			unusedParameters.addAll(parametersByFirstNameComponent.get(name));
 		}
 		
@@ -106,11 +106,11 @@ public class Parameters {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (!(obj instanceof Parameters))
 			return false;
 		
-		Parameters other = (Parameters)obj;
+		final Parameters other = (Parameters)obj;
 		return getParametersList().equals(other.getParametersList());
 	}
 }

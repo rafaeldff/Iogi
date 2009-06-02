@@ -22,42 +22,42 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 public class ObjectInstantiator implements Instantiator<Object> {
-	private Instantiator<Object> argumentInstantiator;
+	private final Instantiator<Object> argumentInstantiator;
 	private final DependencyProvider dependencyProvider;
 	
-	public ObjectInstantiator(Instantiator<Object> argumentInstantiator, DependencyProvider dependencyProvider) {
+	public ObjectInstantiator(final Instantiator<Object> argumentInstantiator, final DependencyProvider dependencyProvider) {
 		this.argumentInstantiator = argumentInstantiator;
 		this.dependencyProvider = dependencyProvider;
 	}
 
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target) {
 		return !Primitives.isPrimitiveLike(target.getClassType()) && target.getClassType() != String.class;
 	}
 
-	public Object instantiate(Target<?> target, Parameters parameters) {
+	public Object instantiate(final Target<?> target, final Parameters parameters) {
 		signalErrorIfTargetIsAbstract(target);
 		
-		Parameters relevantParameters = parameters.relevantTo(target).strip();
+		final Parameters relevantParameters = parameters.relevantTo(target).strip();
 		
-		Set<ClassConstructor> candidateConstructors = target.classConstructors();  
-		List<ClassConstructor> orderedConstructors = fromLargestToSmallest(candidateConstructors);
-		Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, orderedConstructors);
+		final Set<ClassConstructor> candidateConstructors = target.classConstructors();  
+		final List<ClassConstructor> orderedConstructors = fromLargestToSmallest(candidateConstructors);
+		final Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, orderedConstructors);
 		
 		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
-		ClassConstructor largestMatchingConstructor = matchingConstructors.iterator().next();
+		final ClassConstructor largestMatchingConstructor = matchingConstructors.iterator().next();
 		
-		Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependencyProvider);
+		final Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependencyProvider);
 		populateRemainingProperties(object, largestMatchingConstructor, relevantParameters);
 		
 		return object;
 	}
 
-	private Collection<ClassConstructor> compatible(Parameters relevantParameters, Collection<ClassConstructor> candidates) {
-		ArrayList<ClassConstructor> compatibleConstructors = Lists.newArrayList();
+	private Collection<ClassConstructor> compatible(final Parameters relevantParameters, final Collection<ClassConstructor> candidates) {
+		final ArrayList<ClassConstructor> compatibleConstructors = Lists.newArrayList();
 		
-		for (ClassConstructor candidate : candidates) {
-			Collection<Target<?>> notFulfilled = candidate.notFulfilledBy(relevantParameters);
+		for (final ClassConstructor candidate : candidates) {
+			final Collection<Target<?>> notFulfilled = candidate.notFulfilledBy(relevantParameters);
 			
 			if (canObtainDependenciesFor(notFulfilled)) {
 				compatibleConstructors.add(candidate);
@@ -67,53 +67,53 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		return compatibleConstructors;
 	}
 
-	private boolean canObtainDependenciesFor(Collection<Target<?>> targets) {
-		for (Target<?> target : targets) {
+	private boolean canObtainDependenciesFor(final Collection<Target<?>> targets) {
+		for (final Target<?> target : targets) {
 			if (!dependencyProvider.canProvide(target))
 				return false;
 		}
 		return true;
 	}
 
-	private <T> void signalErrorIfTargetIsAbstract(Target<T> target) {
+	private <T> void signalErrorIfTargetIsAbstract(final Target<T> target) {
 		if (!target.isInstantiable())
 			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
 	}
 
-	private <T> void signalErrorIfNoMatchingConstructorFound(Target<?> target, Collection<ClassConstructor> matchingConstructors, Parameters relevantParameters) {
+	private <T> void signalErrorIfNoMatchingConstructorFound(final Target<?> target, final Collection<ClassConstructor> matchingConstructors, final Parameters relevantParameters) {
 		if (matchingConstructors.isEmpty()) {
-			String parameterList =  "(" + Joiner.on(", ").join(relevantParameters.getParametersList()) + ")";
+			final String parameterList =  "(" + Joiner.on(", ").join(relevantParameters.getParametersList()) + ")";
 			throw new NoConstructorFoundException("No constructor found to instantiate a %s named %s " +
 					"with parameter names %s",
 					target.getClassType(), target.getName(), parameterList);
 		}
 	}
 	
-	private List<ClassConstructor> fromLargestToSmallest(Collection<ClassConstructor> matchingConstructors) {
-		ArrayList<ClassConstructor> constructors = Lists.newArrayList(matchingConstructors);
+	private List<ClassConstructor> fromLargestToSmallest(final Collection<ClassConstructor> matchingConstructors) {
+		final ArrayList<ClassConstructor> constructors = Lists.newArrayList(matchingConstructors);
 		Collections.sort(constructors, new Comparator<ClassConstructor>(){
-			public int compare(ClassConstructor first, ClassConstructor second) {
+			public int compare(final ClassConstructor first, final ClassConstructor second) {
 				return first.size() < second.size() ? 1 : (first.size() == second.size() ? 0 : -1);
 			}
 		});
 		return Collections.unmodifiableList(constructors);
 	}
 	
-	private void populateRemainingProperties(Object object, ClassConstructor constructor, Parameters parameters) {
-		Parameters remainingParameters = parameters.notUsedBy(constructor);
-		for (Setter setter : settersIn(object)) {
-			Target<?> target = new Target<Object>(setter.type(), setter.propertyName());
-			Parameters parameterNamedAfterProperty = remainingParameters.relevantTo(target);
+	private void populateRemainingProperties(final Object object, final ClassConstructor constructor, final Parameters parameters) {
+		final Parameters remainingParameters = parameters.notUsedBy(constructor);
+		for (final Setter setter : settersIn(object)) {
+			final Target<?> target = new Target<Object>(setter.type(), setter.propertyName());
+			final Parameters parameterNamedAfterProperty = remainingParameters.relevantTo(target);
 			if (parameterNamedAfterProperty != null) {
-				Object argument = argumentInstantiator.instantiate(target, parameterNamedAfterProperty);
+				final Object argument = argumentInstantiator.instantiate(target, parameterNamedAfterProperty);
 				setter.set(argument);
 			}
 		}
 	}
 	
-	private Collection<Setter> settersIn(Object object) {
-		ArrayList<Setter> foundSetters = new ArrayList<Setter>();
-		for (Method setterMethod: new Mirror().on(object.getClass()).reflectAll().setters()) {
+	private Collection<Setter> settersIn(final Object object) {
+		final ArrayList<Setter> foundSetters = new ArrayList<Setter>();
+		for (final Method setterMethod: new Mirror().on(object.getClass()).reflectAll().setters()) {
 			foundSetters.add(new Setter(setterMethod, object));
 		}
 		return foundSetters;
@@ -123,18 +123,18 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		private final Method setter;
 		private final Object object;
 		
-		public Setter(Method setter, Object object) {
+		public Setter(final Method setter, final Object object) {
 			this.setter = setter;
 			this.object = object;
 		}
 		
-		public void set(Object argument) {
+		public void set(final Object argument) {
 			new Mirror().on(object).invoke().method(setter).withArgs(argument);
 		}
 		
 		public String propertyName() {
-			String capitalizedPropertyName = setter.getName().substring(3);
-			String propertyName = capitalizedPropertyName.substring(0, 1).toLowerCase() + capitalizedPropertyName.substring(1);
+			final String capitalizedPropertyName = setter.getName().substring(3);
+			final String propertyName = capitalizedPropertyName.substring(0, 1).toLowerCase() + capitalizedPropertyName.substring(1);
 			return propertyName;
 		}
 		

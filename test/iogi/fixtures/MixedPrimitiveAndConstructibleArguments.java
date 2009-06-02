@@ -7,7 +7,7 @@ public class MixedPrimitiveAndConstructibleArguments {
 	private final int one;
 	private final OneIntegerPrimitive two;
 
-	public MixedPrimitiveAndConstructibleArguments(int one,  OneIntegerPrimitive two) {
+	public MixedPrimitiveAndConstructibleArguments(final int one,  final OneIntegerPrimitive two) {
 		this.one = one;
 		this.two = two;
 	}

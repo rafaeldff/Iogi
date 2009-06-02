@@ -6,12 +6,12 @@ import java.math.BigInteger;
 
 public class BigIntegerConverter extends TypeConverter<BigInteger> {
 	@Override
-	public boolean isAbleToInstantiate(Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == BigInteger.class;
 	}
 
 	@Override
-	protected BigInteger convert(String stringValue, Target<?> to) {
+	protected BigInteger convert(final String stringValue, final Target<?> to) {
 		return new BigInteger(stringValue);
 	}
 }
