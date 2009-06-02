@@ -84,6 +84,10 @@ public class Target<T> {
 	public Class<?> arrayElementType() {
 		return getClassType().getComponentType();
 	}
+	
+	public Target<?> arrayElementTarget() {
+		return Target.create(arrayElementType(), getName());
+	}
 
 	@Override
 	public int hashCode() {
@@ -115,12 +119,4 @@ public class Target<T> {
 			return false;
 		return true;
 	}
-
-	public Target<?> arrayElementTarget() {
-		return Target.create(arrayElementType(), getName());
-	}
-	
-	
-	
-	
 }
