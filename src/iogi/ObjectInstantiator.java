@@ -6,7 +6,6 @@ import iogi.parameters.Parameters;
 import iogi.reflection.ClassConstructor;
 import iogi.reflection.Primitives;
 import iogi.reflection.Target;
-import iogi.util.Quantification;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -26,11 +25,9 @@ import com.google.common.collect.Lists;
 public class ObjectInstantiator implements Instantiator<Object> {
 	private final Instantiator<Object> argumentInstantiator;
 	private final DependenciesInjector dependenciesInjector;
-	private final DependencyProvider dependencyProvider; //TODO: remove in favor of the injector
 	
 	public ObjectInstantiator(final Instantiator<Object> argumentInstantiator, final DependencyProvider dependencyProvider) {
 		this.argumentInstantiator = argumentInstantiator;
-		this.dependencyProvider = dependencyProvider;
 		this.dependenciesInjector = new DependenciesInjector(dependencyProvider);
 	}
 
@@ -50,7 +47,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
 		final ClassConstructor largestMatchingConstructor = matchingConstructors.iterator().next();
 		
-		final Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependencyProvider);
+		final Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependenciesInjector);
 		populateRemainingProperties(object, largestMatchingConstructor, relevantParameters);
 		
 		return object;
@@ -63,11 +60,11 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	private Predicate<ClassConstructor> canInstantiateOrObtainDependencies(final Parameters parameters) {
 		return new Predicate<ClassConstructor>() {
 			public boolean apply(ClassConstructor input) {
-				return dependenciesInjector.canObtainDependenciesFor(input.notFulfilledBy(parameters));
+				Collection<Target<?>> uninstatiableByParameters = input.notFulfilledBy(parameters);
+				return dependenciesInjector.canObtainDependenciesFor(uninstatiableByParameters);
 			}
 		};
 	}
-	
 
 	private <T> void signalErrorIfTargetIsAbstract(final Target<T> target) {
 		if (!target.isInstantiable())
@@ -135,22 +132,5 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		public Type type() {
 			return setter.getGenericParameterTypes()[0];
 		}
-	}
-	
-	static class DependenciesInjector {
-		private final DependencyProvider dependencyProvider;
-
-		public DependenciesInjector(DependencyProvider dependencyProvider) {
-			this.dependencyProvider = dependencyProvider;
-		}
-		
-		public boolean canObtainDependenciesFor(final Collection<Target<?>> targets) {
-			return Quantification.forAll(targets, new Predicate<Target<?>>() {
-				public boolean apply(Target<?> input) {
-					return dependencyProvider.canProvide(input);
-				}
-			});
-		}
-
 	}
 }

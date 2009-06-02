@@ -2,6 +2,7 @@ package iogi.reflection;
 
 
 import static org.junit.Assert.assertEquals;
+import iogi.DependenciesInjector;
 import iogi.Instantiator;
 import iogi.NullDependencyProvider;
 import iogi.conversion.StringConverter;
@@ -29,7 +30,8 @@ public class ClassConstructorTests {
 	public void canInstantiateFromArgumentNames() throws Exception {
 		final ClassConstructor constructor = new ClassConstructor(fooConstructor); 
 		final ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
-		final Foo foo = (Foo)constructor.instantiate(primitiveInstantiator, new Parameters(parameters), new NullDependencyProvider());
+		DependenciesInjector nullDependenciesInjector = new DependenciesInjector(new NullDependencyProvider());
+		final Foo foo = (Foo)constructor.instantiate(primitiveInstantiator, new Parameters(parameters), nullDependenciesInjector);
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());
 	}

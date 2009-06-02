@@ -1,6 +1,6 @@
 package iogi.reflection;
 
-import iogi.DependencyProvider;
+import iogi.DependenciesInjector;
 import iogi.Instantiator;
 import iogi.parameters.Parameters;
 
@@ -16,6 +16,8 @@ import java.util.Set;
 import net.vidageek.mirror.dsl.Mirror;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
@@ -56,14 +58,14 @@ public class ClassConstructor {
 		return names;
 	}
 
-	public Object instantiate(final Instantiator<?> instantiator, final Parameters parameters, final DependencyProvider dependencyProvider) {
+	public Object instantiate(final Instantiator<?> instantiator, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
 		final List<Object> argumentValues = Lists.newArrayList();
 		final Collection<Target<?>> needDependency = notFulfilledBy(parameters);
 		
 		for (final Target<?> target : parameterTargets()) {
 			Object value;
 			if (needDependency.contains(target))
-				value = dependencyProvider.provide(target);
+				value = dependenciesInjector.provide(target);
 			else
 				value = instantiator.instantiate(target, parameters);
 			
@@ -82,14 +84,11 @@ public class ClassConstructor {
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {
-		final ArrayList<Target<?>> unfulfilled = Lists.newArrayList();
-		
-		for (final Target<?> target : parameterTargets()) {
-			if (parameters.relevantTo(target).getParametersList().isEmpty())
-				unfulfilled.add(target);
-		}
-		
-		return unfulfilled;
+		return Collections2.filter(parameterTargets(), new Predicate<Target<?>>() {
+			public boolean apply(Target<?> target) {
+				return parameters.relevantTo(target).areEmpty();
+			}
+		});
 	}
 	
 	private List<Target<?>> parameterTargets() {

@@ -113,4 +113,8 @@ public class Parameters {
 		final Parameters other = (Parameters)obj;
 		return getParametersList().equals(other.getParametersList());
 	}
+	
+	public boolean areEmpty() {
+		return parametersList.isEmpty();
+	}
 }
