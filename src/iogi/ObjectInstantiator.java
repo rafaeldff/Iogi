@@ -39,13 +39,13 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		signalErrorIfTargetIsAbstract(target);
 		
 		Parameters relevantParameters = parameters.relevantTo(target).strip();
+		
 		Set<ClassConstructor> candidateConstructors = target.classConstructors();  
+		List<ClassConstructor> orderedConstructors = fromLargestToSmallest(candidateConstructors);
+		Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, orderedConstructors);
 		
-		Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, fromLargestToSmallest(candidateConstructors));
 		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
-		
-		List<ClassConstructor> orderedMatchingConstructors = fromLargestToSmallest(matchingConstructors);
-		ClassConstructor largestMatchingConstructor = orderedMatchingConstructors.iterator().next();
+		ClassConstructor largestMatchingConstructor = matchingConstructors.iterator().next();
 		
 		Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependencyProvider);
 		populateRemainingProperties(object, largestMatchingConstructor, relevantParameters);
@@ -55,6 +55,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 
 	private Collection<ClassConstructor> compatible(Parameters relevantParameters, Collection<ClassConstructor> candidates) {
 		ArrayList<ClassConstructor> compatibleConstructors = Lists.newArrayList();
+		
 		for (ClassConstructor candidate : candidates) {
 			Collection<Target<?>> notFulfilled = candidate.notFulfilledBy(relevantParameters);
 			

@@ -6,8 +6,8 @@ import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -26,55 +26,49 @@ public class ArrayInstantiator implements Instantiator<Object> {
 	
 	@Override
 	public Object instantiate(Target<?> target, Parameters parameters) {
-		ParametersByFirstComponent byFirstComponent = new ParametersByFirstComponent(parameters, target);
+		ParametersByIndex parametersByIndex = new ParametersByIndex(parameters, target);
 	
-		ArrayFactory factory = new ArrayFactory(target, byFirstComponent);
+		ArrayFactory factory = new ArrayFactory(target, parametersByIndex);
 		
-		return factory.arrayOfT();
+		return factory.getArray();
 	}
 	
-	private static class ParametersByFirstComponent {
-		private ListMultimap<String, Parameter> firstComponentToParameterMap;
+	private static class ParametersByIndex {
+		private Pattern firstComponentPattern;
+		private ListMultimap<Integer, Parameter> firstComponentToParameterMap;
 		
-		public ParametersByFirstComponent(Parameters parameters, Target<?> target) {
+		public ParametersByIndex(Parameters parameters, Target<?> target) {
+			this.firstComponentPattern = Pattern.compile(target.getName() + "\\[(\\d+)\\]");
+			
 			this.firstComponentToParameterMap = ArrayListMultimap.create(); 
-			for (Parameter parameter : relatedParameters(parameters, target)) {
-				firstComponentToParameterMap.put(parameter.getFirstNameComponentWithDecoration(), parameter);
+			for (Parameter parameter : parameters.getParametersList()) {
+				Matcher matcher = firstComponentPattern.matcher(parameter.getFirstNameComponentWithDecoration());
+				if (matcher.find()) {
+					Integer index = Integer.valueOf(matcher.group(1));
+					firstComponentToParameterMap.put(index, parameter);
+				}
 			}
 		}
 
-		private List<Parameter> relatedParameters(Parameters parameters, Target<?> target) {
-			List<Parameter> parametersForArray = new ArrayList<Parameter>();
-			for (Parameter parameter : parameters.getParametersList()) {
-				if (parameter.getFirstNameComponentWithDecoration().matches(target.getName() + "\\[\\d+\\]"))
-					parametersForArray.add(parameter);
-			}
-			return parametersForArray;
-		}
-		
 		public int groupCount() {
 			return firstComponentToParameterMap.keySet().size();
 		}
 
-		public Parameters get(String firstComponent) {
-			return new Parameters(firstComponentToParameterMap.get(firstComponent));
+		public Parameters get(int index) {
+			return new Parameters(firstComponentToParameterMap.get(index));
 		}
 	}
 	
 	private class ArrayFactory {
-		private final ParametersByFirstComponent byFirstComponent;
-		private final Target<?> target;
+		private final ParametersByIndex parametersByIndex;
+		private final Target<?> arrayTarget;
 
-		public ArrayFactory(Target<?> target, ParametersByFirstComponent byFirstComponent) {
-			this.target = target;
-			this.byFirstComponent = byFirstComponent;
+		public ArrayFactory(Target<?> target, ParametersByIndex parametersByIndex) {
+			this.arrayTarget = target;
+			this.parametersByIndex = parametersByIndex;
 		}
 
-		public Object arrayOfT() {
-			return populateNewArray();
-		}
-
-		private Object populateNewArray() {
+		public Object getArray() {
 			Object array = makeArray();
 			
 			for (int i = 0; i <  Array.getLength(array); i++) {
@@ -85,14 +79,12 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		}
 
 		private Object makeArray() {
-			return Array.newInstance(target.arrayElementType(), byFirstComponent.groupCount());
+			return Array.newInstance(arrayTarget.arrayElementType(), parametersByIndex.groupCount());
 		}
 		
-		private Object instantiateArrayElement(int i) {
-			String firstComponent = target.getName();
-			Target<?> elementTarget = Target.create(target.arrayElementType(), firstComponent);
-			Parameters elementParameters = byFirstComponent.get(firstComponent + "["+i+"]");
-			return elementInstantiator.instantiate(elementTarget, elementParameters);
+		private Object instantiateArrayElement(int index) {
+			Target<?> elementTarget = arrayTarget.arrayElementTarget();
+			return elementInstantiator.instantiate(elementTarget, parametersByIndex.get(index));
 		}
 	}
 }

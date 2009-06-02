@@ -102,7 +102,7 @@ public class Target<T> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Target other = (Target) obj;
+		Target<?> other = (Target<?>) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -114,6 +114,10 @@ public class Target<T> {
 		} else if (!type.equals(other.type))
 			return false;
 		return true;
+	}
+
+	public Target<?> arrayElementTarget() {
+		return Target.create(arrayElementType(), getName());
 	}
 	
 	
