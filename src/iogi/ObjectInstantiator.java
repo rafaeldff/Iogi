@@ -6,6 +6,7 @@ import iogi.parameters.Parameters;
 import iogi.reflection.ClassConstructor;
 import iogi.reflection.Primitives;
 import iogi.reflection.Target;
+import iogi.util.Quantification;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -14,20 +15,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import net.vidageek.mirror.dsl.Mirror;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public class ObjectInstantiator implements Instantiator<Object> {
 	private final Instantiator<Object> argumentInstantiator;
-	private final DependencyProvider dependencyProvider;
+	private final DependenciesInjector dependenciesInjector;
+	private final DependencyProvider dependencyProvider; //TODO: remove in favor of the injector
 	
 	public ObjectInstantiator(final Instantiator<Object> argumentInstantiator, final DependencyProvider dependencyProvider) {
 		this.argumentInstantiator = argumentInstantiator;
 		this.dependencyProvider = dependencyProvider;
+		this.dependenciesInjector = new DependenciesInjector(dependencyProvider);
 	}
 
 	@Override
@@ -40,8 +44,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		
 		final Parameters relevantParameters = parameters.relevantTo(target).strip();
 		
-		final Set<ClassConstructor> candidateConstructors = target.classConstructors();  
-		final List<ClassConstructor> orderedConstructors = fromLargestToSmallest(candidateConstructors);
+		final List<ClassConstructor> orderedConstructors = fromLargestToSmallest(target.classConstructors());
 		final Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, orderedConstructors);
 		
 		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
@@ -54,26 +57,17 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	}
 
 	private Collection<ClassConstructor> compatible(final Parameters relevantParameters, final Collection<ClassConstructor> candidates) {
-		final ArrayList<ClassConstructor> compatibleConstructors = Lists.newArrayList();
-		
-		for (final ClassConstructor candidate : candidates) {
-			final Collection<Target<?>> notFulfilled = candidate.notFulfilledBy(relevantParameters);
-			
-			if (canObtainDependenciesFor(notFulfilled)) {
-				compatibleConstructors.add(candidate);
+		return Collections2.filter(candidates, canInstantiateOrObtainDependencies(relevantParameters));
+	}
+	
+	private Predicate<ClassConstructor> canInstantiateOrObtainDependencies(final Parameters parameters) {
+		return new Predicate<ClassConstructor>() {
+			public boolean apply(ClassConstructor input) {
+				return dependenciesInjector.canObtainDependenciesFor(input.notFulfilledBy(parameters));
 			}
-		}
-		
-		return compatibleConstructors;
+		};
 	}
-
-	private boolean canObtainDependenciesFor(final Collection<Target<?>> targets) {
-		for (final Target<?> target : targets) {
-			if (!dependencyProvider.canProvide(target))
-				return false;
-		}
-		return true;
-	}
+	
 
 	private <T> void signalErrorIfTargetIsAbstract(final Target<T> target) {
 		if (!target.isInstantiable())
@@ -141,5 +135,22 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		public Type type() {
 			return setter.getGenericParameterTypes()[0];
 		}
+	}
+	
+	static class DependenciesInjector {
+		private final DependencyProvider dependencyProvider;
+
+		public DependenciesInjector(DependencyProvider dependencyProvider) {
+			this.dependencyProvider = dependencyProvider;
+		}
+		
+		public boolean canObtainDependenciesFor(final Collection<Target<?>> targets) {
+			return Quantification.forAll(targets, new Predicate<Target<?>>() {
+				public boolean apply(Target<?> input) {
+					return dependencyProvider.canProvide(input);
+				}
+			});
+		}
+
 	}
 }

@@ -58,16 +58,16 @@ public class ArrayInstantiator implements Instantiator<Object> {
 			return matcher.find() ? Integer.valueOf(matcher.group(1)) : null;
 		}
 
+		public Collection<Integer> indexes() {
+			return firstComponentToParameterMap.keySet();
+		}
+		
 		public int highestIndex() {
-			return Collections.max(firstComponentToParameterMap.keySet());
+			return Collections.max(indexes());
 		}
 
 		public Parameters get(final int index) {
 			return new Parameters(firstComponentToParameterMap.get(index));
-		}
-		
-		public Collection<Integer> indexes() {
-			return firstComponentToParameterMap.keySet();
 		}
 	}
 	
