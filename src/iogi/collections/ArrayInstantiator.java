@@ -36,11 +36,10 @@ public class ArrayInstantiator implements Instantiator<Object> {
 	}
 	
 	private static class ParametersByIndex {
-		private final Pattern firstComponentPattern;
+		private static final Pattern firstComponentPattern = Pattern.compile("[^\\[]+\\[(\\d+)\\]");
 		private final ListMultimap<Integer, Parameter> firstComponentToParameterMap;
 		
 		public ParametersByIndex(final Parameters parameters, final Target<?> target) {
-			this.firstComponentPattern = indexedNamePattern(target);
 			this.firstComponentToParameterMap = groupByIndex(parameters);
 		}
 
@@ -54,10 +53,6 @@ public class ArrayInstantiator implements Instantiator<Object> {
 			return map;
 		}
 
-		private Pattern indexedNamePattern(final Target<?> target) {
-			return Pattern.compile("[^\\[]+\\[(\\d+)\\]");
-		}
-		
 		private Integer extractIndexOrReturnNull(final Parameter parameter) {
 			final Matcher matcher = firstComponentPattern.matcher(parameter.getFirstNameComponentWithDecoration());			
 			return matcher.find() ? Integer.valueOf(matcher.group(1)) : null;

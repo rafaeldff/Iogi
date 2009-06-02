@@ -87,9 +87,6 @@ public class ArrayInstantiationTests {
 		final String[] firstArray = iogi.instantiate(firstArrayTarget, parameters);  
 		final String[] secondArray = iogi.instantiate(secondArrayTarget, parameters);  
 		
-		System.out.println("1 " + Arrays.toString(firstArray));
-		System.out.println("2 " + Arrays.toString(secondArray));
-		
 		assertArrayEquals(new String[] {"10", "11"}, firstArray);
 		assertArrayEquals(new String[] {"20", "21"}, secondArray);
 	}
