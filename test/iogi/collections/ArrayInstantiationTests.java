@@ -8,7 +8,10 @@ import iogi.NullDependencyProvider;
 import iogi.fixtures.OneIntegerPrimitive;
 import iogi.fixtures.TwoArguments;
 import iogi.parameters.Parameter;
+import iogi.parameters.Parameters;
 import iogi.reflection.Target;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -71,13 +74,33 @@ public class ArrayInstantiationTests {
 	}
 	
 	@Test
+	public void canInstantiateMoreThanOneArrayFromTheSameParameterList() throws Exception {
+		final Target<String[]> firstArrayTarget = Target.create(String[].class, "arr1");
+		final Target<String[]> secondArrayTarget = Target.create(String[].class, "arr2");
+		
+		Parameters parameters = new Parameters(Arrays.asList(
+				new Parameter("arr1[0]", "10"), 
+				new Parameter("arr1[1]", "11"), 
+				new Parameter("arr2[0]", "20"),
+				new Parameter("arr2[1]", "21")));
+		
+		final String[] firstArray = iogi.instantiate(firstArrayTarget, parameters);  
+		final String[] secondArray = iogi.instantiate(secondArrayTarget, parameters);  
+		
+		System.out.println("1 " + Arrays.toString(firstArray));
+		System.out.println("2 " + Arrays.toString(secondArray));
+		
+		assertArrayEquals(new String[] {"10", "11"}, firstArray);
+		assertArrayEquals(new String[] {"20", "21"}, secondArray);
+	}
+	
+	@Test
 	public void willCreateAnArrayWithLengthBoundedByTheHighestIndexedParameter() throws Exception {
 		final Target<OneIntegerPrimitive[]> target = Target.create(OneIntegerPrimitive[].class, "arr");
 		Parameter at0 = new Parameter("arr[0].anInteger", "1");
-		Parameter at1 = new Parameter("arr[1].anInteger", "2");
 		Parameter at16 = new Parameter("arr[16].anInteger", "3");
 		
-		final OneIntegerPrimitive[] array = iogi.instantiate(target, at0, at1, at16);
+		final OneIntegerPrimitive[] array = iogi.instantiate(target, at0, at16);
 		assertEquals(17, array.length);
 	}
 	

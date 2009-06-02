@@ -28,7 +28,7 @@ public class ArrayInstantiator implements Instantiator<Object> {
 	
 	@Override
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
-		final ParametersByIndex parametersByIndex = new ParametersByIndex(parameters, target);
+		final ParametersByIndex parametersByIndex = new ParametersByIndex(parameters.relevantTo(target), target);
 	
 		final ArrayFactory factory = new ArrayFactory(target, parametersByIndex);
 		
@@ -55,7 +55,7 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		}
 
 		private Pattern indexedNamePattern(final Target<?> target) {
-			return Pattern.compile(target.getName() + "\\[(\\d+)\\]");
+			return Pattern.compile("[^\\[]+\\[(\\d+)\\]");
 		}
 		
 		private Integer extractIndexOrReturnNull(final Parameter parameter) {
