@@ -43,7 +43,6 @@ public class ArrayInstantiationTests {
 		assertEquals(99, array[0].getAnInteger());
 		assertEquals(98, array[1].getAnInteger());
 	}
-	
 	@Test
 	public void canInstantiateAnArrayOfObjectsWithMoreThanOneConstructorParameter() throws Exception {
 		final Target<TwoArguments[]> target = Target.create(TwoArguments[].class, "arr");
@@ -69,5 +68,27 @@ public class ArrayInstantiationTests {
 		assertEquals("00", rootObject.getObject().getSomeString());
 		assertEquals("10", rootObject.getArray()[0].getSomeString());
 		assertEquals("20", rootObject.getArray()[1].getSomeString());
+	}
+	
+	@Test
+	public void willCreateAnArrayWithLengthBoundedByTheHighestIndexedParameter() throws Exception {
+		final Target<OneIntegerPrimitive[]> target = Target.create(OneIntegerPrimitive[].class, "arr");
+		Parameter at0 = new Parameter("arr[0].anInteger", "1");
+		Parameter at1 = new Parameter("arr[1].anInteger", "2");
+		Parameter at16 = new Parameter("arr[16].anInteger", "3");
+		
+		final OneIntegerPrimitive[] array = iogi.instantiate(target, at0, at1, at16);
+		assertEquals(17, array.length);
+	}
+	
+	@Test
+	public void willFillUnsetArrayElementsWithJavaDefault() throws Exception {
+		final Target<int[]> target = Target.create(int[].class, "arr");
+		Parameter at0 = new Parameter("arr[0]", "5");
+		Parameter at2 = new Parameter("arr[2].anInteger", "5");
+		Parameter at4 = new Parameter("arr[4].anInteger", "5");
+		
+		final int[] array = iogi.instantiate(target, at0, at2, at4);
+		assertArrayEquals(new int[] {5, 0, 5, 0, 5}, array);
 	}
 }

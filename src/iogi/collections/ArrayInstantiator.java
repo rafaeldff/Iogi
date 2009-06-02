@@ -6,6 +6,8 @@ import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,14 +40,22 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		private final ListMultimap<Integer, Parameter> firstComponentToParameterMap;
 		
 		public ParametersByIndex(final Parameters parameters, final Target<?> target) {
-			this.firstComponentPattern = Pattern.compile(target.getName() + "\\[(\\d+)\\]");
-			this.firstComponentToParameterMap = ArrayListMultimap.create();
-			
+			this.firstComponentPattern = indexedNamePattern(target);
+			this.firstComponentToParameterMap = groupByIndex(parameters);
+		}
+
+		private ArrayListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters) {
+			ArrayListMultimap<Integer, Parameter> map = ArrayListMultimap.create();
 			for (final Parameter parameter : parameters.getParametersList()) {
 				final Integer index = extractIndexOrReturnNull(parameter);
 				if (index != null) 
-					firstComponentToParameterMap.put(index, parameter);
+					map.put(index, parameter);
 			}
+			return map;
+		}
+
+		private Pattern indexedNamePattern(final Target<?> target) {
+			return Pattern.compile(target.getName() + "\\[(\\d+)\\]");
 		}
 		
 		private Integer extractIndexOrReturnNull(final Parameter parameter) {
@@ -53,12 +63,16 @@ public class ArrayInstantiator implements Instantiator<Object> {
 			return matcher.find() ? Integer.valueOf(matcher.group(1)) : null;
 		}
 
-		public int groupCount() {
-			return firstComponentToParameterMap.keySet().size();
+		public int highestIndex() {
+			return Collections.max(firstComponentToParameterMap.keySet());
 		}
 
 		public Parameters get(final int index) {
 			return new Parameters(firstComponentToParameterMap.get(index));
+		}
+		
+		public Collection<Integer> indexes() {
+			return firstComponentToParameterMap.keySet();
 		}
 	}
 	
@@ -74,7 +88,7 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		public Object getArray() {
 			final Object array = makeArray();
 			
-			for (int i = 0; i <  Array.getLength(array); i++) {
+			for (int i : parametersByIndex.indexes()) {
 				Array.set(array, i, instantiateArrayElement(i));
 			}
 			
@@ -82,7 +96,8 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		}
 
 		private Object makeArray() {
-			return Array.newInstance(arrayTarget.arrayElementType(), parametersByIndex.groupCount());
+			int arrayLength = parametersByIndex.highestIndex() + 1;
+			return Array.newInstance(arrayTarget.arrayElementType(), arrayLength);
 		}
 		
 		private Object instantiateArrayElement(final int index) {
