@@ -7,6 +7,7 @@ import iogi.parameters.Parameters;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,12 +46,10 @@ public class ClassConstructor {
 	}
 	
 	private static Set<String> parameterNames(final Constructor<?> constructor) {
-		final HashSet<String> parameterNames = new HashSet<String>();
 		final String[] lookedUpNames = paranamer.lookupParameterNames(constructor);
-		for (final String parameterName : lookedUpNames) {
-			if (!parameterName.isEmpty()) //To account for http://jira.codehaus.org/browse/PARANAMER-10
-				parameterNames.add(parameterName);
-		}
+		
+		final HashSet<String> parameterNames = new HashSet<String>(Arrays.asList(lookedUpNames));
+		
 		return parameterNames;
 	}
 	
@@ -93,7 +92,7 @@ public class ClassConstructor {
 	
 	private List<Target<?>> parameterTargets() {
 		final Type[] parameterTypes = constructor.getGenericParameterTypes();
-		final String[] parameterNames = namesInOrder();
+		final String[] parameterNames = paranamer.lookupParameterNames(constructor);
 		
 		final ArrayList<Target<?>> targets = Lists.newArrayList();
 		for (int i = 0; i < parameterNames.length; i++) {
@@ -103,16 +102,6 @@ public class ClassConstructor {
 		
 		return Collections.unmodifiableList(targets);
 	}	
-	
-	private String[] namesInOrder() {
-		final String[] foundByParanamer = paranamer.lookupParameterNames(constructor);
-		
-		if (foundByParanamer.length == 1 && foundByParanamer[0].isEmpty())
-			return new String[] {}; //To account for http://jira.codehaus.org/browse/PARANAMER-10
-		
-		return foundByParanamer;
-	}
-	
 	
 	@Override
 	public String toString() {

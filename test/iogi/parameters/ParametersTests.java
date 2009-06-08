@@ -7,9 +7,7 @@ import static org.junit.Assert.assertThat;
 import iogi.reflection.ClassConstructor;
 import iogi.reflection.Target;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -58,33 +56,6 @@ public class ParametersTests {
 		assertNull(parameters.namedAfter(target));
 	}
 	
-	@Test
-	public void compatibleClassConstructorsAreThoseWhoseParameterNamesAreASubset() throws Exception {
-		final Parameters parameters = parametersNamed("a", "b", "c"); 
-		final ClassConstructor subset = new ClassConstructor(Sets.newHashSet("a", "b"));
-		final ClassConstructor alsoASubset = new ClassConstructor(Sets.newHashSet("b"));
-		final ClassConstructor notASubset = new ClassConstructor(Sets.newHashSet("a", "b", "x"));
-		
-		final Set<ClassConstructor> candidates = Sets.newHashSet(subset, notASubset, alsoASubset);
-		final Collection<ClassConstructor> compatible = parameters.compatible(candidates);
-		
-		assertEquals(2, compatible.size());
-		assertThat(compatible, containsInAnyOrder(subset, alsoASubset));
-	}
-	
-	@Test
-	public void compatibleWillConsiderIdenticalParameterListsAsSubsets() throws Exception {
-		final Parameters parameters = parametersNamed("a", "b", "c"); 
-		final ClassConstructor subset = new ClassConstructor(Sets.newHashSet("a", "b", "c"));
-		final ClassConstructor notASubset = new ClassConstructor(Sets.newHashSet("a", "b", "x"));
-		
-		final Set<ClassConstructor> candidates = Sets.newHashSet(subset, notASubset);
-		final Collection<ClassConstructor> compatible = parameters.compatible(candidates);
-		
-		assertEquals(1, compatible.size());
-		assertEquals(subset, compatible.iterator().next());
-	}
-
 	@Test
 	public void parametersNotUsedByAConstructorAreThoseWhoseFirstComponentsDontMatchWithTheConstructorArgumentNames() throws Exception {
 		final Parameters parameters = parametersNamed("foo", "bar", "baz", "fizzle"); 
