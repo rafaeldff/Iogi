@@ -1,11 +1,16 @@
 package iogi.reflection;
 
 
+import iogi.DependenciesInjector;
+import iogi.parameters.Parameters;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class Target<T> {
@@ -118,5 +123,23 @@ public class Target<T> {
 		} else if (!type.equals(other.type))
 			return false;
 		return true;
+	}
+
+	public Collection<ClassConstructor> compatibleConstructors(final Parameters relevantParameters, final DependenciesInjector dependenciesInjector) {
+		LinkedList<ClassConstructor> compatible = new LinkedList<ClassConstructor>();
+		
+		for (ClassConstructor classConstructor : classConstructors()) {
+			if (canInstantiateOrInject(classConstructor, relevantParameters, dependenciesInjector))
+				compatible.add(classConstructor);
+		}
+		
+		return compatible;
+	}
+
+	private boolean canInstantiateOrInject(ClassConstructor classConstructor, final Parameters relevantParameters,
+			final DependenciesInjector dependenciesInjector) {
+		Collection<Target<?>> uninstatiableByParameters = classConstructor.notFulfilledBy(relevantParameters);
+		boolean canObtainDependenciesFor = dependenciesInjector.canObtainDependenciesFor(uninstatiableByParameters);
+		return canObtainDependenciesFor;
 	}
 }

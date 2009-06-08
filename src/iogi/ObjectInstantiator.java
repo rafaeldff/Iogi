@@ -18,8 +18,6 @@ import java.util.List;
 import net.vidageek.mirror.dsl.Mirror;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public class ObjectInstantiator implements Instantiator<Object> {
@@ -37,14 +35,14 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	}
 
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
-		signalErrorIfTargetIsAbstract(target);
+		expectingAConcreteTarget(target);
 		
 		final Parameters relevantParameters = parameters.relevantTo(target).strip();
 		
-		final Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, target.classConstructors());
+		final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(relevantParameters, dependenciesInjector);
+		expectingAtLeastOneCompatibleConstructor(compatibleConstructors, target, relevantParameters);
 		
-		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
-		List<ClassConstructor> orderedConstructors = fromLargestToSmallest(matchingConstructors);
+		List<ClassConstructor> orderedConstructors = fromLargestToSmallest(compatibleConstructors);
 		final ClassConstructor largestMatchingConstructor = orderedConstructors.iterator().next();
 		
 		final Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependenciesInjector);
@@ -53,25 +51,12 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		return object;
 	}
 
-	private Collection<ClassConstructor> compatible(final Parameters relevantParameters, final Collection<ClassConstructor> candidates) {
-		return Collections2.filter(candidates, canInstantiateOrObtainDependencies(relevantParameters));
-	}
-	
-	private Predicate<ClassConstructor> canInstantiateOrObtainDependencies(final Parameters parameters) {
-		return new Predicate<ClassConstructor>() {
-			public boolean apply(ClassConstructor input) {
-				Collection<Target<?>> uninstatiableByParameters = input.notFulfilledBy(parameters);
-				return dependenciesInjector.canObtainDependenciesFor(uninstatiableByParameters);
-			}
-		};
-	}
-
-	private <T> void signalErrorIfTargetIsAbstract(final Target<T> target) {
+	private <T> void expectingAConcreteTarget(final Target<T> target) {
 		if (!target.isInstantiable())
 			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
 	}
 
-	private <T> void signalErrorIfNoMatchingConstructorFound(final Target<?> target, final Collection<ClassConstructor> matchingConstructors, final Parameters relevantParameters) {
+	private <T> void expectingAtLeastOneCompatibleConstructor(final Collection<ClassConstructor> matchingConstructors, final Target<?> target, final Parameters relevantParameters) {
 		if (matchingConstructors.isEmpty()) {
 			final String parameterList =  "(" + Joiner.on(", ").join(relevantParameters.getParametersList()) + ")";
 			throw new NoConstructorFoundException("No constructor found to instantiate a %s named %s " +
