@@ -56,6 +56,10 @@ public class ClassConstructor {
 	public Set<String> getNames() {
 		return names;
 	}
+	
+	public int size() {
+		return names.size();
+	}
 
 	public Object instantiate(final Instantiator<?> instantiator, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
 		final List<Object> argumentValues = Lists.newArrayList();
@@ -72,14 +76,6 @@ public class ClassConstructor {
 		}
 
 		return new Mirror().on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
-	}
-
-	private Class<?> declaringClass() {
-		return constructor.getDeclaringClass();
-	}
-
-	public int size() {
-		return names.size();
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {
@@ -102,6 +98,10 @@ public class ClassConstructor {
 		
 		return Collections.unmodifiableList(targets);
 	}	
+	
+	private Class<?> declaringClass() {
+		return constructor.getDeclaringClass();
+	}
 	
 	@Override
 	public String toString() {
