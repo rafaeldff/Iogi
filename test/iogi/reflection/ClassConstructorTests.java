@@ -1,6 +1,5 @@
 package iogi.reflection;
 
-
 import static org.junit.Assert.assertEquals;
 import iogi.DependenciesInjector;
 import iogi.Instantiator;
@@ -15,7 +14,6 @@ import java.util.Collection;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
-
 
 public class ClassConstructorTests {
 	private final Constructor<Foo> fooConstructor;

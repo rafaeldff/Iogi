@@ -41,11 +41,11 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		
 		final Parameters relevantParameters = parameters.relevantTo(target).strip();
 		
-		final List<ClassConstructor> orderedConstructors = fromLargestToSmallest(target.classConstructors());
-		final Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, orderedConstructors);
+		final Collection<ClassConstructor> matchingConstructors = compatible(relevantParameters, target.classConstructors());
 		
 		signalErrorIfNoMatchingConstructorFound(target, matchingConstructors, relevantParameters);
-		final ClassConstructor largestMatchingConstructor = matchingConstructors.iterator().next();
+		List<ClassConstructor> orderedConstructors = fromLargestToSmallest(matchingConstructors);
+		final ClassConstructor largestMatchingConstructor = orderedConstructors.iterator().next();
 		
 		final Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependenciesInjector);
 		populateRemainingProperties(object, largestMatchingConstructor, relevantParameters);
