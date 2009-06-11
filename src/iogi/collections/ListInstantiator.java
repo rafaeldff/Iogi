@@ -9,6 +9,7 @@ import iogi.reflection.Target;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -29,9 +30,10 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 	@Override
 	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
 		signalErrorIfGivenARawType(target);
-			
+		Parameters relevantParameters = parameters.relevantTo(target);
+		
 		final Target<Object> listElementTarget = target.typeArgument(0);
-		final Collection<List<Parameter>> parameterLists = breakList(parameters.relevantTo(target).getParametersList());
+		final Collection<List<Parameter>> parameterLists = breakList(relevantParameters.getParametersList());
 		
 		final ArrayList<Object> newList = new ArrayList<Object>();
 		for (final List<Parameter> parameterListForAnElement : parameterLists) {
@@ -48,7 +50,11 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 	}
 
 	private Collection<List<Parameter>> breakList(final List<Parameter> parameters) {
-		final int listSize = this.countToFirstRepeatedParameterName(parameters);
+		final int listSize = countToFirstRepeatedParameterName(parameters);
+		
+		if (listSize == 0)
+			return Collections.<List<Parameter>>emptyList(); 
+		
 		return Lists.partition(parameters, listSize);
 	}
 

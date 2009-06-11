@@ -1,6 +1,7 @@
 package iogi.collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import iogi.Iogi;
 import iogi.NullDependencyProvider;
 import iogi.exceptions.InvalidTypeException;
@@ -110,5 +111,16 @@ public class ListInstantiatonTests {
 		assertEquals("ble", second.getSomeString());
 		
 		assertEquals("blu", root.getObject().getSomeString());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void willInstantiateAnEmptyListIfGivenNoAppropriatedParameters() throws Exception {
+		final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfOneString").getGenericType();
+		
+		final Target<List> target = new Target(parameterizedListType, "root");
+		final List objects = iogi.instantiate(target);
+		
+		assertTrue(objects.isEmpty());
 	}
 }

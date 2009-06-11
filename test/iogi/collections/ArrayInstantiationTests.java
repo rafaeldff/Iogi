@@ -46,6 +46,14 @@ public class ArrayInstantiationTests {
 		assertEquals(99, array[0].getAnInteger());
 		assertEquals(98, array[1].getAnInteger());
 	}
+	
+	@Test
+	public void willInstantiateAnZeroLengthArrayIfGivenNoParameters() {
+		final Target<String[]> target = Target.create(String[].class, "arr");
+		final String[] array = iogi.instantiate(target);
+		assertEquals(0, array.length);
+	}
+	
 	@Test
 	public void canInstantiateAnArrayOfObjectsWithMoreThanOneConstructorParameter() throws Exception {
 		final Target<TwoArguments[]> target = Target.create(TwoArguments[].class, "arr");

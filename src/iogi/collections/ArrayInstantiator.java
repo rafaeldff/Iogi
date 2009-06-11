@@ -66,6 +66,10 @@ public class ArrayInstantiator implements Instantiator<Object> {
 			return Collections.max(indexes());
 		}
 
+		public boolean isEmpty() {
+			return firstComponentToParameterMap.isEmpty();
+		}
+
 		public Parameters get(final int index) {
 			return new Parameters(firstComponentToParameterMap.get(index));
 		}
@@ -91,7 +95,7 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		}
 
 		private Object makeArray() {
-			int arrayLength = parametersByIndex.highestIndex() + 1;
+			int arrayLength = parametersByIndex.isEmpty() ? 0 : parametersByIndex.highestIndex() + 1;
 			return Array.newInstance(arrayTarget.arrayElementType(), arrayLength);
 		}
 		
