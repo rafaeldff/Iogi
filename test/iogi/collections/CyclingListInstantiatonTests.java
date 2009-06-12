@@ -1,6 +1,8 @@
 package iogi.collections;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import iogi.Iogi;
 import iogi.NullDependencyProvider;
@@ -12,6 +14,7 @@ import iogi.parameters.Parameter;
 import iogi.reflection.Target;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -122,5 +125,19 @@ public class CyclingListInstantiatonTests {
 		final List objects = iogi.instantiate(target);
 		
 		assertTrue(objects.isEmpty());
+	}
+	
+	@Test
+	public void canInstantiateACollection() throws Exception {
+		final Type parameterizedCollectionType = ContainsAParameterizedCollection.class.getDeclaredField("collectionOfString").getGenericType();
+		
+		final Target<Collection<String>> target = new Target<Collection<String>>(parameterizedCollectionType, "col");
+		final Collection<String> collection = iogi.instantiate(target, new Parameter("col", "bar"), new Parameter("col", "quuux"));
+		
+		assertThat(collection, contains("bar", "quuux"));
+	}
+	
+	static class ContainsAParameterizedCollection {
+		Collection<String> collectionOfString;
 	}
 }

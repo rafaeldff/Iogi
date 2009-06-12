@@ -16,7 +16,7 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 
 	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
-		return List.class.isAssignableFrom(target.getClassType());
+		return target.getClassType().isAssignableFrom(List.class);
 	}
 
 	@Override

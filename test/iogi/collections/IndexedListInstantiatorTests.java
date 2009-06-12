@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import iogi.Iogi;
 import iogi.NullDependencyProvider;
+import iogi.collections.CyclingListInstantiatonTests.ContainsAParameterizedCollection;
 import iogi.collections.CyclingListInstantiatonTests.ContainsParameterizedList;
 import iogi.exceptions.InvalidTypeException;
 import iogi.fixtures.OneString;
@@ -106,5 +107,15 @@ public class IndexedListInstantiatorTests {
 		 final Parameter parameter = new Parameter("foo[0].bar", "baz");
 		 
 		 iogi.instantiate(target, parameter);
+	}
+	
+	@Test
+	public void canInstantiateACollection() throws Exception {
+		final Type parameterizedCollectionType = ContainsAParameterizedCollection.class.getDeclaredField("collectionOfString").getGenericType();
+		
+		final Target<Collection<String>> target = new Target<Collection<String>>(parameterizedCollectionType, "col");
+		final Collection<String> collection = iogi.instantiate(target, new Parameter("col[0]", "bar"), new Parameter("col[1]", "quuux"));
+		
+		assertThat(collection, contains("bar", "quuux"));
 	}
 }
