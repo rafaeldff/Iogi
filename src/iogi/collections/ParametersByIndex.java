@@ -24,7 +24,7 @@ class ParametersByIndex {
 	}
 
 	private ArrayListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters) {
-		ArrayListMultimap<Integer, Parameter> map = ArrayListMultimap.create();
+		final ArrayListMultimap<Integer, Parameter> map = ArrayListMultimap.create();
 		for (final Parameter parameter : parameters.getParametersList()) {
 			final Integer index = extractIndexOrReturnNull(parameter);
 			if (index != null) 
@@ -50,7 +50,7 @@ class ParametersByIndex {
 		return firstComponentToParameterMap.isEmpty();
 	}
 
-	public Parameters get(final int index) {
+	public Parameters at(final int index) {
 		return new Parameters(firstComponentToParameterMap.get(index));
 	}
 }

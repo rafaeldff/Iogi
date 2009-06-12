@@ -40,7 +40,7 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		public Object getArray() {
 			final Object array = makeArray();
 			
-			for (int i : parametersByIndex.indexes()) {
+			for (final int i : parametersByIndex.indexes()) {
 				Array.set(array, i, instantiateArrayElement(i));
 			}
 			
@@ -48,13 +48,13 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		}
 
 		private Object makeArray() {
-			int arrayLength = parametersByIndex.isEmpty() ? 0 : parametersByIndex.highestIndex() + 1;
+			final int arrayLength = parametersByIndex.isEmpty() ? 0 : parametersByIndex.highestIndex() + 1;
 			return Array.newInstance(arrayTarget.arrayElementType(), arrayLength);
 		}
 		
 		private Object instantiateArrayElement(final int index) {
 			final Target<?> elementTarget = arrayTarget.arrayElementTarget();
-			return elementInstantiator.instantiate(elementTarget, parametersByIndex.get(index));
+			return elementInstantiator.instantiate(elementTarget, parametersByIndex.at(index));
 		}
 	}
 }

@@ -7,8 +7,6 @@ import iogi.reflection.Target;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 public class IndexedListInstantiator implements Instantiator<List<Object>> {
 
 	private final Instantiator<Object> listElementInstantiator;
@@ -31,7 +29,7 @@ public class IndexedListInstantiator implements Instantiator<List<Object>> {
 		final Target<?> elementTarget = target.typeArgument(0);
 		
 		for (final Integer index : parametersByIndex.indexes()) {
-			final Parameters atIndex = parametersByIndex.get(index);
+			final Parameters atIndex = parametersByIndex.at(index);
 			final Object newElement = listElementInstantiator.instantiate(elementTarget , atIndex); 
 			newList.add(newElement);
 		}
