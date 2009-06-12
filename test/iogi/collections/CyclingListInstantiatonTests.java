@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import iogi.Iogi;
 import iogi.NullDependencyProvider;
 import iogi.exceptions.InvalidTypeException;
+import iogi.fixtures.ContainsAParameterizedCollection;
 import iogi.fixtures.MixedObjectAndList;
 import iogi.fixtures.OneString;
 import iogi.fixtures.TwoArguments;
@@ -135,9 +136,5 @@ public class CyclingListInstantiatonTests {
 		final Collection<String> collection = iogi.instantiate(target, new Parameter("col", "bar"), new Parameter("col", "quuux"));
 		
 		assertThat(collection, contains("bar", "quuux"));
-	}
-	
-	static class ContainsAParameterizedCollection {
-		Collection<String> collectionOfString;
 	}
 }

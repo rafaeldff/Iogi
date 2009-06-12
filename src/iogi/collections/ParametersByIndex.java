@@ -38,12 +38,12 @@ class ParametersByIndex {
 		return matcher.find() ? Integer.valueOf(matcher.group(1)) : null;
 	}
 
-	public Collection<Integer> indexes() {
-		return firstComponentToParameterMap.keySet();
-	}
-	
 	public int highestIndex() {
 		return Collections.max(indexes());
+	}
+	
+	public Collection<Integer> indexes() {
+		return firstComponentToParameterMap.keySet();
 	}
 
 	public boolean isEmpty() {

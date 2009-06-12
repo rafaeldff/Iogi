@@ -42,7 +42,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(relevantParameters, dependenciesInjector);
 		expectingAtLeastOneCompatibleConstructor(compatibleConstructors, target, relevantParameters);
 		
-		List<ClassConstructor> orderedConstructors = fromLargestToSmallest(compatibleConstructors);
+		final List<ClassConstructor> orderedConstructors = fromLargestToSmallest(compatibleConstructors);
 		final ClassConstructor largestMatchingConstructor = orderedConstructors.iterator().next();
 		
 		final Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependenciesInjector);
@@ -79,9 +79,9 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		final Parameters remainingParameters = parameters.notUsedBy(constructor);
 		for (final Setter setter : settersIn(object)) {
 			final Target<?> target = new Target<Object>(setter.type(), setter.propertyName());
-			final Parameters parameterNamedAfterProperty = remainingParameters.relevantTo(target);
-			if (parameterNamedAfterProperty != null) {
-				final Object argument = argumentInstantiator.instantiate(target, parameterNamedAfterProperty);
+			final Parameters parametersNamedAfterProperty = remainingParameters.relevantTo(target);
+			if (!parametersNamedAfterProperty.areEmpty()) {
+				final Object argument = argumentInstantiator.instantiate(target, parametersNamedAfterProperty);
 				setter.set(argument);
 			}
 		}

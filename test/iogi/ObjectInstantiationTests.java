@@ -130,6 +130,14 @@ public class ObjectInstantiationTests {
 	}
 	
 	@Test
+	public void willIgnorePropertiesForWhichThereAreNoParameters() throws Exception {
+		final Parameter one = new Parameter("root.one", "1");
+		final Target<TwoProperties> target = Target.create(TwoProperties.class, "root");
+		final TwoProperties object = iogi.instantiate(target, one);
+		assertEquals(1, object.getOne());
+	}
+	
+	@Test
 	public void ifThereIsNoConstructorWithArgumentsWillCallTheDefaultConstructorAndFillPropertiesThroughSetters()  throws Exception {
 		final Parameter one = new Parameter("root.one", "9001");
 		final Parameter two = new Parameter("root.two", "9002");

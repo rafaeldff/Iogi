@@ -1,5 +1,9 @@
 package iogi;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
@@ -10,13 +14,13 @@ import org.junit.Test;
 
 
 public class VRaptorTests {
-	private Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider());
 
 	// OgnlParametersProviderTest
 	public static class Cat {
         private String id;
 
-        public void setId(String id) {
+        public void setId(final String id) {
             this.id = id;
         }
 
@@ -28,7 +32,7 @@ public class VRaptorTests {
     public static class House {
         private Cat cat;
 
-        public void setCat(Cat cat) {
+        public void setCat(final Cat cat) {
             this.cat = cat;
         }
 
@@ -36,7 +40,7 @@ public class VRaptorTests {
             return cat;
         }
 
-        public void setExtraCats(List<Cat> extraCats) {
+        public void setExtraCats(final List<Cat> extraCats) {
             this.extraCats = extraCats;
         }
 
@@ -44,7 +48,7 @@ public class VRaptorTests {
             return extraCats;
         }
 
-        public void setIds(Long[] ids) {
+        public void setIds(final Long[] ids) {
             this.ids = ids;
         }
 
@@ -54,7 +58,7 @@ public class VRaptorTests {
             return ids;
         }
 
-        public void setOwners(List<String> owners) {
+        public void setOwners(final List<String> owners) {
             this.owners = owners;
         }
 
@@ -69,14 +73,14 @@ public class VRaptorTests {
     }
 
     class MyResource {
-        void buyA(House house) {
+        void buyA(final House house) {
         }
     }
 
     public static class BuyASetter {
         private House House_;
 
-        public void setHouse(House house_) {
+        public void setHouse(final House house_) {
             House_ = house_;
         }
 
@@ -87,10 +91,19 @@ public class VRaptorTests {
     
     @Test
     public void isCapableOfDealingWithEmptyParameterForInternalWrapperValue() {
-    	Parameter parameter = new Parameter("house.cat.id", "guilherme");
-    	Target<House> target =  Target.create(House.class, "house");
-    	House house = iogi.instantiate(target, parameter);
+    	final Parameter parameter = new Parameter("house.cat.id", "guilherme");
+    	final Target<House> target =  Target.create(House.class, "house");
+    	final House house = iogi.instantiate(target, parameter);
     	assertEquals("guilherme", house.cat.id);
     }
+    
+	@Test
+	public void removeFromTheCollectionIfAnElementIsCreatedWithinACollectionButNoFieldIsSet() {
+		final Target<House> target = Target.create(House.class, "house");
+		final Parameter parameter = new Parameter("house.extraCats[1].id", "guilherme");
+		final House house = iogi.instantiate(target, parameter);
+		assertThat(house.extraCats, hasSize(1));
+		assertThat(house.extraCats.get(0).id, is(equalTo("guilherme")));
+	}
 	//     -----------------
 }
