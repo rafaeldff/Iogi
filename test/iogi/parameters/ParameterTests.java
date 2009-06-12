@@ -1,7 +1,9 @@
 package iogi.parameters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -44,5 +46,11 @@ public class ParameterTests {
 	@Test(expected=IllegalArgumentException.class)
 	public void cannotCreateAParameterWithNullValue() throws Exception {
 		new Parameter("not null", null); 
+	}
+	
+	@Test
+	public void isDecoratedIfFirstnameComponentHasABracket() throws Exception {
+		assertTrue(new Parameter("asdf[0].k","").isDecorated()); 
+		assertFalse(new Parameter("asdf.k","").isDecorated()); 
 	}
 }

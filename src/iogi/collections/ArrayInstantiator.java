@@ -1,18 +1,11 @@
 package iogi.collections;
 
 import iogi.Instantiator;
-import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 
 public class ArrayInstantiator implements Instantiator<Object> {
 	private final Instantiator<Object> elementInstantiator;
@@ -33,46 +26,6 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		final ArrayFactory factory = new ArrayFactory(target, parametersByIndex);
 		
 		return factory.getArray();
-	}
-	
-	private static class ParametersByIndex {
-		private static final Pattern firstComponentPattern = Pattern.compile("[^\\[]+\\[(\\d+)\\]");
-		private final ListMultimap<Integer, Parameter> firstComponentToParameterMap;
-		
-		public ParametersByIndex(final Parameters parameters, final Target<?> target) {
-			this.firstComponentToParameterMap = groupByIndex(parameters);
-		}
-
-		private ArrayListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters) {
-			ArrayListMultimap<Integer, Parameter> map = ArrayListMultimap.create();
-			for (final Parameter parameter : parameters.getParametersList()) {
-				final Integer index = extractIndexOrReturnNull(parameter);
-				if (index != null) 
-					map.put(index, parameter);
-			}
-			return map;
-		}
-
-		private Integer extractIndexOrReturnNull(final Parameter parameter) {
-			final Matcher matcher = firstComponentPattern.matcher(parameter.getFirstNameComponentWithDecoration());			
-			return matcher.find() ? Integer.valueOf(matcher.group(1)) : null;
-		}
-
-		public Collection<Integer> indexes() {
-			return firstComponentToParameterMap.keySet();
-		}
-		
-		public int highestIndex() {
-			return Collections.max(indexes());
-		}
-
-		public boolean isEmpty() {
-			return firstComponentToParameterMap.isEmpty();
-		}
-
-		public Parameters get(final int index) {
-			return new Parameters(firstComponentToParameterMap.get(index));
-		}
 	}
 	
 	private class ArrayFactory {

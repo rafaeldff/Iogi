@@ -86,7 +86,7 @@ public class ArrayInstantiationTests {
 		final Target<String[]> firstArrayTarget = Target.create(String[].class, "arr1");
 		final Target<String[]> secondArrayTarget = Target.create(String[].class, "arr2");
 		
-		Parameters parameters = new Parameters(Arrays.asList(
+		final Parameters parameters = new Parameters(Arrays.asList(
 				new Parameter("arr1[0]", "10"), 
 				new Parameter("arr1[1]", "11"), 
 				new Parameter("arr2[0]", "20"),
@@ -102,8 +102,8 @@ public class ArrayInstantiationTests {
 	@Test
 	public void willCreateAnArrayWithLengthBoundedByTheHighestIndexedParameter() throws Exception {
 		final Target<OneIntegerPrimitive[]> target = Target.create(OneIntegerPrimitive[].class, "arr");
-		Parameter at0 = new Parameter("arr[0].anInteger", "1");
-		Parameter at16 = new Parameter("arr[16].anInteger", "3");
+		final Parameter at0 = new Parameter("arr[0].anInteger", "1");
+		final Parameter at16 = new Parameter("arr[16].anInteger", "3");
 		
 		final OneIntegerPrimitive[] array = iogi.instantiate(target, at0, at16);
 		assertEquals(17, array.length);
@@ -112,9 +112,9 @@ public class ArrayInstantiationTests {
 	@Test
 	public void willFillUnsetArrayElementsWithJavaDefault() throws Exception {
 		final Target<int[]> target = Target.create(int[].class, "arr");
-		Parameter at0 = new Parameter("arr[0]", "5");
-		Parameter at2 = new Parameter("arr[2].anInteger", "5");
-		Parameter at4 = new Parameter("arr[4].anInteger", "5");
+		final Parameter at0 = new Parameter("arr[0]", "5");
+		final Parameter at2 = new Parameter("arr[2].anInteger", "5");
+		final Parameter at4 = new Parameter("arr[4].anInteger", "5");
 		
 		final int[] array = iogi.instantiate(target, at0, at2, at4);
 		assertArrayEquals(new int[] {5, 0, 5, 0, 5}, array);

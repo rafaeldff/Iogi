@@ -17,7 +17,7 @@ import java.util.List;
 import org.junit.Test;
 
 
-public class ListInstantiatonTests {
+public class CyclingListInstantiatonTests {
 	private final Iogi iogi = new Iogi(new NullDependencyProvider());
 	
 	public static class ContainsParameterizedList {

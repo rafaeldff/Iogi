@@ -15,10 +15,10 @@ import java.util.ListIterator;
 
 import com.google.common.collect.Lists;
 
-public class ListInstantiator implements Instantiator<List<Object>> {
+public class CyclingListInstantiator implements Instantiator<List<Object>> {
 	private final Instantiator<Object> elementInstantiator;
 
-	public ListInstantiator(final Instantiator<Object> objectInstantiator) {
+	public CyclingListInstantiator(final Instantiator<Object> objectInstantiator) {
 		this.elementInstantiator = objectInstantiator;
 	}
 
@@ -30,7 +30,7 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 	@Override
 	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
 		signalErrorIfGivenARawType(target);
-		Parameters relevantParameters = parameters.relevantTo(target);
+		final Parameters relevantParameters = parameters.relevantTo(target);
 		
 		final Target<Object> listElementTarget = target.typeArgument(0);
 		final Collection<List<Parameter>> parameterLists = breakList(relevantParameters.getParametersList());

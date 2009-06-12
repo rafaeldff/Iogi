@@ -100,4 +100,8 @@ public class Parameter {
 			return false;
 		return true;
 	}
+
+	public boolean isDecorated() {
+		return !getFirstNameComponentWithDecoration().equals(getFirstNameComponent());
+	}
 }
