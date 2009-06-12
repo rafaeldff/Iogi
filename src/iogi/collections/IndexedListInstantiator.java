@@ -3,9 +3,11 @@ package iogi.collections;
 import iogi.Instantiator;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
+import iogi.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class IndexedListInstantiator implements Instantiator<List<Object>> {
 
@@ -26,8 +28,7 @@ public class IndexedListInstantiator implements Instantiator<List<Object>> {
 		
 		final ArrayList<Object> newList = new ArrayList<Object>();
 		
-		final Target<?> elementTarget = target.typeArgument(0);
-		
+		final Target<?> elementTarget = elementTarget(target);
 		for (final Integer index : parametersByIndex.indexes()) {
 			final Parameters atIndex = parametersByIndex.at(index);
 			final Object newElement = listElementInstantiator.instantiate(elementTarget , atIndex); 
@@ -37,4 +38,8 @@ public class IndexedListInstantiator implements Instantiator<List<Object>> {
 		return newList;
 	}
 
+	private Target<?> elementTarget(final Target<?> target) {
+		Assert.isNotARawType(target);
+		return (Target<?>) target.typeArgument(0);
+	}
 }

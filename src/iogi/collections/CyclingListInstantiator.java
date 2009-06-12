@@ -1,12 +1,11 @@
 package iogi.collections;
 
 import iogi.Instantiator;
-import iogi.exceptions.InvalidTypeException;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
+import iogi.util.Assert;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +28,7 @@ public class CyclingListInstantiator implements Instantiator<List<Object>> {
 
 	@Override
 	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
-		signalErrorIfGivenARawType(target);
+		Assert.isNotARawType(target);
 		final Parameters relevantParameters = parameters.relevantTo(target);
 		
 		final Target<Object> listElementTarget = target.typeArgument(0);
@@ -42,11 +41,6 @@ public class CyclingListInstantiator implements Instantiator<List<Object>> {
 		}
 		
 		return newList;
-	}
-
-	private void signalErrorIfGivenARawType(final Target<?> target) {
-		if (!(target.getType() instanceof ParameterizedType))
-			throw new InvalidTypeException("Expecting a parameterized list type, got raw type \"%s\" instead", target.getType());
 	}
 
 	private Collection<List<Parameter>> breakList(final List<Parameter> parameters) {
