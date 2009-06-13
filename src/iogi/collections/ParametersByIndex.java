@@ -8,7 +8,6 @@ import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,10 +37,6 @@ class ParametersByIndex {
 		return matcher.find() ? Integer.valueOf(matcher.group(1)) : null;
 	}
 
-	public int highestIndex() {
-		return Collections.max(indexes());
-	}
-	
 	public Collection<Integer> indexes() {
 		return firstComponentToParameterMap.keySet();
 	}
@@ -52,5 +47,9 @@ class ParametersByIndex {
 
 	public Parameters at(final int index) {
 		return new Parameters(firstComponentToParameterMap.get(index));
+	}
+
+	public int count() {
+		return firstComponentToParameterMap.values().size();
 	}
 }

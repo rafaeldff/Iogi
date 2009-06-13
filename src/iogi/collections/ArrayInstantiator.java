@@ -5,6 +5,8 @@ import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.TreeSet;
 
 
 public class ArrayInstantiator implements Instantiator<Object> {
@@ -40,21 +42,24 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		public Object getArray() {
 			final Object array = makeArray();
 			
-			for (final int i : parametersByIndex.indexes()) {
-				Array.set(array, i, instantiateArrayElement(i));
+			int indexIntoTheArray = 0;
+			final Collection<Integer> orderedIndexes = new TreeSet<Integer>(parametersByIndex.indexes());
+			for (final int indexOfTheParameters : orderedIndexes) {
+				final Parameters parameters = parametersByIndex.at(indexOfTheParameters);
+				Array.set(array, indexIntoTheArray++, instantiateArrayElement(parameters));
 			}
 			
 			return array;
 		}
 
 		private Object makeArray() {
-			final int arrayLength = parametersByIndex.isEmpty() ? 0 : parametersByIndex.highestIndex() + 1;
+			final int arrayLength = parametersByIndex.count();
 			return Array.newInstance(arrayTarget.arrayElementType(), arrayLength);
 		}
 		
-		private Object instantiateArrayElement(final int index) {
+		private Object instantiateArrayElement(final Parameters parameters) {
 			final Target<?> elementTarget = arrayTarget.arrayElementTarget();
-			return elementInstantiator.instantiate(elementTarget, parametersByIndex.at(index));
+			return elementInstantiator.instantiate(elementTarget, parameters);
 		}
 	}
 }

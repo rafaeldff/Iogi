@@ -100,23 +100,25 @@ public class ArrayInstantiationTests {
 	}
 	
 	@Test
-	public void willCreateAnArrayWithLengthBoundedByTheHighestIndexedParameter() throws Exception {
+	public void willCreateAnArrayWithLengthEqualToTheNumberOfSpecifiedParameters() {
 		final Target<OneIntegerPrimitive[]> target = Target.create(OneIntegerPrimitive[].class, "arr");
 		final Parameter at0 = new Parameter("arr[0].anInteger", "1");
-		final Parameter at16 = new Parameter("arr[16].anInteger", "3");
+		final Parameter at16 = new Parameter("arr[16].anInteger", "2");
 		
 		final OneIntegerPrimitive[] array = iogi.instantiate(target, at0, at16);
-		assertEquals(17, array.length);
+		assertEquals(2, array.length);
 	}
-	
+
 	@Test
-	public void willFillUnsetArrayElementsWithJavaDefault() throws Exception {
-		final Target<int[]> target = Target.create(int[].class, "arr");
-		final Parameter at0 = new Parameter("arr[0]", "5");
-		final Parameter at2 = new Parameter("arr[2].anInteger", "5");
-		final Parameter at4 = new Parameter("arr[4].anInteger", "5");
+	public void orderOfElementsInTheArrayCorrespondsToTheOrderOfTheIndexes() {
+		final Target<OneIntegerPrimitive[]> target = Target.create(OneIntegerPrimitive[].class, "arr");
+		final Parameter at16 = new Parameter("arr[16].anInteger", "3");
+		final Parameter at0 = new Parameter("arr[0].anInteger", "1");
+		final Parameter at5 = new Parameter("arr[5].anInteger", "2");
 		
-		final int[] array = iogi.instantiate(target, at0, at2, at4);
-		assertArrayEquals(new int[] {5, 0, 5, 0, 5}, array);
+		final OneIntegerPrimitive[] array = iogi.instantiate(target, at16, at0, at5);
+		assertEquals(1, array[0].getAnInteger());
+		assertEquals(2, array[1].getAnInteger());
+		assertEquals(3, array[2].getAnInteger());
 	}
 }
