@@ -8,6 +8,7 @@ import iogi.Iogi;
 import iogi.NullDependencyProvider;
 import iogi.exceptions.InvalidTypeException;
 import iogi.fixtures.ContainsAParameterizedCollection;
+import iogi.fixtures.ContainsParameterizedList;
 import iogi.fixtures.MixedObjectAndList;
 import iogi.fixtures.OneString;
 import iogi.fixtures.TwoArguments;
@@ -24,12 +25,6 @@ import org.junit.Test;
 public class CyclingListInstantiatonTests {
 	private final Iogi iogi = new Iogi(new NullDependencyProvider());
 	
-	public static class ContainsParameterizedList {
-		List<OneString> listOfOneString;
-		List<TwoArguments> listOfTwoArguments;
-		List<Integer> listOfInteger;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void canInstantiateAListOfObjects() throws Exception {

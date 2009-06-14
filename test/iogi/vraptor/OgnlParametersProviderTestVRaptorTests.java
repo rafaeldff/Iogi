@@ -1,10 +1,12 @@
-package iogi;
+package iogi.vraptor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import iogi.Iogi;
+import iogi.NullDependencyProvider;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
 
@@ -12,10 +14,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class VRaptorTests {
+public class OgnlParametersProviderTestVRaptorTests {
 	private final Iogi iogi = new Iogi(new NullDependencyProvider());
 
-	// OgnlParametersProviderTest
 	public static class Cat {
 		private String id;
 
@@ -114,5 +115,12 @@ public class VRaptorTests {
 		assertThat(house.ids[0], is(equalTo(3l)));
     }
 
-	// -----------------
+	@Test
+    public void removeFromTheCollectionIfAnElementIsCreatedWithinACollectionButNoFieldIsSetAppartFromTheValueItselfNotAChild() {
+		final Target<House> target = Target.create(House.class, "house");
+		final Parameter parameter = new Parameter("house.owners[1]", "guilherme");
+		final House house = iogi.instantiate(target, parameter);
+        assertThat(house.owners, hasSize(1));
+        assertThat(house.owners.get(0), is(equalTo("guilherme")));
+    }
 }
