@@ -58,11 +58,6 @@ public class Target<T> {
 
 	}
 	
-	@Override
-	public String toString() {
-		return String.format("Target(name=%s, type=%s)", name, getClassType());
-	}
-	
 	public Set<ClassConstructor> classConstructors() {
 		final HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
 		for (final Constructor<?> constructor : getClassType().getConstructors()) {
@@ -94,6 +89,24 @@ public class Target<T> {
 		return Target.create(arrayElementType(), getName());
 	}
 
+	public Collection<ClassConstructor> compatibleConstructors(final Parameters relevantParameters, final DependenciesInjector dependenciesInjector) {
+		final LinkedList<ClassConstructor> compatible = new LinkedList<ClassConstructor>();
+		
+		for (final ClassConstructor classConstructor : classConstructors()) {
+			if (canInstantiateOrInject(classConstructor, relevantParameters, dependenciesInjector))
+				compatible.add(classConstructor);
+		}
+		
+		return compatible;
+	}
+
+	private boolean canInstantiateOrInject(final ClassConstructor classConstructor, final Parameters relevantParameters,
+			final DependenciesInjector dependenciesInjector) {
+		final Collection<Target<?>> uninstatiableByParameters = classConstructor.notFulfilledBy(relevantParameters);
+		final boolean canObtainDependenciesFor = dependenciesInjector.canObtainDependenciesFor(uninstatiableByParameters);
+		return canObtainDependenciesFor;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -125,21 +138,8 @@ public class Target<T> {
 		return true;
 	}
 
-	public Collection<ClassConstructor> compatibleConstructors(final Parameters relevantParameters, final DependenciesInjector dependenciesInjector) {
-		LinkedList<ClassConstructor> compatible = new LinkedList<ClassConstructor>();
-		
-		for (ClassConstructor classConstructor : classConstructors()) {
-			if (canInstantiateOrInject(classConstructor, relevantParameters, dependenciesInjector))
-				compatible.add(classConstructor);
-		}
-		
-		return compatible;
-	}
-
-	private boolean canInstantiateOrInject(ClassConstructor classConstructor, final Parameters relevantParameters,
-			final DependenciesInjector dependenciesInjector) {
-		Collection<Target<?>> uninstatiableByParameters = classConstructor.notFulfilledBy(relevantParameters);
-		boolean canObtainDependenciesFor = dependenciesInjector.canObtainDependenciesFor(uninstatiableByParameters);
-		return canObtainDependenciesFor;
+	@Override
+	public String toString() {
+		return String.format("Target(name=%s, type=%s)", name, getClassType());
 	}
 }
