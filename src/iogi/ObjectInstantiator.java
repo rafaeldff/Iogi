@@ -37,18 +37,19 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
 		expectingAConcreteTarget(target);
 		
-		final Parameters relevantParameters = parameters.relevantTo(target).strip();
-		if (relevantParameters.areEmpty())
+		if (parameters.areEmptyFor(target))
 			return null;
 		
-		final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(relevantParameters, dependenciesInjector);
-		expectingAtLeastOneCompatibleConstructor(compatibleConstructors, target, relevantParameters);
+		final Parameters strippedParameters = parameters.strip(target);
+		
+		final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(strippedParameters, dependenciesInjector);
+		expectingAtLeastOneCompatibleConstructor(compatibleConstructors, target, strippedParameters);
 		
 		final List<ClassConstructor> orderedConstructors = fromLargestToSmallest(compatibleConstructors);
 		final ClassConstructor largestMatchingConstructor = orderedConstructors.iterator().next();
 		
-		final Object object = largestMatchingConstructor.instantiate(argumentInstantiator, relevantParameters, dependenciesInjector);
-		populateRemainingProperties(object, largestMatchingConstructor, relevantParameters);
+		final Object object = largestMatchingConstructor.instantiate(argumentInstantiator, strippedParameters, dependenciesInjector);
+		populateRemainingProperties(object, largestMatchingConstructor, strippedParameters);
 		
 		return object;
 	}
@@ -62,7 +63,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		if (matchingConstructors.isEmpty()) {
 			final String parameterList =  relevantParameters.signatureString();
 			throw new NoConstructorFoundException("No constructor found to instantiate a %s named %s " +
-					"with parameter names %s",
+					"given parameter names %s",
 					target.getClassType(), target.getName(), parameterList);
 		}
 	}
@@ -81,9 +82,8 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		final Parameters remainingParameters = parameters.notUsedBy(constructor);
 		for (final Setter setter : settersIn(object)) {
 			final Target<?> target = new Target<Object>(setter.type(), setter.propertyName());
-			final Parameters parametersNamedAfterProperty = remainingParameters.relevantTo(target);
-			if (!parametersNamedAfterProperty.areEmpty()) {
-				final Object argument = argumentInstantiator.instantiate(target, parametersNamedAfterProperty);
+			if (!remainingParameters.areEmptyFor(target)) {
+				final Object argument = argumentInstantiator.instantiate(target, parameters);
 				setter.set(argument);
 			}
 		}

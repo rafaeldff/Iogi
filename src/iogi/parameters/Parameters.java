@@ -17,7 +17,6 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public class Parameters {
-	private final List<Parameter> parametersList;
 	private final ListMultimap<String, Parameter> parametersByFirstNameComponent;
 	
 	public Parameters(final Parameter... parameters) {
@@ -25,7 +24,6 @@ public class Parameters {
 	}
 
 	public Parameters(final List<Parameter> parametersList) {
-		this.parametersList = parametersList;
 		this.parametersByFirstNameComponent = groupByFirstNameComponent(parametersList);
 	}
 	
@@ -40,14 +38,9 @@ public class Parameters {
 	}
 
 	public List<Parameter> getParametersList(final Target<?> target) {
-		return relevantTo(target).parametersList;
+		return parametersByFirstNameComponent.get(target.getName());
 	}
 	
-	List<Parameter> getParametersList() {
-		return this.parametersList;
-	}
-	
-
 	public Parameter namedAfter(final Target<?> target) {
 		final Collection<Parameter> named = parametersByFirstNameComponent.get(target.getName());
 		assertFoundAtMostOneTarget(target, named);
@@ -60,24 +53,18 @@ public class Parameters {
 					"Expecting only one parameter named after " + target + ", found instead " + named);
 	}
 	
-	public Parameters relevantTo(final Target<?> target) {
-		return new Parameters(parametersByFirstNameComponent.get(target.getName()));
-	}
-
-	public Parameters strip() {
-		final ArrayList<Parameter> striped = new ArrayList<Parameter>(getParametersList().size());
+	public Parameters strip(final Target<?> target) {
+		final List<Parameter> relevantParameters = getParametersList(target);
 		
-		for (final Parameter parameter : getParametersList()) {
+		final ArrayList<Parameter> striped = new ArrayList<Parameter>(relevantParameters.size());
+		
+		for (final Parameter parameter : relevantParameters) {
 			striped.add(parameter.strip());
 		}
 		
 		return new Parameters(striped);
 	}
 	
-	private Set<String> firstComponents() {
-		return this.parametersByFirstNameComponent.keySet();
-	}
-
 	public Parameters notUsedBy(final ClassConstructor aConstructor) {
 		final SetView<String> namesNotUsedBy = Sets.difference(firstComponents(), aConstructor.getNames());
 		final List<Parameter> unusedParameters = new ArrayList<Parameter>();
@@ -89,8 +76,12 @@ public class Parameters {
 		return new Parameters(unusedParameters);
 	}
 	
-	public boolean areEmpty() {
-		return parametersList.isEmpty();
+	private Set<String> firstComponents() {
+		return this.parametersByFirstNameComponent.keySet();
+	}
+	
+	public boolean areEmptyFor(final Target<?> target) {
+		return getParametersList(target).isEmpty();
 	}
 	
 	public String signatureString() {
@@ -104,7 +95,7 @@ public class Parameters {
 	
 	@Override
 	public int hashCode() {
-		return this.getParametersList().hashCode();
+		return this.parametersByFirstNameComponent.hashCode();
 	}
 	
 	@Override
@@ -113,7 +104,11 @@ public class Parameters {
 			return false;
 		
 		final Parameters other = (Parameters)obj;
-		return getParametersList().equals(other.getParametersList());
+		return this.parametersByFirstNameComponent.equals(other.parametersByFirstNameComponent);
 	}
 	
+	/* The only reason this is not private is to help unit tests. */
+	Collection<Parameter> getParametersList() {
+		return this.parametersByFirstNameComponent.values();
+	}
 }

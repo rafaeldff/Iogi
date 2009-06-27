@@ -23,7 +23,7 @@ public class ArrayInstantiator implements Instantiator<Object> {
 	
 	@Override
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
-		final ParametersByIndex parametersByIndex = new ParametersByIndex(parameters.relevantTo(target), target);
+		final ParametersByIndex parametersByIndex = new ParametersByIndex(parameters, target);
 	
 		final ArrayFactory factory = new ArrayFactory(target, parametersByIndex);
 		

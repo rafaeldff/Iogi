@@ -24,7 +24,7 @@ public class IndexedListInstantiator implements Instantiator<List<Object>> {
 	
 	@Override
 	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
-		final ParametersByIndex parametersByIndex = new ParametersByIndex(parameters.relevantTo(target), target);
+		final ParametersByIndex parametersByIndex = new ParametersByIndex(parameters, target);
 		
 		final ArrayList<Object> newList = new ArrayList<Object>();
 		

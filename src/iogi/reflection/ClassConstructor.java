@@ -17,8 +17,6 @@ import java.util.Set;
 import net.vidageek.mirror.dsl.Mirror;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
@@ -82,7 +80,7 @@ public class ClassConstructor {
 		final ArrayList<Target<?>> unfulfilledParameterTargets = new ArrayList<Target<?>>();
 		
 		for (final Target<?> parameterTarget : parameterTargets()) {
-			if (parameters.relevantTo(parameterTarget).areEmpty())
+			if (parameters.areEmptyFor(parameterTarget))
 				unfulfilledParameterTargets.add(parameterTarget);
 		}
 		return Collections.unmodifiableList(unfulfilledParameterTargets);
