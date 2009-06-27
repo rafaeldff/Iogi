@@ -19,12 +19,12 @@ class ParametersByIndex {
 	private final ListMultimap<Integer, Parameter> firstComponentToParameterMap;
 	
 	public ParametersByIndex(final Parameters parameters, final Target<?> target) {
-		this.firstComponentToParameterMap = groupByIndex(parameters);
+		this.firstComponentToParameterMap = groupByIndex(parameters, target);
 	}
 
-	private ArrayListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters) {
+	private ArrayListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters, final Target<?> target) {
 		final ArrayListMultimap<Integer, Parameter> map = ArrayListMultimap.create();
-		for (final Parameter parameter : parameters.getParametersList()) {
+		for (final Parameter parameter : parameters.getParametersList(target)) {
 			final Integer index = extractIndexOrReturnNull(parameter);
 			if (index != null) 
 				map.put(index, parameter);

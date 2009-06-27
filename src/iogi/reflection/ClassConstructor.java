@@ -79,11 +79,13 @@ public class ClassConstructor {
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {
-		return Collections2.filter(parameterTargets(), new Predicate<Target<?>>() {
-			public boolean apply(Target<?> target) {
-				return parameters.relevantTo(target).areEmpty();
-			}
-		});
+		final ArrayList<Target<?>> unfulfilledParameterTargets = new ArrayList<Target<?>>();
+		
+		for (final Target<?> parameterTarget : parameterTargets()) {
+			if (parameters.relevantTo(parameterTarget).areEmpty())
+				unfulfilledParameterTargets.add(parameterTarget);
+		}
+		return Collections.unmodifiableList(unfulfilledParameterTargets);
 	}
 	
 	private List<Target<?>> parameterTargets() {

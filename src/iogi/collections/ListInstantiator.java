@@ -21,7 +21,7 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 
 	@Override
 	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
-		final List<Parameter> relevantParameters = parameters.relevantTo(target).getParametersList();
+		final List<Parameter> relevantParameters = parameters.getParametersList(target);
 		
 		if (hasNoRelevantParameters(relevantParameters) || firstParameterIsDecorated(relevantParameters))
 			return new IndexedListInstantiator(listElementInstantiator).instantiate(target, parameters);

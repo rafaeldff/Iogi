@@ -29,10 +29,9 @@ public class CyclingListInstantiator implements Instantiator<List<Object>> {
 	@Override
 	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
 		Assert.isNotARawType(target);
-		final Parameters relevantParameters = parameters.relevantTo(target);
 		
 		final Target<Object> listElementTarget = target.typeArgument(0);
-		final Collection<List<Parameter>> parameterLists = breakList(relevantParameters.getParametersList());
+		final Collection<List<Parameter>> parameterLists = breakList(parameters.getParametersList(target));
 		
 		final ArrayList<Object> newList = new ArrayList<Object>();
 		for (final List<Parameter> parameterListForAnElement : parameterLists) {

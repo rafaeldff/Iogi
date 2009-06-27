@@ -39,9 +39,14 @@ public class Parameters {
 		return firstNameComponentToParameterMap;
 	}
 
-	public List<Parameter> getParametersList() {
-		return parametersList;
+	public List<Parameter> getParametersList(final Target<?> target) {
+		return relevantTo(target).parametersList;
 	}
+	
+	List<Parameter> getParametersList() {
+		return this.parametersList;
+	}
+	
 
 	public Parameter namedAfter(final Target<?> target) {
 		final Collection<Parameter> named = parametersByFirstNameComponent.get(target.getName());
