@@ -37,7 +37,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
 		expectingAConcreteTarget(target);
 		
-		if (parameters.areEmptyFor(target))
+		if (!parameters.hasRelatedTo(target))
 			return null;
 		
 		final Parameters strippedParameters = parameters.strip(target);
@@ -82,7 +82,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		final Parameters remainingParameters = parameters.notUsedBy(constructor);
 		for (final Setter setter : settersIn(object)) {
 			final Target<?> target = new Target<Object>(setter.type(), setter.propertyName());
-			if (!remainingParameters.areEmptyFor(target)) {
+			if (remainingParameters.hasRelatedTo(target)) {
 				final Object argument = argumentInstantiator.instantiate(target, parameters);
 				setter.set(argument);
 			}

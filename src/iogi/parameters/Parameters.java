@@ -80,8 +80,8 @@ public class Parameters {
 		return this.parametersByFirstNameComponent.keySet();
 	}
 	
-	public boolean areEmptyFor(final Target<?> target) {
-		return getParametersList(target).isEmpty();
+	public boolean hasRelatedTo(final Target<?> target) {
+		return !getParametersList(target).isEmpty();
 	}
 	
 	public String signatureString() {

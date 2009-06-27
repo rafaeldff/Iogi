@@ -80,7 +80,7 @@ public class ClassConstructor {
 		final ArrayList<Target<?>> unfulfilledParameterTargets = new ArrayList<Target<?>>();
 		
 		for (final Target<?> parameterTarget : parameterTargets()) {
-			if (parameters.areEmptyFor(parameterTarget))
+			if (!parameters.hasRelatedTo(parameterTarget))
 				unfulfilledParameterTargets.add(parameterTarget);
 		}
 		return Collections.unmodifiableList(unfulfilledParameterTargets);
