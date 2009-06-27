@@ -6,16 +6,17 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import iogi.Iogi;
-import iogi.NullDependencyProvider;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
+import iogi.util.DefaultLocaleProvider;
+import iogi.util.NullDependencyProvider;
 
 import java.util.List;
 
 import org.junit.Test;
 
 public class OgnlParametersProviderTestVRaptorTests {
-	private final Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
 
 	public static class Cat {
 		private String id;

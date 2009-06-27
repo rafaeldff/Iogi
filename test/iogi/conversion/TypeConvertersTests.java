@@ -6,9 +6,13 @@ import static org.junit.Assert.assertTrue;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
+import iogi.spi.LocaleProvider;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import org.junit.Test;
 
@@ -176,5 +180,16 @@ public class TypeConvertersTests {
 		MOE,
 		CURLY,
 		LARRY
+	}
+	
+	@Test
+	public void dateConverter() throws Exception {
+		final LocaleProvider localeProvider = new LocaleProvider() {
+			@Override public Locale getLocale() {
+				return new Locale("pt", "BR");
+			}
+		};
+		final Calendar object = convertWith(new LocaleBasedCalendarConverter(localeProvider), Calendar.class,  "30/01/2009");
+		assertEquals(new GregorianCalendar(2009, 0, 30),  object);
 	}
 }

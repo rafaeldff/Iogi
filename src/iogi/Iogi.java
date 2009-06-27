@@ -19,6 +19,7 @@ import iogi.conversion.FloatPrimitiveConverter;
 import iogi.conversion.FloatWrapperConverter;
 import iogi.conversion.IntegerPrimitiveConverter;
 import iogi.conversion.IntegerWrapperConverter;
+import iogi.conversion.LocaleBasedCalendarConverter;
 import iogi.conversion.LongPrimitiveConverter;
 import iogi.conversion.LongWrapperConverter;
 import iogi.conversion.ShortPrimitiveConverter;
@@ -27,6 +28,8 @@ import iogi.conversion.StringConverter;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
+import iogi.spi.DependencyProvider;
+import iogi.spi.LocaleProvider;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +39,7 @@ import com.google.common.collect.ImmutableList;
 public class Iogi {
 	private final MultiInstantiator allInstantiators;
 	
-	public Iogi(final DependencyProvider dependencyProvider) {
+	public Iogi(final DependencyProvider dependencyProvider, final LocaleProvider localeProvider) {
 		final List<Instantiator<?>>  all = new ImmutableList.Builder<Instantiator<?>>()
 			.add(fallbackToNull(new BigDecimalConverter()))
 			.add(fallbackToNull(new BigIntegerConverter()))
@@ -51,6 +54,7 @@ public class Iogi {
 			.add(fallbackToNull(new LongWrapperConverter()))
 			.add(fallbackToNull(new ShortWrapperConverter()))
 			.add(fallbackToNull(new StringConverter()))
+			.add(fallbackToNull(new LocaleBasedCalendarConverter(localeProvider)))
 			.add(fallbackTo(new BooleanPrimitiveConverter(), false))
 			.add(fallbackTo(new BytePrimitiveConverter(), (byte)0))
 			.add(fallbackTo(new CharacterPrimitiveConverter(), (char)0))

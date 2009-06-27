@@ -4,6 +4,7 @@
 package iogi;
 
 import iogi.reflection.Target;
+import iogi.spi.DependencyProvider;
 import iogi.util.Quantification;
 
 import java.util.Collection;

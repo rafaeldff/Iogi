@@ -1,7 +1,5 @@
 package iogi;
 
-import iogi.Instantiator;
-import iogi.MultiInstantiator;
 import iogi.exceptions.InvalidTypeException;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;

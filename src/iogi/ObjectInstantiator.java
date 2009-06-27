@@ -6,6 +6,7 @@ import iogi.parameters.Parameters;
 import iogi.reflection.ClassConstructor;
 import iogi.reflection.Primitives;
 import iogi.reflection.Target;
+import iogi.spi.DependencyProvider;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -17,7 +18,6 @@ import java.util.List;
 
 import net.vidageek.mirror.dsl.Mirror;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 public class ObjectInstantiator implements Instantiator<Object> {
@@ -38,6 +38,8 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		expectingAConcreteTarget(target);
 		
 		final Parameters relevantParameters = parameters.relevantTo(target).strip();
+		if (relevantParameters.areEmpty())
+			return null;
 		
 		final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(relevantParameters, dependenciesInjector);
 		expectingAtLeastOneCompatibleConstructor(compatibleConstructors, target, relevantParameters);
@@ -58,13 +60,13 @@ public class ObjectInstantiator implements Instantiator<Object> {
 
 	private <T> void expectingAtLeastOneCompatibleConstructor(final Collection<ClassConstructor> matchingConstructors, final Target<?> target, final Parameters relevantParameters) {
 		if (matchingConstructors.isEmpty()) {
-			final String parameterList =  "(" + Joiner.on(", ").join(relevantParameters.getParametersList()) + ")";
+			final String parameterList =  relevantParameters.signatureString();
 			throw new NoConstructorFoundException("No constructor found to instantiate a %s named %s " +
 					"with parameter names %s",
 					target.getClassType(), target.getName(), parameterList);
 		}
 	}
-	
+
 	private List<ClassConstructor> fromLargestToSmallest(final Collection<ClassConstructor> matchingConstructors) {
 		final ArrayList<ClassConstructor> constructors = Lists.newArrayList(matchingConstructors);
 		Collections.sort(constructors, new Comparator<ClassConstructor>(){

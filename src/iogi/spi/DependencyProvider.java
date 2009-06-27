@@ -1,4 +1,4 @@
-package iogi;
+package iogi.spi;
 
 import iogi.reflection.Target;
 

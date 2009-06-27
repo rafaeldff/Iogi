@@ -4,19 +4,20 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import iogi.Iogi;
 import iogi.MixedObjectAndArray;
-import iogi.NullDependencyProvider;
 import iogi.fixtures.OneIntegerPrimitive;
 import iogi.fixtures.TwoArguments;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
+import iogi.util.DefaultLocaleProvider;
+import iogi.util.NullDependencyProvider;
 
 import java.util.Arrays;
 
 import org.junit.Test;
 
 public class ArrayInstantiationTests {
-	private final Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
 	
 	@Test
 	public void canInstantiateAnArrayOfStrings() throws Exception {

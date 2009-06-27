@@ -20,7 +20,7 @@ public class FallbackConverter<T> extends TypeConverter<T> {
 	}
 
 	@Override
-	protected T convert(final String stringValue, final Target<?> to) {
+	protected T convert(final String stringValue, final Target<?> to) throws Exception {
 		if (stringValue.isEmpty())
 			return fallbackValue;
 		return delegate.convert(stringValue, to);

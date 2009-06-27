@@ -2,6 +2,7 @@ package iogi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
 import iogi.fixtures.AbstractClass;
@@ -19,13 +20,23 @@ import iogi.fixtures.TwoLevelConstructible;
 import iogi.fixtures.TwoProperties;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
+import iogi.spi.DependencyProvider;
+import iogi.util.DefaultLocaleProvider;
+import iogi.util.NullDependencyProvider;
 
 import java.util.List;
 
 import org.junit.Test;
 
 public class ObjectInstantiationTests {
-	private final Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
+	
+	@Test
+	public void willReturnNullIfNoAppropriateParameterIsFound() throws Exception {
+		final Target<OneString> target = Target.create(OneString.class, "root");
+		final OneString object = iogi.instantiate(target);
+		assertNull(object);
+	}
 	
 	@Test
 	public void canInstantiateWithOneIntegerArgument() throws Exception {
@@ -214,7 +225,7 @@ public class ObjectInstantiationTests {
 			public boolean canProvide(final Target<?> target) {
 				return target.getName().equals("uninstantiable");
 			}
-		});
+		}, new DefaultLocaleProvider());
 		
 		final HasDependency object = iogi.instantiate(target, parameterForInstantiableArg);
 		assertEquals("instantiable ok", object.getInstantiable());

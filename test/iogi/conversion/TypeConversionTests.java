@@ -2,14 +2,15 @@ package iogi.conversion;
 
 import static org.junit.Assert.assertEquals;
 import iogi.Iogi;
-import iogi.NullDependencyProvider;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
+import iogi.util.DefaultLocaleProvider;
+import iogi.util.NullDependencyProvider;
 
 import org.junit.Test;
 
 public class TypeConversionTests {
-	private final Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
 	
 	@Test
 	public void canInstantiatePrimitives() {

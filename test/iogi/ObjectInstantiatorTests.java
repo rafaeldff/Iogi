@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
+import iogi.util.NullDependencyProvider;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;

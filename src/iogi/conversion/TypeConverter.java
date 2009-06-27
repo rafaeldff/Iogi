@@ -6,7 +6,7 @@ import iogi.reflection.Target;
 
 public abstract class TypeConverter<T> implements Instantiator<T> {
 
-	protected abstract T convert(String stringValue, Target<?> to);
+	protected abstract T convert(String stringValue, Target<?> to) throws Exception;
 	
 	@Override
 	public final T instantiate(final Target<?> target, final Parameters parameters) {

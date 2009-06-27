@@ -3,10 +3,10 @@ package iogi.reflection;
 import static org.junit.Assert.assertEquals;
 import iogi.DependenciesInjector;
 import iogi.Instantiator;
-import iogi.NullDependencyProvider;
 import iogi.conversion.StringConverter;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
+import iogi.util.NullDependencyProvider;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;

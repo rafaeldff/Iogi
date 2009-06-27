@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import iogi.Iogi;
-import iogi.NullDependencyProvider;
 import iogi.exceptions.InvalidTypeException;
 import iogi.fixtures.ContainsAParameterizedCollection;
 import iogi.fixtures.ContainsParameterizedList;
@@ -14,6 +13,8 @@ import iogi.fixtures.OneString;
 import iogi.fixtures.TwoArguments;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
+import iogi.util.DefaultLocaleProvider;
+import iogi.util.NullDependencyProvider;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -23,7 +24,7 @@ import org.junit.Test;
 
 
 public class CyclingListInstantiatonTests {
-	private final Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
 	
 	@SuppressWarnings("unchecked")
 	@Test

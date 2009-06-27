@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
@@ -83,9 +84,17 @@ public class Parameters {
 		return new Parameters(unusedParameters);
 	}
 	
+	public boolean areEmpty() {
+		return parametersList.isEmpty();
+	}
+	
+	public String signatureString() {
+		return "(" + Joiner.on(", ").join(getParametersList()) + ")";
+	}
+	
 	@Override
 	public String toString() {
-		return "Parameters" + parametersList.toString();
+		return "Parameters" + signatureString();
 	}
 	
 	@Override
@@ -102,7 +111,4 @@ public class Parameters {
 		return getParametersList().equals(other.getParametersList());
 	}
 	
-	public boolean areEmpty() {
-		return parametersList.isEmpty();
-	}
 }

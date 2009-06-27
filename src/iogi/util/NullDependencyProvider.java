@@ -1,6 +1,7 @@
-package iogi;
+package iogi.util;
 
 import iogi.reflection.Target;
+import iogi.spi.DependencyProvider;
 
 
 public class NullDependencyProvider implements DependencyProvider {

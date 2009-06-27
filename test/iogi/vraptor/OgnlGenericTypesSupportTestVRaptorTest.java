@@ -4,10 +4,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import iogi.Iogi;
-import iogi.NullDependencyProvider;
 import iogi.fixtures.ContainsParameterizedList;
 import iogi.parameters.Parameter;
 import iogi.reflection.Target;
+import iogi.util.DefaultLocaleProvider;
+import iogi.util.NullDependencyProvider;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 import org.junit.Test;
 
 public class OgnlGenericTypesSupportTestVRaptorTest {
-	private final Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
 	
 	public static class Cat {
         private List<String> legLength;

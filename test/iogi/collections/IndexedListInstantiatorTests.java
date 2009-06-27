@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import iogi.Iogi;
-import iogi.NullDependencyProvider;
 import iogi.exceptions.InvalidTypeException;
 import iogi.fixtures.ContainsAParameterizedCollection;
 import iogi.fixtures.ContainsParameterizedList;
@@ -15,6 +14,8 @@ import iogi.fixtures.TwoArguments;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
+import iogi.util.DefaultLocaleProvider;
+import iogi.util.NullDependencyProvider;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ import org.junit.Test;
 
 
 public class IndexedListInstantiatorTests {
-	private final Iogi iogi = new Iogi(new NullDependencyProvider());
+	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
 	
 	@Test
 	public void canInstantiateAListOfStrings() throws Exception {
