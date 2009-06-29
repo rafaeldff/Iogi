@@ -1,56 +1,49 @@
 package iogi.parameters;
 
+import java.util.regex.Pattern;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 public class Parameter {
-	private final String name;
+	private static final Pattern DECORATION_REGEX = Pattern.compile("\\[\\d+\\]$");
 	private final String value;
 	private final ImmutableList<String> nameComponents;
 
 	public Parameter(final String name, final String value) {
-		this(notNull(name, "Parameter name"), notNull(value, "Paramter value"), computeNameComponents(name));
+		this(notNull(value, "Parameter value"), computeNameComponents(notNull(name, "Parameter name")));
 	}
 	
-	/** 
-	 * Primary constructor.
-	 * Prefer calling one of the two-argument constructors to maintain
-	 * consistency between name and nameComponents.
-	 */
-	private Parameter(final String name, final String value, final ImmutableList<String> nameComponents) {
-		this.name = name;
+	private Parameter(final String value, final ImmutableList<String> nameComponents) {
 		this.value = value;
 		this.nameComponents = nameComponents;
 	}
 	
-	private Parameter(final String value, final ImmutableList<String> nameComponents) {
-		this(computeName(nameComponents), value, nameComponents);
-	}
-	
-	private static <T> T notNull(final T objeto, final String name) {
-		if (objeto == null)
+	private static <T> T notNull(final T object, final String name) {
+		if (object == null)
 			throw new IllegalArgumentException(name + " cannot be null");
-		return objeto;
+		return object;
 	}
 	
 	private static ImmutableList<String> computeNameComponents(final String name) {
 		return ImmutableList.of(name.split("\\."));
 	}
 
-	private static String computeName(final ImmutableList<String> nameComponents) {
-		return Joiner.on(".").join(nameComponents);
-	}
-
 	public String getName() {
-		return name;
+		return Joiner.on(".").join(nameComponents);
 	}
 	
 	public String getValue() {
 		return value;
 	}
 	
+	public String getFirstNameComponentWithDecoration() {
+		return nameComponents.get(0);
+	}
+	
 	public String getFirstNameComponent() {
-		return nameComponents.get(0).replaceAll("\\[\\d+\\]", "");
+		final String first = getFirstNameComponentWithDecoration();
+		return DECORATION_REGEX.matcher(first).replaceAll("");
 	}
 
 	public Parameter strip() {
@@ -61,20 +54,15 @@ public class Parameter {
 		return new Parameter(value, componentsExceptTheFirst);
 	}
 	
-	public String getFirstNameComponentWithDecoration() {
-		return name.split("\\.")[0];
+	public boolean isDecorated() {
+		return DECORATION_REGEX.matcher(getFirstNameComponentWithDecoration()).find();
 	}
 	
-	@Override
-	public String toString() {
-		return String.format("Parameter(%s -> %s)", getName(), getValue());
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((nameComponents == null) ? 0 : nameComponents.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
@@ -88,10 +76,10 @@ public class Parameter {
 		if (getClass() != obj.getClass())
 			return false;
 		final Parameter other = (Parameter) obj;
-		if (name == null) {
-			if (other.name != null)
+		if (nameComponents == null) {
+			if (other.nameComponents != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!nameComponents.equals(other.nameComponents))
 			return false;
 		if (value == null) {
 			if (other.value != null)
@@ -101,7 +89,8 @@ public class Parameter {
 		return true;
 	}
 
-	public boolean isDecorated() {
-		return !getFirstNameComponentWithDecoration().equals(getFirstNameComponent());
+	@Override
+	public String toString() {
+		return String.format("Parameter(%s -> %s)", getName(), getValue());
 	}
 }

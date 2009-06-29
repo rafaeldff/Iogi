@@ -7,16 +7,15 @@ import iogi.parameters.Parameters;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import net.vidageek.mirror.dsl.Mirror;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
@@ -39,16 +38,9 @@ public class ClassConstructor {
 		this(constructor, parameterNames(constructor));
 	}
 	
-	public ClassConstructor(final Set<String> parameterNames) {
-		this(null, parameterNames);
-	}
-	
 	private static Set<String> parameterNames(final Constructor<?> constructor) {
 		final String[] lookedUpNames = paranamer.lookupParameterNames(constructor);
-		
-		final HashSet<String> parameterNames = new HashSet<String>(Arrays.asList(lookedUpNames));
-		
-		return parameterNames;
+		return ImmutableSet.of(lookedUpNames);
 	}
 	
 	public Set<String> getNames() {
@@ -60,7 +52,7 @@ public class ClassConstructor {
 	}
 
 	public Object instantiate(final Instantiator<?> instantiator, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
-		final List<Object> argumentValues = Lists.newArrayList();
+		final List<Object> argumentValues = Lists.newArrayListWithCapacity(size());
 		final Collection<Target<?>> needDependency = notFulfilledBy(parameters);
 		
 		for (final Target<?> target : parameterTargets()) {

@@ -4,15 +4,16 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import iogi.fixtures.TwoArguments;
 import iogi.reflection.ClassConstructor;
 import iogi.reflection.Target;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class ParametersTests {
 	
@@ -58,8 +59,9 @@ public class ParametersTests {
 	
 	@Test
 	public void parametersNotUsedByAConstructorAreThoseWhoseFirstComponentsDontMatchWithTheConstructorArgumentNames() throws Exception {
-		final Parameters parameters = parametersNamed("foo", "bar", "baz", "fizzle"); 
-		final ClassConstructor constructor = new ClassConstructor(Sets.newHashSet("bar", "baz"));
+		final Parameters parameters = parametersNamed("foo", "one", "two", "fizzle"); 
+		final Constructor<TwoArguments> constructorWithParametersNamedOneAndTwo = TwoArguments.class.getDeclaredConstructor(int.class, int.class);
+		final ClassConstructor constructor = new ClassConstructor(constructorWithParametersNamedOneAndTwo);
 		
 		final Parameters notUsed = parameters.notUsedBy(constructor);
 		assertThat(notUsed.getParametersList(), containsInAnyOrder(new Parameter("foo", ""), new Parameter("fizzle", "")));

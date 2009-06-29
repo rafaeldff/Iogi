@@ -8,6 +8,8 @@ import iogi.util.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 
 public class IndexedListInstantiator implements Instantiator<List<Object>> {
 
@@ -26,9 +28,9 @@ public class IndexedListInstantiator implements Instantiator<List<Object>> {
 	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
 		final ParametersByIndex parametersByIndex = new ParametersByIndex(parameters, target);
 		
-		final ArrayList<Object> newList = new ArrayList<Object>();
-		
 		final Target<?> elementTarget = elementTarget(target);
+		
+		final ArrayList<Object> newList = Lists.newArrayListWithExpectedSize(parametersByIndex.count());
 		for (final Integer index : parametersByIndex.indexes()) {
 			final Parameters atIndex = parametersByIndex.at(index);
 			final Object newElement = listElementInstantiator.instantiate(elementTarget , atIndex); 

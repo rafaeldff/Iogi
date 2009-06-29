@@ -1,6 +1,5 @@
-package iogi.conversion;
+package iogi.exceptions;
 
-import iogi.exceptions.InvalidTypeException;
 
 public class ConversionException extends InvalidTypeException {
 	private static final long serialVersionUID = 1L;

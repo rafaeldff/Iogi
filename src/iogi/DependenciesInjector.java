@@ -5,28 +5,26 @@ package iogi;
 
 import iogi.reflection.Target;
 import iogi.spi.DependencyProvider;
-import iogi.util.Quantification;
 
 import java.util.Collection;
-
-import com.google.common.base.Predicate;
 
 public class DependenciesInjector {
 	private final DependencyProvider dependencyProvider;
 
-	public DependenciesInjector(DependencyProvider dependencyProvider) {
+	public DependenciesInjector(final DependencyProvider dependencyProvider) {
 		this.dependencyProvider = dependencyProvider;
 	}
 	
 	public boolean canObtainDependenciesFor(final Collection<Target<?>> targets) {
-		return Quantification.forAll(targets, new Predicate<Target<?>>() {
-			public boolean apply(Target<?> input) {
-				return dependencyProvider.canProvide(input);
+		for (final Target<?> target : targets) {
+			if (!dependencyProvider.canProvide(target)) {
+				return false;
 			}
-		});
+		}
+		return true;
 	}
 	
-	public Object provide(Target<?> target) {
+	public Object provide(final Target<?> target) {
 		return dependencyProvider.provide(target);
 	}
 

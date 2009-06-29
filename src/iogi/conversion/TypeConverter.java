@@ -1,6 +1,7 @@
 package iogi.conversion;
 
 import iogi.Instantiator;
+import iogi.exceptions.ConversionException;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
 

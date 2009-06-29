@@ -31,9 +31,9 @@ public class CyclingListInstantiator implements Instantiator<List<Object>> {
 		Assert.isNotARawType(target);
 		
 		final Target<Object> listElementTarget = target.typeArgument(0);
-		final Collection<List<Parameter>> parameterLists = breakList(parameters.getParametersList(target));
+		final Collection<List<Parameter>> parameterLists = breakList(parameters.forTarget(target));
 		
-		final ArrayList<Object> newList = new ArrayList<Object>();
+		final ArrayList<Object> newList = Lists.newArrayListWithExpectedSize(parameterLists.size());
 		for (final List<Parameter> parameterListForAnElement : parameterLists) {
 			final Object listElement = elementInstantiator.instantiate(listElementTarget, new Parameters(parameterListForAnElement));
 			newList.add(listElement);
@@ -43,18 +43,14 @@ public class CyclingListInstantiator implements Instantiator<List<Object>> {
 	}
 
 	private Collection<List<Parameter>> breakList(final List<Parameter> parameters) {
+		if (parameters.isEmpty())
+			return Collections.emptyList();
+		
 		final int listSize = countToFirstRepeatedParameterName(parameters);
-		
-		if (listSize == 0)
-			return Collections.<List<Parameter>>emptyList(); 
-		
 		return Lists.partition(parameters, listSize);
 	}
 
 	private int countToFirstRepeatedParameterName(final List<Parameter> parameters) {
-		if (parameters.isEmpty())
-			return 0;
-		
 		int count = 1;
 		final ListIterator<Parameter> parametersIterator = parameters.listIterator();
 		final String firstParameterName = parametersIterator.next().getName();
@@ -68,5 +64,4 @@ public class CyclingListInstantiator implements Instantiator<List<Object>> {
 		
 		return count;
 	}
-
 }

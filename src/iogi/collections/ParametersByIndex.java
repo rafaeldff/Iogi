@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
 
 class ParametersByIndex {
 	private static final Pattern firstComponentPattern = Pattern.compile("[^\\[]+\\[(\\d+)\\]");
@@ -22,14 +23,14 @@ class ParametersByIndex {
 		this.firstComponentToParameterMap = groupByIndex(parameters, target);
 	}
 
-	private ArrayListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters, final Target<?> target) {
-		final ArrayListMultimap<Integer, Parameter> map = ArrayListMultimap.create();
-		for (final Parameter parameter : parameters.getParametersList(target)) {
+	private ListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters, final Target<?> target) {
+		final ListMultimap<Integer, Parameter> map = ArrayListMultimap.create();
+		for (final Parameter parameter : parameters.forTarget(target)) {
 			final Integer index = extractIndexOrReturnNull(parameter);
 			if (index != null) 
 				map.put(index, parameter);
 		}
-		return map;
+		return Multimaps.unmodifiableListMultimap(map);
 	}
 
 	private Integer extractIndexOrReturnNull(final Parameter parameter) {

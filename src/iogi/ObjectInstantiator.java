@@ -4,7 +4,6 @@ import iogi.exceptions.InvalidTypeException;
 import iogi.exceptions.NoConstructorFoundException;
 import iogi.parameters.Parameters;
 import iogi.reflection.ClassConstructor;
-import iogi.reflection.Primitives;
 import iogi.reflection.Target;
 import iogi.spi.DependencyProvider;
 
@@ -31,7 +30,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 
 	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
-		return !Primitives.isPrimitiveLike(target.getClassType()) && target.getClassType() != String.class;
+		return true;
 	}
 
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
@@ -94,7 +93,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		for (final Method setterMethod: new Mirror().on(object.getClass()).reflectAll().setters()) {
 			foundSetters.add(new Setter(setterMethod, object));
 		}
-		return foundSetters;
+		return Collections.unmodifiableList(foundSetters);
 	}
 
 	private static class Setter {

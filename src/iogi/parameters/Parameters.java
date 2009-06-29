@@ -13,6 +13,8 @@ import java.util.Set;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -34,10 +36,10 @@ public class Parameters {
 			firstNameComponentToParameterMap.put(parameter.getFirstNameComponent(), parameter);
 		}
 		
-		return firstNameComponentToParameterMap;
+		return Multimaps.unmodifiableListMultimap(firstNameComponentToParameterMap);
 	}
 
-	public List<Parameter> getParametersList(final Target<?> target) {
+	public List<Parameter> forTarget(final Target<?> target) {
 		return parametersByFirstNameComponent.get(target.getName());
 	}
 	
@@ -54,9 +56,9 @@ public class Parameters {
 	}
 	
 	public Parameters strip(final Target<?> target) {
-		final List<Parameter> relevantParameters = getParametersList(target);
+		final List<Parameter> relevantParameters = forTarget(target);
 		
-		final ArrayList<Parameter> striped = new ArrayList<Parameter>(relevantParameters.size());
+		final List<Parameter> striped = Lists.newArrayListWithCapacity(relevantParameters.size());
 		
 		for (final Parameter parameter : relevantParameters) {
 			striped.add(parameter.strip());
@@ -81,7 +83,7 @@ public class Parameters {
 	}
 	
 	public boolean hasRelatedTo(final Target<?> target) {
-		return !getParametersList(target).isEmpty();
+		return !forTarget(target).isEmpty();
 	}
 	
 	public String signatureString() {

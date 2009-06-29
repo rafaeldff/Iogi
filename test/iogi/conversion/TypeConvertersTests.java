@@ -3,6 +3,7 @@ package iogi.conversion;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import iogi.exceptions.ConversionException;
 import iogi.parameters.Parameter;
 import iogi.parameters.Parameters;
 import iogi.reflection.Target;
@@ -174,6 +175,13 @@ public class TypeConvertersTests {
 		final Target<Object> target = new Target<Object>(Stooges.class, "foo");
 		final String overNineThousand = "9001";
 		instantiator.instantiate(target, new Parameters(new Parameter("foo", overNineThousand)));
+	}
+	
+	@Test(expected=ConversionException.class)
+	public void enumConverterWillThrowAnExceptionIfGivenANonEnumClass() throws Exception {
+		final TypeConverter<Object> instantiator = new EnumConverter();
+		final Target<Object> target = new Target<Object>(String.class, "foo");
+		instantiator.instantiate(target, new Parameters(new Parameter("foo", "baz")));
 	}
 	
 	static enum Stooges {

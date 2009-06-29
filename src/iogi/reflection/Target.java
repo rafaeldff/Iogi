@@ -11,7 +11,10 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.ImmutableMap;
 
 public class Target<T> {
 	public static <T> Target<T> create(final Class<T> type, final String name) {
@@ -103,8 +106,8 @@ public class Target<T> {
 	private boolean canInstantiateOrInject(final ClassConstructor classConstructor, final Parameters relevantParameters,
 			final DependenciesInjector dependenciesInjector) {
 		final Collection<Target<?>> uninstatiableByParameters = classConstructor.notFulfilledBy(relevantParameters);
-		final boolean canObtainDependenciesFor = dependenciesInjector.canObtainDependenciesFor(uninstatiableByParameters);
-		return canObtainDependenciesFor;
+		final boolean canObtainDependencies = dependenciesInjector.canObtainDependenciesFor(uninstatiableByParameters);
+		return canObtainDependencies;
 	}
 	
 	@Override
@@ -141,5 +144,35 @@ public class Target<T> {
 	@Override
 	public String toString() {
 		return String.format("Target(name=%s, type=%s)", name, getClassType());
+	}
+	
+	private static class Primitives {
+		private static final Map<Class<?>, Class<?>> primitiveToObject = ImmutableMap.<Class<?>, Class<?>>builder()
+			.put(Boolean.TYPE, Boolean.class)
+			.put(Character.TYPE, Character.class)
+			.put(Byte.TYPE, Byte.class)
+			.put(Short.TYPE, Short.class)
+			.put(Integer.TYPE, Integer.class)
+			.put(Long.TYPE, Long.class)
+			.put(Float.TYPE, Float.class)
+			.put(Double.TYPE, Double.class)
+			.put(Void.TYPE, Void.class)
+			.build();
+
+		private Primitives() {}
+
+		/**
+		 * @param type
+		 * @return true iff type represents a primitive (like int.class) or a primitive wrapper (like Integer.class)
+		 */
+		public static boolean isPrimitiveLike(final Class<?> type) {
+			return primitiveToObject.keySet().contains(type) || primitiveToObject.values().contains(type);
+		}
+
+		@SuppressWarnings("unchecked")
+		public static <T> T primitiveCast(final Object object, final Class<T> type) {
+			return (T) primitiveToObject.get(type).cast(object);
+		}
+		
 	}
 }
