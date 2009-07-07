@@ -82,7 +82,7 @@ public class Iogi {
 	
 	/*
 	 *	This is an ugly hack to enable cyclic references between allInstantiators
-	 * 	and some of its components - like objectInstantiator - that require a 
+	 * 	and some of its components - such as objectInstantiator - that require a 
 	 * 	recursive reference to allInstantiators.
 	 */
 	private final class DelegateToAllInstantatiors implements Instantiator<Object> {
