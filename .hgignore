@@ -6,4 +6,5 @@ syntax: glob
 .settings/*
 bin
 bin/*
-
+build/*
+build

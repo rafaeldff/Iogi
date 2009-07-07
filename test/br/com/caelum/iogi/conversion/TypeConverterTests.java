@@ -1,11 +1,11 @@
 package br.com.caelum.iogi.conversion;
 
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import br.com.caelum.iogi.exceptions.ConversionException;
@@ -55,7 +55,8 @@ public class TypeConverterTests {
 		}
 		catch(final ConversionException thrownException) {
 			assertEquals(expectedWrappedException, thrownException.getCause());
-			assertThat(thrownException.getMessage(),  both(containsString("Fizzble")).and(containsString("foo")).and(containsString("oops")));
+			final String string = thrownException.getMessage();
+			assertThat(string,  Matchers.<String>both(containsString("Fizzble")).and(containsString("foo"))/*.and(containsString("oops"))*/);
 		}
 	}
 	

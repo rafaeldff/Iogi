@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     Jul 7, 2009 11:42:59 AM                                                        
+
+     Immutable Object Graph Instantiation    
+     Library for instantiating graphs of objects
+                   
+     rafaelf                                                                
+     ====================================================================== -->
+<project name="Immutable Object Graph Instantiation" default="test">
+	<description>
+            Library for instantiating graphs of objects
+    </description>
+
+	<property name="main.source.dir" value="${basedir}/src"/>
+	<property name="tests.source.dir" value="${basedir}/test"/>
+
+	<property name="main.libs.dir" value="${basedir}/lib"/>
+	<property name="tests.libs.dir" value="${basedir}/testLib"/>
+
+	<property name="build.dir" value="${basedir}/build"/>
+	<property name="main.classes.dir" value="${build.dir}/main/classes"/>
+	<property name="tests.classes.dir" value="${build.dir}/tests/classes"/>
+	<property name="tests.reports.dir" value="${build.dir}/tests/reports"/>
+
+	<path id="mainClasspath">
+		<fileset dir="${main.libs.dir}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<path id="testsClasspath">
+		<path refid="mainClasspath"/>
+		<fileset dir="${tests.libs.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<path path="${main.classes.dir}"/>
+		<path path="${tests.classes.dir}"/>
+	</path>
+
+	<target name="test" depends="testsCompiled" description="Library for instantiating graphs of objects">
+		<junit  printsummary="true" showoutput="true" 
+			errorproperty="${testsHaveFailed}" failureproperty="${testsHaveFailed}" >
+			<classpath>
+				<path refid="testsClasspath"/>
+			</classpath>
+			<formatter type="brief" usefile="false" />
+			<formatter type="xml" />
+			<batchtest todir="${tests.reports.dir}">
+				<fileset dir="${tests.classes.dir}" includes="**/*Tests.class" id="testsFilest"/>
+			</batchtest>
+		</junit>
+		<fail if="${testsHaveFailed}" message="Tests have failed."/>
+	</target>
+
+	<target name="testsCompiled" depends="mainCompiled">
+		<javac classpathref="testsClasspath" srcdir="${tests.source.dir}" destdir="${tests.classes.dir}" debug="true"/>
+	</target>
+
+	<target name="mainCompiled" depends="buildPrepared">
+		<javac classpathref="mainClasspath" srcdir="${main.source.dir}" destdir="${main.classes.dir}" debug="true"/>
+	</target>
+
+	<target name="buildPrepared">
+		<mkdir dir="${main.classes.dir}"/>
+		<mkdir dir="${tests.classes.dir}"/>
+		<mkdir dir="${tests.reports.dir}"/>
+	</target>
+
+
+	<target name="clean" description="Delete build dir">
+		<delete dir="${build.dir}" />
+	</target>
+
+
+</project>
