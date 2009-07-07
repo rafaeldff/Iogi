@@ -23,6 +23,9 @@
 	<property name="tests.classes.dir" value="${build.dir}/tests/classes"/>
 	<property name="tests.reports.dir" value="${build.dir}/tests/reports"/>
 
+	<property name="main.target.dir" value="${build.dir}/target" />
+	<property name="jar.file" value="${main.target.dir}/iogi.jar" />
+	
 	<path id="mainClasspath">
 		<fileset dir="${main.libs.dir}">
 			<include name="**/*.jar"/>
@@ -37,6 +40,15 @@
 		<path path="${main.classes.dir}"/>
 		<path path="${tests.classes.dir}"/>
 	</path>
+	
+    <target name="jar" depends="testsPassed" description="description">
+		<jar destfile="${jar.file}">
+			<fileset dir="${main.classes.dir}" includes="**/*.class"/>
+		</jar>
+    </target>
+	
+	<target name="testsPassed" depends="test">
+	</target>
 
 	<target name="test" depends="testsCompiled" description="Library for instantiating graphs of objects">
 		<junit  printsummary="true" showoutput="true" 
@@ -63,6 +75,7 @@
 
 	<target name="buildPrepared">
 		<mkdir dir="${main.classes.dir}"/>
+		<mkdir dir="${main.target.dir}"/>
 		<mkdir dir="${tests.classes.dir}"/>
 		<mkdir dir="${tests.reports.dir}"/>
 	</target>
@@ -71,6 +84,4 @@
 	<target name="clean" description="Delete build dir">
 		<delete dir="${build.dir}" />
 	</target>
-
-
 </project>
