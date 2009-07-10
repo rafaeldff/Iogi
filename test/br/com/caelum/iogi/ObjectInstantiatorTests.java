@@ -34,7 +34,7 @@ public class ObjectInstantiatorTests {
 	}
 
 	@Test
-	public void canInstantiateIfNoAppropriateConstructorIsFound() throws Exception {
+	public void canInstantiateIfThereAreExtraParametersInTheRequest() throws Exception {
 		final Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class,  "root");
 		final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
 		final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
