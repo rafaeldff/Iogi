@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.Test;
 
 import br.com.caelum.iogi.exceptions.InvalidTypeException;
-import br.com.caelum.iogi.exceptions.NoConstructorFoundException;
 import br.com.caelum.iogi.fixtures.AbstractClass;
 import br.com.caelum.iogi.fixtures.MixedPrimitiveAndConstructibleArguments;
 import br.com.caelum.iogi.fixtures.OneArgOneProperty;
@@ -172,11 +171,12 @@ public class ObjectInstantiationTests {
 		assertEquals(-2, list.get(1).getAnInteger());
 	}
 	
-	@Test(expected=NoConstructorFoundException.class)
-	public void testWillThrowANoConstructorFoundExceptionIfNoAdequateConstructorIsFound() {
+	@Test
+	public void testWillReturnNullIfNoAdequateConstructorIsFound() {
 		final Parameter aParameter = new Parameter("root.a", "");
 		final Target<OneIntegerPrimitive> target = Target.create(OneIntegerPrimitive.class, "root");
-		iogi.instantiate(target, aParameter);
+		final OneIntegerPrimitive object = iogi.instantiate(target, aParameter);
+		assertNull(object);
 	}
 	
 	@Test(expected=InvalidTypeException.class)

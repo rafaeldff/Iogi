@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.jmock.Expectations;
@@ -97,8 +96,9 @@ public class ObjectInstantiatorTests {
 			will(returnValue(injectedValue));
 		}});
 		
-		final Object object = new ObjectInstantiator(stubInstantiator, mockDependencyProvider).instantiate(rootTarget, new Parameters(Collections.<Parameter>emptyList()));
-		assertSame(injectedValue, object);
+		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, mockDependencyProvider);
+		final OneConstructibleArgument object = (OneConstructibleArgument) objectInstantiator.instantiate(rootTarget, new Parameters(Collections.<Parameter>emptyList()));
+		assertSame(injectedValue, object.getArg());
 	}
 	
 	public static class TwoCompatibleConstructors {

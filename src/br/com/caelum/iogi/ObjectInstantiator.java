@@ -10,7 +10,6 @@ import java.util.List;
 
 import net.vidageek.mirror.dsl.Mirror;
 import br.com.caelum.iogi.exceptions.InvalidTypeException;
-import br.com.caelum.iogi.exceptions.NoConstructorFoundException;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.ClassConstructor;
 import br.com.caelum.iogi.reflection.Target;
@@ -35,13 +34,12 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
 		expectingAConcreteTarget(target);
 		
-		if (!parameters.hasRelatedTo(target))
-			return null;
-		
 		final Parameters strippedParameters = parameters.strip(target);
 		
 		final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(strippedParameters, dependenciesInjector);
-		expectingAtLeastOneCompatibleConstructor(compatibleConstructors, target, strippedParameters);
+		if (compatibleConstructors.isEmpty()) {
+			return null;
+		}
 		
 		final List<ClassConstructor> orderedConstructors = fromLargestToSmallest(compatibleConstructors);
 		final ClassConstructor largestMatchingConstructor = orderedConstructors.iterator().next();
@@ -55,15 +53,6 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	private <T> void expectingAConcreteTarget(final Target<T> target) {
 		if (!target.isInstantiable())
 			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
-	}
-
-	private <T> void expectingAtLeastOneCompatibleConstructor(final Collection<ClassConstructor> matchingConstructors, final Target<?> target, final Parameters relevantParameters) {
-		if (matchingConstructors.isEmpty()) {
-			final String parameterList =  relevantParameters.signatureString();
-			throw new NoConstructorFoundException("No constructor found to instantiate a %s named %s " +
-					"given parameter names %s",
-					target.getClassType(), target.getName(), parameterList);
-		}
 	}
 
 	private List<ClassConstructor> fromLargestToSmallest(final Collection<ClassConstructor> matchingConstructors) {
