@@ -30,6 +30,7 @@ import com.thoughtworks.paranamer.CachingParanamer;
  *
  */
 public class ClassConstructor {
+	private static final Mirror MIRROR = new Mirror();
 	private static final CachingParanamer paranamer = new CachingParanamer(new BytecodeReadingParanamer());
 	private final LinkedHashSet<String> names;
 	private final Constructor<?> constructor;
@@ -70,7 +71,7 @@ public class ClassConstructor {
 			argumentValues.add(value);
 		}
 
-		return new Mirror().on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
+		return MIRROR.on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {

@@ -18,6 +18,7 @@ import br.com.caelum.iogi.spi.DependencyProvider;
 import com.google.common.collect.Lists;
 
 public class ObjectInstantiator implements Instantiator<Object> {
+	private static final Mirror MIRROR = new Mirror();
 	private final Instantiator<Object> argumentInstantiator;
 	private final DependenciesInjector dependenciesInjector;
 	
@@ -77,8 +78,9 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	}
 	
 	private Collection<Setter> settersIn(final Object object) {
-		final ArrayList<Setter> foundSetters = new ArrayList<Setter>();
-		for (final Method setterMethod: new Mirror().on(object.getClass()).reflectAll().setters()) {
+		final ArrayList<Setter> foundSetters = 
+			new ArrayList<Setter>();
+		for (final Method setterMethod: MIRROR.on(object.getClass()).reflectAll().setters()) {
 			foundSetters.add(new Setter(setterMethod, object));
 		}
 		return Collections.unmodifiableList(foundSetters);
@@ -94,7 +96,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		}
 		
 		public void set(final Object argument) {
-			new Mirror().on(object).invoke().method(setter).withArgs(argument);
+			MIRROR.on(object).invoke().method(setter).withArgs(argument);
 		}
 		
 		public String propertyName() {
