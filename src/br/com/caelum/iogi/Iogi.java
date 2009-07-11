@@ -31,6 +31,7 @@ import br.com.caelum.iogi.conversion.ShortWrapperConverter;
 import br.com.caelum.iogi.conversion.StringConverter;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
+import br.com.caelum.iogi.reflection.ParanamerParameterNamesProvider;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
 import br.com.caelum.iogi.spi.LocaleProvider;
@@ -66,7 +67,7 @@ public class Iogi {
 			.add(fallbackTo(new ShortPrimitiveConverter(), (short)0))
 			.add(new ArrayInstantiator(new DelegateToAllInstantatiors()))
 			.add(new ListInstantiator(new DelegateToAllInstantatiors()))
-			.add(new ObjectInstantiator(new DelegateToAllInstantatiors(), dependencyProvider))
+			.add(new ObjectInstantiator(new DelegateToAllInstantatiors(), dependencyProvider, new ParanamerParameterNamesProvider()))
 			.build();
 	
 		this.allInstantiators = new MultiInstantiator(all);

@@ -14,6 +14,7 @@ import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.ClassConstructor;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
+import br.com.caelum.iogi.spi.ParameterNamesProvider;
 
 import com.google.common.collect.Lists;
 
@@ -21,10 +22,12 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	private static final Mirror MIRROR = new Mirror();
 	private final Instantiator<Object> argumentInstantiator;
 	private final DependenciesInjector dependenciesInjector;
+	private final ParameterNamesProvider parameterNamesProvider;
 	
-	public ObjectInstantiator(final Instantiator<Object> argumentInstantiator, final DependencyProvider dependencyProvider) {
+	public ObjectInstantiator(final Instantiator<Object> argumentInstantiator, final DependencyProvider dependencyProvider, final ParameterNamesProvider parameterNamesProvider) {
 		this.argumentInstantiator = argumentInstantiator;
 		this.dependenciesInjector = new DependenciesInjector(dependencyProvider);
+		this.parameterNamesProvider = parameterNamesProvider;
 	}
 
 	@Override
@@ -37,7 +40,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		
 		final Parameters strippedParameters = parameters.strip(target);
 		
-		final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(strippedParameters, dependenciesInjector);
+		final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(strippedParameters, dependenciesInjector, parameterNamesProvider);
 		if (compatibleConstructors.isEmpty()) {
 			return null;
 		}

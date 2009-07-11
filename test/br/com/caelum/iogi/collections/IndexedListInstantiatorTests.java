@@ -1,10 +1,10 @@
 package br.com.caelum.iogi.collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public class IndexedListInstantiatorTests {
 	@Test
 	public void canInstantiateAListOfStringsAtSpacedIntervals() throws Exception {
 		final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfInteger").getGenericType();
-		final Target<List<Integer>> target = new Target<List<Integer>>(parameterizedListType, "list");
+		final Target<List<Integer>> target = new Target<List<Integer>>(parameterizedListType, "list" );
 		
 		final Parameter parameterAtIndex0 = new Parameter("list[0]", "42");
 		final Parameter parameterAtIndex10 = new Parameter("list[10]", "666");

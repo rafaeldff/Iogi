@@ -74,7 +74,7 @@ public class OgnlGenericTypesSupportTestVRaptorTest {
 	@Test
     public void canInstantiatingStringsInAListSettingItsInternalValueWithoutInvokingConverters1() throws Exception {
         final Type type = ContainsParameterizedList.class.getField("listOfString").getGenericType();
-		final Target<List<String>> target = new Target<List<String>>(type, "legLength");
+		final Target<List<String>> target = new Target<List<String>>(type, "legLength" );
 		final List<String> legs = iogi.instantiate(target , new Parameter("legLength[0]", "small"), new Parameter("legLength[1]", "big"));
         assertThat(legs.get(1), is(equalTo("big")));
     }

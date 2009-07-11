@@ -13,6 +13,7 @@ import java.util.Set;
 
 import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.parameters.Parameters;
+import br.com.caelum.iogi.spi.ParameterNamesProvider;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -61,10 +62,10 @@ public class Target<T> {
 
 	}
 	
-	public Set<ClassConstructor> classConstructors() {
+	public Set<ClassConstructor> classConstructors(final ParameterNamesProvider parameterNamesProvider) {
 		final HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
 		for (final Constructor<?> constructor : getClassType().getConstructors()) {
-			classConstructors.add(new ClassConstructor(constructor));
+			classConstructors.add(new ClassConstructor(constructor, parameterNamesProvider));
 		}
 		return classConstructors;
 	}
@@ -92,10 +93,10 @@ public class Target<T> {
 		return Target.create(arrayElementType(), getName());
 	}
 
-	public Collection<ClassConstructor> compatibleConstructors(final Parameters relevantParameters, final DependenciesInjector dependenciesInjector) {
+	public Collection<ClassConstructor> compatibleConstructors(final Parameters relevantParameters, final DependenciesInjector dependenciesInjector, final ParameterNamesProvider parameterNamesProvider) {
 		final LinkedList<ClassConstructor> compatible = new LinkedList<ClassConstructor>();
 		
-		for (final ClassConstructor classConstructor : classConstructors()) {
+		for (final ClassConstructor classConstructor : classConstructors(parameterNamesProvider)) {
 			if (canInstantiateOrInject(classConstructor, relevantParameters, dependenciesInjector))
 				compatible.add(classConstructor);
 		}

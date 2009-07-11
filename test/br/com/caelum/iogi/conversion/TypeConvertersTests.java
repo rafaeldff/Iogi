@@ -149,7 +149,7 @@ public class TypeConvertersTests {
 	@Test
 	public void enumConverterCanConvertLiterals() throws Exception {
 		final TypeConverter<Object> instantiator = new EnumConverter();
-		final Target<Object> target = new Target<Object>(Stooges.class, "foo");
+		final Target<Object> target = new Target<Object>(Stooges.class, "foo" );
 		assertTrue(instantiator.isAbleToInstantiate(target));
 		final Stooges object = (Stooges) instantiator.instantiate(target, new Parameters(new Parameter("foo", "CURLY")));
 		assertEquals(Stooges.CURLY, object);

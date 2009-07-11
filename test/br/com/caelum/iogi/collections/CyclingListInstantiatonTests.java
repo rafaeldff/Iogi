@@ -1,9 +1,8 @@
 package br.com.caelum.iogi.collections;
 
-import static org.hamcrest.Matchers.contains;
-
-import static org.junit.Assert.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Type;
@@ -36,7 +35,7 @@ public class CyclingListInstantiatonTests {
 		
 		final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfOneString").getGenericType();
 		
-		final Target<List> target = new Target(parameterizedListType, "root");
+		final Target<List> target = new Target(parameterizedListType, "root" );
 		final List objects = iogi.instantiate(target, firstParameter, secondParameter);
 		
 		assertEquals(2, objects.size());

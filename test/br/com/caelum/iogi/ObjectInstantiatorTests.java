@@ -18,6 +18,7 @@ import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
 import br.com.caelum.iogi.fixtures.OneStringOneConstructible;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
+import br.com.caelum.iogi.reflection.ParanamerParameterNamesProvider;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
@@ -52,7 +53,7 @@ public class ObjectInstantiatorTests {
 		final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
 		final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
 		
-		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
+		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider(), new ParanamerParameterNamesProvider());
 		final Object object = objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
 		assertNotNull(object);
 	}
@@ -63,7 +64,7 @@ public class ObjectInstantiatorTests {
 		final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
 		final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
 		
-		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
+		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider(), new ParanamerParameterNamesProvider());
 		final ConstructorAndProperty object = (ConstructorAndProperty) objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
 		assertEquals("x", object.getConstructorArg());
 		assertEquals("x", object.getPropertyValue());
@@ -77,7 +78,7 @@ public class ObjectInstantiatorTests {
 		 final Parameter c = new Parameter("root.c", "x");
 		 final Parameter irrelevant = new Parameter("root.irrelevant", "x");
 		 
-		 final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
+		 final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider(), new ParanamerParameterNamesProvider());
 		 final TwoCompatibleConstructors object = (TwoCompatibleConstructors) objectInstantiator.instantiate(target, new Parameters(a, b, c, irrelevant));
 		 assertTrue(object.largestWasCalled);
 	}
@@ -97,7 +98,7 @@ public class ObjectInstantiatorTests {
 			will(returnValue(injectedValue));
 		}});
 		
-		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, mockDependencyProvider);
+		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, mockDependencyProvider, new ParanamerParameterNamesProvider());
 		final OneConstructibleArgument object = (OneConstructibleArgument) objectInstantiator.instantiate(rootTarget, new Parameters(Collections.<Parameter>emptyList()));
 		assertSame(injectedValue, object.getArg());
 	}
@@ -119,7 +120,7 @@ public class ObjectInstantiatorTests {
 			will(returnValue(injectedValue));
 		}});
 		
-		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, mockDependencyProvider);
+		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, mockDependencyProvider, new ParanamerParameterNamesProvider());
 		final OneStringOneConstructible object = (OneStringOneConstructible) objectInstantiator.instantiate(rootTarget, parameters);
 		
 		assertSame(injectedValue, object.getTwo());

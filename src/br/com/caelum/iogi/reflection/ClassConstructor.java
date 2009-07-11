@@ -1,9 +1,10 @@
 package br.com.caelum.iogi.reflection;
 
+import static br.com.caelum.iogi.util.IogiCollections.zip;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -16,37 +17,21 @@ import net.vidageek.mirror.dsl.Mirror;
 import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.Instantiator;
 import br.com.caelum.iogi.parameters.Parameters;
-import static br.com.caelum.iogi.util.IogiCollections.*;
+import br.com.caelum.iogi.spi.ParameterNamesProvider;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.thoughtworks.paranamer.BytecodeReadingParanamer;
-import com.thoughtworks.paranamer.CachingParanamer;
 
-/**
- * Equality based on constructor names; 
- *
- */
 public class ClassConstructor {
 	private static final Mirror MIRROR = new Mirror();
-	private static final CachingParanamer paranamer = new CachingParanamer(new BytecodeReadingParanamer());
 	private final LinkedHashSet<String> names;
 	private final Constructor<?> constructor;
 	
-	public ClassConstructor(final Constructor<?> constructor) {
-		this(constructor, parameterNames(constructor));
-	}
-	
-	private ClassConstructor(final Constructor<?> constructor, final LinkedHashSet<String> parameterNames) {
+	public ClassConstructor(final Constructor<?> constructor, final ParameterNamesProvider parameterNamesProvider) {
 		this.constructor = constructor;
-		this.names = parameterNames;
-	}
-	
-	private static LinkedHashSet<String> parameterNames(final Constructor<?> constructor) {
-		final String[] lookedUpNames = paranamer.lookupParameterNames(constructor);
-		return Sets.newLinkedHashSet(Arrays.asList(lookedUpNames));
+		this.names = Sets.newLinkedHashSet(parameterNamesProvider.lookupParameterNames(constructor));
 	}
 	
 	public Set<String> getNames() {
