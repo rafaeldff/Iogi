@@ -15,6 +15,7 @@ import br.com.caelum.iogi.fixtures.OneArgOneProperty;
 import br.com.caelum.iogi.fixtures.OneConstructibleArgument;
 import br.com.caelum.iogi.fixtures.OneDoublePrimitive;
 import br.com.caelum.iogi.fixtures.OneGenericListProperty;
+import br.com.caelum.iogi.fixtures.OneIntOneStringAndOneObject;
 import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
 import br.com.caelum.iogi.fixtures.OneString;
 import br.com.caelum.iogi.fixtures.TwoArguments;
@@ -231,6 +232,14 @@ public class ObjectInstantiationTests {
 		final HasDependency object = iogi.instantiate(target, parameterForInstantiableArg);
 		assertEquals("instantiable ok", object.getInstantiable());
 		assertEquals("uninstantiable ok", object.getUninstantiable());
+	}
+	
+	@Test
+	public void willReturnNullIfThereAreNoParametersNorDependenciesAtLeastForOneFormalParameter() throws Exception {
+		final Target<OneIntOneStringAndOneObject> target = Target.create(OneIntOneStringAndOneObject.class, "root");
+		final OneIntOneStringAndOneObject object = iogi.instantiate(target, new Parameter("root.anObject.anInteger", "111"));
+		
+		assertNull(object);
 	}
 	
 	public static class HasDependency {

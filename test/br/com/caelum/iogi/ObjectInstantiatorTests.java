@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import br.com.caelum.iogi.fixtures.OneConstructibleArgument;
 import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
+import br.com.caelum.iogi.fixtures.OneStringOneConstructible;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.Target;
@@ -99,6 +100,30 @@ public class ObjectInstantiatorTests {
 		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, mockDependencyProvider);
 		final OneConstructibleArgument object = (OneConstructibleArgument) objectInstantiator.instantiate(rootTarget, new Parameters(Collections.<Parameter>emptyList()));
 		assertSame(injectedValue, object.getArg());
+	}
+	
+	@Test
+	public void willCallDependencyInjectorForUninstantiabelParametersAlongsideInstantiablaParameters() {
+		final DependencyProvider mockDependencyProvider = context.mock(DependencyProvider.class);
+		
+		final Target<OneStringOneConstructible> rootTarget = Target.create(OneStringOneConstructible.class, "root");
+		final Parameters parameters = new Parameters(new Parameter("root.one", "x"));
+		final Target<OneIntegerPrimitive> injectableTarget = Target.create(OneIntegerPrimitive.class, "two");
+		
+		final OneIntegerPrimitive injectedValue = new OneIntegerPrimitive(47);
+		context.checking(new Expectations() {{
+			allowing(mockDependencyProvider).canProvide(with(equal(injectableTarget)));
+			will(returnValue(true));
+			
+			atLeast(1).of(mockDependencyProvider).provide(injectableTarget);
+			will(returnValue(injectedValue));
+		}});
+		
+		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, mockDependencyProvider);
+		final OneStringOneConstructible object = (OneStringOneConstructible) objectInstantiator.instantiate(rootTarget, parameters);
+		
+		assertSame(injectedValue, object.getTwo());
+		assertEquals("x", object.getOne());
 	}
 	
 	public static class TwoCompatibleConstructors {
