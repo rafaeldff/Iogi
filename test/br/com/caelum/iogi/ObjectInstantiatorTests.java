@@ -2,16 +2,24 @@ package br.com.caelum.iogi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import br.com.caelum.iogi.fixtures.OneConstructibleArgument;
+import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.Target;
+import br.com.caelum.iogi.spi.DependencyProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
 
 public class ObjectInstantiatorTests {
@@ -31,6 +39,11 @@ public class ObjectInstantiatorTests {
 			will(returnValue("x"));
 		}});
 		
+	}
+	
+	@After
+	public void tearDown() {
+		context.assertIsSatisfied();
 	}
 
 	@Test
@@ -67,6 +80,25 @@ public class ObjectInstantiatorTests {
 		 final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider());
 		 final TwoCompatibleConstructors object = (TwoCompatibleConstructors) objectInstantiator.instantiate(target, new Parameters(a, b, c, irrelevant));
 		 assertTrue(object.largestWasCalled);
+	}
+	
+	@Test
+	public void willCallDependencyInjectorForUninstantiabelParameters() throws Exception {
+		final Target<OneConstructibleArgument> rootTarget = Target.create(OneConstructibleArgument.class, "root");
+		final DependencyProvider mockDependencyProvider = context.mock(DependencyProvider.class);
+		final Target<OneIntegerPrimitive> argTarget = Target.create(OneIntegerPrimitive.class, "arg");
+		
+		final OneIntegerPrimitive injectedValue = new OneIntegerPrimitive(47);
+		context.checking(new Expectations() {{
+			atLeast(1).of(mockDependencyProvider).canProvide(with(equal(argTarget)));
+			will(returnValue(true));
+			
+			atLeast(1).of(mockDependencyProvider).provide(argTarget);
+			will(returnValue(injectedValue));
+		}});
+		
+		final Object object = new ObjectInstantiator(stubInstantiator, mockDependencyProvider).instantiate(rootTarget, new Parameters(Collections.<Parameter>emptyList()));
+		assertSame(injectedValue, object);
 	}
 	
 	public static class TwoCompatibleConstructors {
