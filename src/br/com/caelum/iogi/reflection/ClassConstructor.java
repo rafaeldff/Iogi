@@ -3,19 +3,25 @@ package br.com.caelum.iogi.reflection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import net.vidageek.mirror.dsl.Mirror;
 import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.Instantiator;
 import br.com.caelum.iogi.parameters.Parameters;
+import static br.com.caelum.iogi.util.IogiCollections.*;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.CachingParanamer;
 
@@ -25,21 +31,21 @@ import com.thoughtworks.paranamer.CachingParanamer;
  */
 public class ClassConstructor {
 	private static final CachingParanamer paranamer = new CachingParanamer(new BytecodeReadingParanamer());
-	private final Set<String> names;
+	private final LinkedHashSet<String> names;
 	private final Constructor<?> constructor;
-	
-	private ClassConstructor(final Constructor<?> constructor, final Set<String> parameterNames) {
-		this.constructor = constructor;
-		this.names = parameterNames;
-	}
 	
 	public ClassConstructor(final Constructor<?> constructor) {
 		this(constructor, parameterNames(constructor));
 	}
 	
-	private static Set<String> parameterNames(final Constructor<?> constructor) {
+	private ClassConstructor(final Constructor<?> constructor, final LinkedHashSet<String> parameterNames) {
+		this.constructor = constructor;
+		this.names = parameterNames;
+	}
+	
+	private static LinkedHashSet<String> parameterNames(final Constructor<?> constructor) {
 		final String[] lookedUpNames = paranamer.lookupParameterNames(constructor);
-		return ImmutableSet.of(lookedUpNames);
+		return Sets.newLinkedHashSet(Arrays.asList(lookedUpNames));
 	}
 	
 	public Set<String> getNames() {
@@ -78,13 +84,14 @@ public class ClassConstructor {
 	}
 	
 	private List<Target<?>> parameterTargets() {
-		final Type[] parameterTypes = constructor.getGenericParameterTypes();
-		final String[] parameterNames = paranamer.lookupParameterNames(constructor);
+		final Iterator<Type> typesIterator = Iterators.forArray(constructor.getGenericParameterTypes());
+		final Iterator<String> namesIterator = names.iterator();
+		final Iterator<Entry<Type, String>> parametersIterator = zip(typesIterator, namesIterator);
 		
 		final ArrayList<Target<?>> targets = Lists.newArrayList();
-		for (int i = 0; i < parameterNames.length; i++) {
-			final String name = parameterNames[i];
-			targets.add(new Target<Object>(parameterTypes[i], name));
+		while (parametersIterator.hasNext()) {
+			final Entry<Type, String> parameter = parametersIterator.next();
+			targets.add(new Target<Object>(parameter.getKey(), parameter.getValue()));
 		}
 		
 		return Collections.unmodifiableList(targets);
