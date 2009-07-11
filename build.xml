@@ -59,7 +59,10 @@
 			<formatter type="brief" usefile="false" />
 			<formatter type="xml" />
 			<batchtest todir="${tests.reports.dir}">
-				<fileset dir="${tests.classes.dir}" includes="**/*Tests.class" id="testsFilest"/>
+				<fileset dir="${tests.classes.dir}" id="testsFilest">
+					<include name="**/*Tests.class"/>
+					<exclude name="**/AllTests.class"/>
+				</fileset>
 			</batchtest>
 		</junit>
 		<fail if="${testsHaveFailed}" message="Tests have failed."/>
