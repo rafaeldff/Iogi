@@ -31,6 +31,7 @@ public class Target<T> {
 	}
 
 	public Class<T> getClassType() {
+		// This could be pre-computed if needed for performance
 		return findRawClassType(type);
 	}
 	
