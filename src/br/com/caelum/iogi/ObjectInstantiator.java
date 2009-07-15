@@ -111,5 +111,10 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		public Type type() {
 			return setter.getGenericParameterTypes()[0];
 		}
+		
+		@Override
+		public String toString() {
+			return "Setter(" + propertyName() +")";
+		}
 	}
 }
