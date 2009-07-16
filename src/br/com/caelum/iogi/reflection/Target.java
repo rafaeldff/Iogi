@@ -65,7 +65,7 @@ public class Target<T> {
 	
 	public Set<ClassConstructor> classConstructors(final ParameterNamesProvider parameterNamesProvider) {
 		final HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
-		for (final Constructor<?> constructor : getClassType().getConstructors()) {
+		for (final Constructor<?> constructor : getClassType().getDeclaredConstructors()) {
 			classConstructors.add(new ClassConstructor(constructor, parameterNamesProvider));
 		}
 		return classConstructors;

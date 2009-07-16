@@ -18,6 +18,7 @@ import br.com.caelum.iogi.fixtures.OneGenericListProperty;
 import br.com.caelum.iogi.fixtures.OneIntOneStringAndOneObject;
 import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
 import br.com.caelum.iogi.fixtures.OneString;
+import br.com.caelum.iogi.fixtures.OnlyOneProtectedConstructor;
 import br.com.caelum.iogi.fixtures.TwoArguments;
 import br.com.caelum.iogi.fixtures.TwoConstructibleArguments;
 import br.com.caelum.iogi.fixtures.TwoConstructors;
@@ -211,6 +212,12 @@ public class ObjectInstantiationTests {
 	public void emptyDoubleParametersWillBeInstantiatedAsZero() throws Exception {
 		final OneDoublePrimitive object = iogi.instantiate(Target.create(OneDoublePrimitive.class, "foo"), new Parameter("foo.aDouble", ""));
 		assertEquals(0d, object.getADouble(), 0.00d);
+	}
+	
+	@Test
+	public void canInstantiateAClassWithOnlyOneProtectedConstructor() throws Exception {
+		final OnlyOneProtectedConstructor object = iogi.instantiate(Target.create(OnlyOneProtectedConstructor.class, "blah"));
+		assertNotNull(object);
 	}
 	
 	@Test
