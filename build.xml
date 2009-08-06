@@ -17,6 +17,7 @@
 
 	<property name="main.libs.dir" value="${basedir}/lib"/>
 	<property name="tests.libs.dir" value="${basedir}/testLib"/>
+	<property name="build.libs.dir" value="${basedir}/buildLib"/>
 
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="main.classes.dir" value="${build.dir}/main/classes"/>
@@ -25,6 +26,8 @@
 
 	<property name="main.target.dir" value="${build.dir}/target" />
 	<property name="jar.file" value="${main.target.dir}/iogi.jar" />
+	
+	<property name="googlecollections.file" value="${main.libs.dir}/google-collect-1.0-rc2.jar"/>
 	
 	<path id="mainClasspath">
 		<fileset dir="${main.libs.dir}">
@@ -42,9 +45,13 @@
 	</path>
 	
     <target name="jar" depends="testsPassed" description="description">
-		<jar destfile="${jar.file}">
+        <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+            classpath="${build.libs.dir}/jarjar.jar"/>
+		<jarjar destfile="${jar.file}">
 			<fileset dir="${main.classes.dir}" includes="**/*.class"/>
-		</jar>
+			<zipfileset src="${googlecollections.file}"/>
+			<rule pattern="com.google.common.**" result="br.com.caelum.iogi.googlecollect.@1"/>
+		</jarjar>
     </target>
 	
 	<target name="testsPassed" depends="test">
