@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import net.vidageek.mirror.dsl.Matcher;
 import net.vidageek.mirror.dsl.Mirror;
 import br.com.caelum.iogi.exceptions.InvalidTypeException;
 import br.com.caelum.iogi.parameters.Parameters;
@@ -81,13 +82,19 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	}
 	
 	private Collection<Setter> settersIn(final Object object) {
-		final ArrayList<Setter> foundSetters = 
-			new ArrayList<Setter>();
-		for (final Method setterMethod: MIRROR.on(object.getClass()).reflectAll().setters()) {
+		final ArrayList<Setter> foundSetters = new ArrayList<Setter>();
+		for (final Method setterMethod: MIRROR.on(object.getClass()).reflectAll().methodsMatching(SETTERS)) {
 			foundSetters.add(new Setter(setterMethod, object));
 		}
 		return Collections.unmodifiableList(foundSetters);
 	}
+	
+	private static final Matcher<Method> SETTERS = new Matcher<Method>(){
+		@Override
+		public boolean accepts(final Method method) {
+			return method.getName().startsWith("set");
+		}
+	};
 
 	private static class Setter {
 		private final Method setter;
