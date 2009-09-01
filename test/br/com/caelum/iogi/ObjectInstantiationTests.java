@@ -17,6 +17,7 @@ import br.com.caelum.iogi.fixtures.OneDoublePrimitive;
 import br.com.caelum.iogi.fixtures.OneGenericListProperty;
 import br.com.caelum.iogi.fixtures.OneIntOneStringAndOneObject;
 import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
+import br.com.caelum.iogi.fixtures.OnePropertyWithReturnType;
 import br.com.caelum.iogi.fixtures.OneString;
 import br.com.caelum.iogi.fixtures.OnlyOneProtectedConstructor;
 import br.com.caelum.iogi.fixtures.TwoArguments;
@@ -156,8 +157,16 @@ public class ObjectInstantiationTests {
 		final Parameter two = new Parameter("root.two", "9002");
 		final Target<TwoProperties> target = Target.create(TwoProperties.class, "root");
 		final TwoProperties object = iogi.instantiate(target, one, two);
-		assertEquals(object.getOne(), 9001);
-		assertEquals(object.getTwo(), 9002);
+		assertEquals(9001, object.getOne());
+		assertEquals(9002, object.getTwo());
+	}
+	
+	@Test
+	public void willCallSettersEvenIfTheyDeclareAReturnType() throws Exception {
+		final Parameter oneProperty = new Parameter("root.oneProperty", "666");
+		final Target<OnePropertyWithReturnType> target = Target.create(OnePropertyWithReturnType.class, "root");
+		final OnePropertyWithReturnType object = iogi.instantiate(target, oneProperty);
+		assertEquals(666, object.getOneProperty());
 	}
 	
 	@Test
