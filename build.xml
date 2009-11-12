@@ -80,7 +80,7 @@
 	</target>
 
 	<target name="mainCompiled" depends="buildPrepared">
-		<javac classpathref="mainClasspath" srcdir="${main.source.dir}" destdir="${main.classes.dir}" debug="true"/>
+		<javac classpathref="mainClasspath" source="1.5" target="1.5" srcdir="${main.source.dir}" destdir="${main.classes.dir}" debug="true"/>
 	</target>
 
 	<target name="buildPrepared">
