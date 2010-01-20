@@ -12,6 +12,7 @@
             Library for instantiating graphs of objects
     </description>
 
+	<property file="build.properties"/>
 	<property name="main.source.dir" value="${basedir}/src"/>
 	<property name="tests.source.dir" value="${basedir}/test"/>
 
@@ -25,7 +26,7 @@
 	<property name="tests.reports.dir" value="${build.dir}/tests/reports"/>
 
 	<property name="main.target.dir" value="${build.dir}/target" />
-	<property name="jar.file" value="${main.target.dir}/iogi.jar" />
+	<property name="jar.file" value="${main.target.dir}/iogi-${version}.jar" />
 	
 	<property name="googlecollections.file" value="${main.libs.dir}/google-collect-1.0-rc2.jar"/>
 	
@@ -45,13 +46,9 @@
 	</path>
 	
     <target name="jar" depends="testsPassed" description="description">
-        <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
-            classpath="${build.libs.dir}/jarjar.jar"/>
-		<jarjar destfile="${jar.file}">
+		<jar destfile="${jar.file}">
 			<fileset dir="${main.classes.dir}" includes="**/*.class"/>
-			<zipfileset src="${googlecollections.file}"/>
-			<rule pattern="com.google.common.**" result="br.com.caelum.iogi.googlecollect.@1"/>
-		</jarjar>
+		</jar>
     </target>
 	
 	<target name="testsPassed" depends="test">

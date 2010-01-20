@@ -42,6 +42,13 @@ public class ObjectInstantiationTests {
 	}
 	
 	@Test
+	public void willReturnNullIfNoAppropriateParameterIsFoundWithString() throws Exception {
+		final Target<String> target = Target.create(String.class, "root");
+		final String object = iogi.instantiate(target);
+		assertNull(object);
+	}
+	
+	@Test
 	public void canInstantiateWithOneIntegerArgument() throws Exception {
 		final Target<OneIntegerPrimitive> target = Target.create(OneIntegerPrimitive.class, "oneArg");
 		final OneIntegerPrimitive object = iogi.instantiate(target, new Parameter("oneArg.anInteger", "42"));

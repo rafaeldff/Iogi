@@ -3,7 +3,6 @@ package br.com.caelum.iogi.parameters;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -55,13 +54,14 @@ public class ParametersTests {
 	}
 	
 	@Test
-	public void namedAfterWillReturnNullIfThereIsNoParameterBegginingWithTheTargetName() throws Exception {
+	public void namedAfterWillReturnAnEmptyParameterIfThereIsNoParameterBegginingWithTheTargetName() throws Exception {
 		final Target<Object> target = Target.create(Object.class, "name"); 
 		final Parameter one = new Parameter("fizzble", "one");
 		final Parameter two = new Parameter("foozble", "two");
 		
 		final Parameters parameters = new Parameters(one, two);
-		assertNull(parameters.namedAfter(target));
+		final Parameter found = parameters.namedAfter(target);
+		assertEquals("", found.getValue());
 	}
 	
 	@Test

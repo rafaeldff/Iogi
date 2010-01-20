@@ -46,7 +46,7 @@ public class Parameters {
 	public Parameter namedAfter(final Target<?> target) {
 		final Collection<Parameter> named = parametersByFirstNameComponent.get(target.getName());
 		assertFoundAtMostOneTarget(target, named);
-		return named.isEmpty() ? null : named.iterator().next();
+		return named.isEmpty() ? new Parameter(target.getName(), ""): named.iterator().next();
 	}
 
 	private void assertFoundAtMostOneTarget(final Target<?> target, final Collection<Parameter> named) {
