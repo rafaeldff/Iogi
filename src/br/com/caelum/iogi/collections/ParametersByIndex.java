@@ -11,7 +11,7 @@ import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.Target;
 
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 
@@ -24,7 +24,7 @@ class ParametersByIndex {
 	}
 
 	private ListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters, final Target<?> target) {
-		final ListMultimap<Integer, Parameter> map = ArrayListMultimap.create();
+		final ListMultimap<Integer, Parameter> map = LinkedListMultimap.create();
 		for (final Parameter parameter : parameters.forTarget(target)) {
 			final Integer index = extractIndexOrReturnNull(parameter);
 			if (index != null) 
