@@ -23,7 +23,6 @@ public class TypeConverterTests {
 				return stubConverted;
 			}
 			
-			@Override
 			public boolean isAbleToInstantiate(final Target<?> target) {
 				return false;
 			}
@@ -43,7 +42,6 @@ public class TypeConverterTests {
 				throw expectedWrappedException;
 			}
 			
-			@Override
 			public boolean isAbleToInstantiate(final Target<?> target) {
 				return false;
 			}
@@ -69,7 +67,6 @@ public class TypeConverterTests {
 				throw expectedWrappedException;
 			}
 			
-			@Override
 			public boolean isAbleToInstantiate(final Target<?> target) {
 				return false;
 			}

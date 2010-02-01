@@ -5,7 +5,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 
 public class StringConverter extends TypeConverter<String> {
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == String.class;
 	}

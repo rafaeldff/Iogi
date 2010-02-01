@@ -10,7 +10,6 @@ import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 public class AllTests {
-	
 	public static void main(final String[] args) throws Exception {
 		final int numberOfRuns = 1000;
 		

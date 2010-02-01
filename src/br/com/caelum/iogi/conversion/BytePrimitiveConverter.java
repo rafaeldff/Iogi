@@ -4,7 +4,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 
 public class BytePrimitiveConverter extends TypeConverter<Byte> {
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == byte.class;
 	}

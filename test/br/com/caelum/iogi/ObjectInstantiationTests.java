@@ -246,7 +246,6 @@ public class ObjectInstantiationTests {
 				return "uninstantiable ok";
 			}
 
-			@Override
 			public boolean canProvide(final Target<?> target) {
 				return target.getName().equals("uninstantiable");
 			}

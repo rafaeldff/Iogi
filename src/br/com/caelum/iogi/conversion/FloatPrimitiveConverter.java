@@ -5,7 +5,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 public class FloatPrimitiveConverter extends TypeConverter<Float> {
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == float.class;
 	}

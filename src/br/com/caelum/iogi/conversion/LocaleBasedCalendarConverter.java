@@ -16,7 +16,6 @@ public class LocaleBasedCalendarConverter extends TypeConverter<Calendar> {
 		this.localeProvider = localeProvider;
 	}
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == Calendar.class;
 	}

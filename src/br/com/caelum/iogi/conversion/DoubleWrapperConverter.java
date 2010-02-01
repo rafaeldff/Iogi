@@ -4,7 +4,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 
 public class DoubleWrapperConverter extends TypeConverter<Double> {
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == Double.class;
 	}

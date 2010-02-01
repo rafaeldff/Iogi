@@ -4,7 +4,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 
 public class BooleanWrapperConverter extends TypeConverter<Boolean> {
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == Boolean.class;
 	}

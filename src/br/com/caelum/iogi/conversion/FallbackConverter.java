@@ -22,12 +22,11 @@ public class FallbackConverter<T> extends TypeConverter<T> {
 
 	@Override
 	protected T convert(final String stringValue, final Target<?> to) throws Exception {
-		if (stringValue.isEmpty())
+		if (stringValue.length() == 0)
 			return fallbackValue;
 		return delegate.convert(stringValue, to);
 	}
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return delegate.isAbleToInstantiate(target);
 	}

@@ -5,7 +5,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 
 public class BooleanPrimitiveConverter extends TypeConverter<Boolean> {
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == boolean.class;
 	}

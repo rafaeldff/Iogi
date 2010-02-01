@@ -4,7 +4,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 
 public class DoublePrimitiveConverter extends TypeConverter<Double> {
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == double.class;
 	}

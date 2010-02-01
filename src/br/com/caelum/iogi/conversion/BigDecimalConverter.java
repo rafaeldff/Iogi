@@ -11,7 +11,6 @@ public class BigDecimalConverter extends TypeConverter<BigDecimal> {
 		return new BigDecimal(stringValue);
 	}
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == BigDecimal.class;
 	}

@@ -5,7 +5,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 public class ShortPrimitiveConverter extends TypeConverter<Short> {
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == short.class;
 	}

@@ -4,7 +4,6 @@ import br.com.caelum.iogi.exceptions.ConversionException;
 import br.com.caelum.iogi.reflection.Target;
 
 public class CharacterWrapperConverter extends TypeConverter<Character> {
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == Character.class;
 	}

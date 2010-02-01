@@ -21,12 +21,10 @@ public class CyclingListInstantiator implements Instantiator<List<Object>> {
 		this.elementInstantiator = objectInstantiator;
 	}
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType().isAssignableFrom(List.class);
 	}
 
-	@Override
 	public List<Object> instantiate(final Target<?> target, final Parameters parameters) {
 		Assert.isNotARawType(target);
 		

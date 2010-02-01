@@ -14,7 +14,6 @@ public class MultiInstantiator implements Instantiator<Object> {
 		this.instantiators = instantiators;
 	}
 
-	@Override
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
 		for (final Instantiator<?> instantiator : instantiators) {
 			if (instantiator.isAbleToInstantiate(target))
@@ -23,7 +22,6 @@ public class MultiInstantiator implements Instantiator<Object> {
 		throw new InvalidTypeException("Cannot instantiate " + target);
 	}
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		for (final Instantiator<?> instantiator : instantiators) {
 			if (instantiator.isAbleToInstantiate(target))

@@ -5,7 +5,6 @@ import br.com.caelum.iogi.reflection.Target;
 
 public class LongPrimitiveConverter extends TypeConverter<Long> {
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return target.getClassType() == long.class;
 	}

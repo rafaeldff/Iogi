@@ -31,7 +31,6 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		this.parameterNamesProvider = parameterNamesProvider;
 	}
 
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return true;
 	}
@@ -90,7 +89,6 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	}
 	
 	private static final Matcher<Method> SETTERS = new Matcher<Method>(){
-		@Override
 		public boolean accepts(final Method method) {
 			return method.getName().startsWith("set");
 		}

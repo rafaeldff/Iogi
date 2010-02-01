@@ -194,7 +194,7 @@ public class TypeConvertersTests {
 	@Test
 	public void dateConverter() throws Exception {
 		final LocaleProvider localeProvider = new LocaleProvider() {
-			@Override public Locale getLocale() {
+			public Locale getLocale() {
 				return new Locale("pt", "BR");
 			}
 		};

@@ -88,12 +88,10 @@ public class Iogi {
 	 * 	recursive reference to allInstantiators.
 	 */
 	private final class DelegateToAllInstantatiors implements Instantiator<Object> {
-		@Override
 		public boolean isAbleToInstantiate(final Target<?> target) {
 			return allInstantiators.isAbleToInstantiate(target);
 		}
 
-		@Override
 		public Object instantiate(final Target<?> target, final Parameters parameters) {
 			return allInstantiators.instantiate(target, parameters);
 		}

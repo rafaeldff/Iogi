@@ -4,7 +4,6 @@ import br.com.caelum.iogi.exceptions.ConversionException;
 import br.com.caelum.iogi.reflection.Target;
 
 public class EnumConverter extends TypeConverter<Object> {
-	@Override
 	public boolean isAbleToInstantiate(final Target<?> target) {
 		return Enum.class.isAssignableFrom(target.getClassType());
 	}
