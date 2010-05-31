@@ -57,9 +57,9 @@ p. And here is how you can instantiate them with Iogi:
 
 
 
-bc..        final Target<House> target = Target.create(House.class, "house");
-        final Parameter parameter = new Parameter("house.cat.firstLeg.id", "");
-        final House house = iogi.instantiate(target, parameter);
-        assertThat(house.cat.firstLeg.id, is(equalTo(null)));
+bc.. final Target<House> target = Target.create(House.class, "house");
+final Parameter parameter = new Parameter("house.cat.firstLeg.id", "42");
+final House house = iogi.instantiate(target, parameter);
+assertThat(house.cat.firstLeg.id, is(equalTo(42)));
 
 
