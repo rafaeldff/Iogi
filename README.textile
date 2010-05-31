@@ -41,7 +41,6 @@ bc..    public static class House {
 
     public static class Leg {
         private Integer id;
-        private Calendar birthDay; // weird leg birthday!!
 
         public void setId(final Integer id) {
             this.id = id;
