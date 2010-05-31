@@ -47,12 +47,13 @@ bc..    public static class House {
         public void setId(final Integer id) {
             this.id = id;
         }
-		}
+
+    }
+
 
 
 
 p. And here is how you can instantiate them with Iogi:
-
 
 
 bc..        final Target<House> target = Target.create(House.class, "house");
