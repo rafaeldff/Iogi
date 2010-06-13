@@ -53,7 +53,11 @@ public class NewObject {
 		}
 	};
 
-	private static class Setter {
+    public static NewObject nullNewObject() {
+        return new NewObject(null,null,null);
+    }
+
+    private static class Setter {
 		private final Method setter;
 		private final Object object;
 		

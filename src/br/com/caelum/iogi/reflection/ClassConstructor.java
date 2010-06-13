@@ -1,28 +1,20 @@
 package br.com.caelum.iogi.reflection;
 
-import static br.com.caelum.iogi.util.IogiCollections.zip;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import net.vidageek.mirror.dsl.Mirror;
 import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.Instantiator;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
-
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import net.vidageek.mirror.dsl.Mirror;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static br.com.caelum.iogi.util.IogiCollections.zip;
 
 public class ClassConstructor {
 	private static final Mirror MIRROR = new Mirror();
@@ -71,13 +63,10 @@ public class ClassConstructor {
 	}
 	
 	private List<Target<?>> parameterTargets() {
-		final Iterator<Type> typesIterator = Iterators.forArray(constructor.getGenericParameterTypes());
-		final Iterator<String> namesIterator = names.iterator();
-		final Iterator<Entry<Type, String>> parametersIterator = zip(typesIterator, namesIterator);
-		
-		final ArrayList<Target<?>> targets = Lists.newArrayList();
-		while (parametersIterator.hasNext()) {
-			final Entry<Type, String> parameter = parametersIterator.next();
+		final Iterable<Type> types = Arrays.asList(constructor.getGenericParameterTypes());
+
+        final ArrayList<Target<?>> targets = Lists.newArrayList();
+		for (Entry<Type, String> parameter : zip(types, names)) {
 			targets.add(new Target<Object>(parameter.getKey(), parameter.getValue()));
 		}
 		

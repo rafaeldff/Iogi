@@ -37,22 +37,23 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		expectingAConcreteTarget(target);
 		
 		final Parameters parametersForTarget = parameters.focusedOn(target);
-        final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(parametersForTarget, dependenciesInjector, parameterNamesProvider);
-
-        NewObject newObject = instantiateWithConstructor(parametersForTarget, compatibleConstructors);
+        
+        NewObject newObject = instantiateWithConstructor(target, parametersForTarget);
+        
         newObject.populateRemainingProperties(parametersForTarget);
-
 
 		return newObject.value();
 	}
 
-    private NewObject instantiateWithConstructor(Parameters parametersForTarget, Collection<ClassConstructor> compatibleConstructors) {
-        NewObject newObject = new NewObject(null,null,null);
-        if (!compatibleConstructors.isEmpty()) {
-            final ClassConstructor largestMatchingConstructor = orderConstructorsBySize.max(compatibleConstructors);
-            newObject = largestMatchingConstructor.instantiate(argumentInstantiator, parametersForTarget, dependenciesInjector);
+    private NewObject instantiateWithConstructor(Target<?> target, Parameters parametersForTarget) {
+        final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(parametersForTarget, dependenciesInjector, parameterNamesProvider);
+
+        if (compatibleConstructors.isEmpty()) {
+            return NewObject.nullNewObject();
         }
-        return newObject;
+       
+        final ClassConstructor largestMatchingConstructor = orderConstructorsBySize.max(compatibleConstructors);
+        return largestMatchingConstructor.instantiate(argumentInstantiator, parametersForTarget, dependenciesInjector);
     }
 
     private <T> void expectingAConcreteTarget(final Target<T> target) {
