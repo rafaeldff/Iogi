@@ -1,16 +1,5 @@
 package br.com.caelum.iogi.reflection;
 
-import static org.junit.Assert.assertEquals;
-
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.junit.Test;
-
 import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.Instantiator;
 import br.com.caelum.iogi.conversion.StringConverter;
@@ -18,8 +7,17 @@ import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
-
 import com.google.common.collect.ImmutableList;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.junit.Test;
+
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
 
 public class ClassConstructorTests {
 	private final Constructor<Foo> fooConstructor;
@@ -37,7 +35,8 @@ public class ClassConstructorTests {
 		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two")); 
 		final ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
 		final DependenciesInjector nullDependenciesInjector = new DependenciesInjector(new NullDependencyProvider());
-		final Foo foo = (Foo)constructor.instantiate(primitiveInstantiator, new Parameters(parameters), nullDependenciesInjector);
+        NewObject newObject = constructor.instantiate(primitiveInstantiator, new Parameters(parameters), nullDependenciesInjector);
+        final Foo foo = (Foo) newObject.value();
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());
 	}

@@ -42,7 +42,7 @@ public class ClassConstructor {
 		return names.size();
 	}
 
-	public Object instantiate(final Instantiator<?> instantiator, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
+	public NewObject instantiate(final Instantiator<?> instantiator, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
 		final List<Object> argumentValues = Lists.newArrayListWithCapacity(size());
 		final Collection<Target<?>> needDependency = notFulfilledBy(parameters);
 		
@@ -56,7 +56,8 @@ public class ClassConstructor {
 			argumentValues.add(value);
 		}
 
-		return MIRROR.on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
+        Object newObjectValue = MIRROR.on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
+        return new NewObject(instantiator, this, newObjectValue);
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {

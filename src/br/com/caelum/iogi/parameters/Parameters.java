@@ -55,7 +55,7 @@ public class Parameters {
 					"Expecting only one parameter named after " + target + ", found instead " + named);
 	}
 	
-	public Parameters strip(final Target<?> target) {
+	public Parameters focusedOn(final Target<?> target) {
 		final List<Parameter> relevantParameters = forTarget(target);
 		
 		final List<Parameter> striped = Lists.newArrayListWithCapacity(relevantParameters.size());
