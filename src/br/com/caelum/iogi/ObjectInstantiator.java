@@ -39,11 +39,14 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		final Parameters parametersForTarget = parameters.focusedOn(target);
         
         NewObject newObject = instantiateWithConstructor(target, parametersForTarget);
-        
-        newObject.populateRemainingProperties(parametersForTarget);
 
-		return newObject.value();
+        return newObject.withPropertiesSet(parametersForTarget);
 	}
+
+    private <T> void expectingAConcreteTarget(final Target<T> target) {
+        if (!target.isInstantiable())
+            throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
+    }
 
     private NewObject instantiateWithConstructor(Target<?> target, Parameters parametersForTarget) {
         final Collection<ClassConstructor> compatibleConstructors = target.compatibleConstructors(parametersForTarget, dependenciesInjector, parameterNamesProvider);
@@ -51,15 +54,10 @@ public class ObjectInstantiator implements Instantiator<Object> {
         if (compatibleConstructors.isEmpty()) {
             return NewObject.nullNewObject();
         }
-       
+
         final ClassConstructor largestMatchingConstructor = orderConstructorsBySize.max(compatibleConstructors);
         return largestMatchingConstructor.instantiate(argumentInstantiator, parametersForTarget, dependenciesInjector);
     }
-
-    private <T> void expectingAConcreteTarget(final Target<T> target) {
-		if (!target.isInstantiable())
-			throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
-	}
 
     
 }

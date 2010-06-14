@@ -17,8 +17,7 @@ import java.util.Map.Entry;
 import static br.com.caelum.iogi.util.IogiCollections.zip;
 
 public class ClassConstructor {
-	private static final Mirror MIRROR = new Mirror();
-	private final LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names;
 	private final Constructor<?> constructor;
 	
 	public ClassConstructor(final Constructor<?> constructor, final ParameterNamesProvider parameterNamesProvider) {
@@ -38,7 +37,7 @@ public class ClassConstructor {
 		final List<Object> argumentValues = Lists.newArrayListWithCapacity(size());
 		final Collection<Target<?>> needDependency = notFulfilledBy(parameters);
 		
-		for (final Target<?> target : parameterTargets()) {
+		for (final Target<?> target : argumentTargets()) {
 			Object value;
 			if (needDependency.contains(target))
 				value = dependenciesInjector.provide(target);
@@ -48,21 +47,21 @@ public class ClassConstructor {
 			argumentValues.add(value);
 		}
 
-        Object newObjectValue = MIRROR.on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
+        Object newObjectValue = new Mirror().on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
         return new NewObject(instantiator, this, newObjectValue);
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {
 		final ArrayList<Target<?>> unfulfilledParameterTargets = new ArrayList<Target<?>>();
 		
-		for (final Target<?> parameterTarget : parameterTargets()) {
+		for (final Target<?> parameterTarget : argumentTargets()) {
 			if (!parameters.hasRelatedTo(parameterTarget))
 				unfulfilledParameterTargets.add(parameterTarget);
 		}
 		return Collections.unmodifiableList(unfulfilledParameterTargets);
 	}
 	
-	private List<Target<?>> parameterTargets() {
+	private List<Target<?>> argumentTargets() {
 		final Iterable<Type> types = Arrays.asList(constructor.getGenericParameterTypes());
 
         final ArrayList<Target<?>> targets = Lists.newArrayList();

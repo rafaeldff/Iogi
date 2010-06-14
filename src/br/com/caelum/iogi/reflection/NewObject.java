@@ -10,79 +10,107 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class NewObject {
-    private Instantiator<?> propertiesInstantiator;
-    private Object value;
-    private ClassConstructor constructorUsed;
+    public static NewObject nullNewObject() {
+        return new NewObject(null,null,null) {
+            @Override
+            public Object value() {
+                return null;
+            }
 
-    public NewObject(Instantiator<?> instantiator, ClassConstructor constructorUsed, Object value) {
-        propertiesInstantiator = instantiator;
-        this.value = value;
+            @Override
+            public Object withPropertiesSet(Parameters parametersForTarget) {
+                return null;
+            }
+        };
+    }    
+
+    private Instantiator<?> propertiesInstantiator;
+    private ClassConstructor constructorUsed;
+    private Object object;
+
+    public NewObject(Instantiator<?> propertiesInstantiator, ClassConstructor constructorUsed, Object object) {
+        this.propertiesInstantiator = propertiesInstantiator;
         this.constructorUsed = constructorUsed;
+        this.object = object;
     }
 
     public Object value() {
-        return value;
+        return object;
     }
 
-    public void populateRemainingProperties(final Parameters parameters) {
-        if (value == null)
-            return;
-        final Parameters remainingParameters = parameters.notUsedBy(constructorUsed);
-		for (final Setter setter : settersIn(value)) {
-			final Target<?> target = new Target<Object>(setter.type(), setter.propertyName());
-			if (remainingParameters.hasRelatedTo(target)) {
-				final Object argument = propertiesInstantiator.instantiate(target, parameters);
-				setter.set(argument);
-			}
-		}
-	}
-    
-    private Collection<Setter> settersIn(final Object object) {
-		final ArrayList<Setter> foundSetters = new ArrayList<Setter>();
-		for (final Method setterMethod: new Mirror().on(object.getClass()).reflectAll().methodsMatching(SETTERS)) {
-			foundSetters.add(new Setter(setterMethod, object));
-		}
-		return Collections.unmodifiableList(foundSetters);
-	}
-	
-	private static final Matcher<Method> SETTERS = new Matcher<Method>(){
-		public boolean accepts(final Method method) {
-			return method.getName().startsWith("set");
-		}
-	};
+    public Object withPropertiesSet(Parameters parameters) {
+        populateProperties(parametersForProperties(parameters));
+        return value();
+    }
 
-    public static NewObject nullNewObject() {
-        return new NewObject(null,null,null);
+    private Parameters parametersForProperties(Parameters parameters) {
+        return parameters.notUsedBy(constructorUsed);
+    }
+
+    private void populateProperties(final Parameters parametersForProperties) {
+		for (final Setter setter : Setter.settersIn(object)) {
+            setProperty(setter, parametersForProperties);
+        }
+	}
+
+    private void setProperty(Setter setter, Parameters remainingParameters) {
+        if (remainingParameters.hasRelatedTo(setter.asTarget())) {
+            final Object propertyValue = propertiesInstantiator.instantiate(setter.asTarget(), remainingParameters);
+            setter.set(propertyValue);
+        }
     }
 
     private static class Setter {
-		private final Method setter;
-		private final Object object;
-		
-		public Setter(final Method setter, final Object object) {
+        private static final Matcher<Method> SETTERS = new Matcher<Method>() {
+            public boolean accepts(final Method method) {
+                return method.getName().startsWith("set");
+            }
+        };
+
+        private static Collection<Setter> settersIn(final Object object) {
+            List<Method> setterMethods = new Mirror().on(object.getClass()).reflectAll().methodsMatching(SETTERS);
+
+            final ArrayList<Setter> setters = new ArrayList<Setter>();
+            for (final Method setterMethod: setterMethods) {
+                setters.add(new Setter(setterMethod, object));
+            }
+
+            return Collections.unmodifiableList(setters);
+        }
+        
+        private final Method setter;
+
+        private final Object object;
+
+        public Setter(final Method setter, final Object object) {
 			this.setter = setter;
 			this.object = object;
 		}
-		
+
 		public void set(final Object argument) {
 			new Mirror().on(object).invoke().method(setter).withArgs(argument);
 		}
-		
-		public String propertyName() {
-			final String capitalizedPropertyName = setter.getName().substring(3);
-			final String propertyName = capitalizedPropertyName.substring(0, 1).toLowerCase() + capitalizedPropertyName.substring(1);
-			return propertyName;
-		}
-		
-		public Type type() {
-			return setter.getGenericParameterTypes()[0];
-		}
-		
-		@Override
-		public String toString() {
-			return "Setter(" + propertyName() +")";
-		}
-	}
+
+        private Target<Object> asTarget() {
+            return new Target<Object>(type(), propertyName());
+        }
+
+        private String propertyName() {
+            final String capitalizedPropertyName = setter.getName().substring(3);
+            final String propertyName = capitalizedPropertyName.substring(0, 1).toLowerCase() + capitalizedPropertyName.substring(1);
+            return propertyName;
+        }
+
+        private Type type() {
+            return setter.getGenericParameterTypes()[0];
+        }
+
+        @Override
+        public String toString() {
+            return "Setter(" + propertyName() +")";
+        }
+    }
 }
