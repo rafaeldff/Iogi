@@ -1,6 +1,5 @@
 package br.com.caelum.iogi.reflection;
 
-
 import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
 import com.google.common.collect.ImmutableMap;
@@ -9,7 +8,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
 
 public class Target<T> {
     public static <T> Target<T> create(final Class<T> type, final String name) {
@@ -39,33 +39,16 @@ public class Target<T> {
 	
 	public String getName() {
 		return name;
-	} 
-
-	@SuppressWarnings("unchecked")
-	public boolean isPrimitiveLike() {
-		if (!(type instanceof Class))
-			return false;
-		
-		return Primitives.isPrimitiveLike(getClassType()) || getClassType() == String.class; 
 	}
-	
-	public T cast(final Object object) {
+
+    public T cast(final Object object) {
 		if (getClassType().isPrimitive())
 			return Primitives.primitiveCast(object, getClassType());
 			
 		return getClassType().cast(object);
-
-	}
-	
-	public Set<ClassConstructor> classConstructors(final ParameterNamesProvider parameterNamesProvider, DependenciesInjector dependenciesInjector) {
-		final HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
-		for (final Constructor<?> constructor : getClassType().getDeclaredConstructors()) {
-			classConstructors.add(new ClassConstructor(constructor, parameterNamesProvider, dependenciesInjector));
-		}
-		return classConstructors;
 	}
 
-	 public boolean isInstantiable() {
+    public boolean isInstantiable() {
 		return !getClassType().isInterface() && !Modifier.isAbstract(getClassType().getModifiers()) && getClassType() != Void.class;
 	}
 	 
@@ -126,7 +109,16 @@ public class Target<T> {
 	}
 
     public Constructors constructors(ParameterNamesProvider parameterNamesProvider, DependenciesInjector dependenciesInjector) {
-        return new Constructors(classConstructors(parameterNamesProvider, dependenciesInjector), dependenciesInjector);
+        final HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
+        for (final Constructor<?> constructor : getClassType().getDeclaredConstructors()) {
+            classConstructors.add(new ClassConstructor(constructor, parameterNamesProvider, dependenciesInjector));
+        }
+
+        return new Constructors(classConstructors, dependenciesInjector);
+    }
+
+    public boolean isParameterized() {
+        return this.getType() instanceof ParameterizedType;
     }
 
     private static class Primitives {
@@ -144,15 +136,7 @@ public class Target<T> {
 
 		private Primitives() {}
 
-		/**
-		 * @param type
-		 * @return true iff type represents a primitive (like int.class) or a primitive wrapper (like Integer.class)
-		 */
-		public static boolean isPrimitiveLike(final Class<?> type) {
-			return primitiveToObject.keySet().contains(type) || primitiveToObject.values().contains(type);
-		}
-
-		@SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
 		public static <T> T primitiveCast(final Object object, final Class<T> type) {
 			return (T) primitiveToObject.get(type).cast(object);
 		}

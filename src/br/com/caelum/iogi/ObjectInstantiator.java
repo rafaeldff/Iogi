@@ -2,7 +2,6 @@ package br.com.caelum.iogi;
 
 import br.com.caelum.iogi.exceptions.InvalidTypeException;
 import br.com.caelum.iogi.parameters.Parameters;
-import br.com.caelum.iogi.reflection.NewObject;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
@@ -27,23 +26,18 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		expectingAConcreteTarget(target);
 		
 		final Parameters parametersForTarget = parameters.focusedOn(target);
-        
-        NewObject newObject = instantiateWithConstructor(target, parametersForTarget);
 
-        return newObject.withPropertiesSet(parametersForTarget);
+        return target
+                .constructors(parameterNamesProvider, dependenciesInjector)
+                .compatibleWith(parametersForTarget)
+                .largest()
+                .instantiate(argumentInstantiator, parametersForTarget)
+                .withPropertiesSet(parametersForTarget);
 	}
 
     private <T> void expectingAConcreteTarget(final Target<T> target) {
         if (!target.isInstantiable())
             throw new InvalidTypeException("Cannot instantiate abstract type %s", target.getClassType());
-    }
-
-    private NewObject instantiateWithConstructor(Target<?> target, Parameters parametersForTarget) {
-        return target
-                .constructors(parameterNamesProvider, dependenciesInjector)
-                .compatibleWith(parametersForTarget)
-                .largest()
-                .instantiate(argumentInstantiator, parametersForTarget);
     }
 
 }

@@ -20,7 +20,7 @@ public class ClassConstructor {
     public static ClassConstructor nullClassConstructor() {
         return new ClassConstructor(null,Collections.<String>emptySet(), DependenciesInjector.nullDependenciesInjector()) {
             @Override
-            public NewObject instantiate(Instantiator<?> instantiator, Parameters parameters) {
+            public NewObject instantiate(Instantiator<?> argumentsInstantiator, Parameters parameters) {
                 return NewObject.nullNewObject();
             }
         };
@@ -48,7 +48,7 @@ public class ClassConstructor {
 		return names.size();
 	}
 
-	public NewObject instantiate(final Instantiator<?> instantiator, final Parameters parameters) {
+	public NewObject instantiate(final Instantiator<?> argumentsInstantiator, final Parameters parameters) {
 		final List<Object> argumentValues = Lists.newArrayListWithCapacity(size());
 		final Collection<Target<?>> needDependency = notFulfilledBy(parameters);
 
@@ -57,13 +57,13 @@ public class ClassConstructor {
 			if (needDependency.contains(target))
 				value = dependenciesInjector.provide(target);
 			else
-				value = instantiator.instantiate(target, parameters);
+				value = argumentsInstantiator.instantiate(target, parameters);
 
 			argumentValues.add(value);
 		}
 
         Object newObjectValue = new Mirror().on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
-        return new NewObject(instantiator, this, newObjectValue);
+        return new NewObject(argumentsInstantiator, this, newObjectValue);
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {

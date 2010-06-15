@@ -19,8 +19,8 @@ public class Constructors {
     private DependenciesInjector dependenciesInjector;
 
     public Constructors(Collection<ClassConstructor> constructors, DependenciesInjector dependenciesInjector) {
-        classConstructors = constructors;
-        this.dependenciesInjector = dependenciesInjector;        
+        this.classConstructors = constructors;
+        this.dependenciesInjector = dependenciesInjector;
     }
 
     public Constructors compatibleWith(final Parameters relevantParameters) {
@@ -40,5 +40,9 @@ public class Constructors {
         }
         
         return orderConstructorsBySize.max(classConstructors);
+    }
+
+    public int size() {
+        return classConstructors.size();
     }
 }
