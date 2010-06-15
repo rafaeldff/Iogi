@@ -12,7 +12,7 @@ public class TargetTests {
 	@Test
 	public void willListProtectedConstructors() {
 		final Target<OnlyOneProtectedConstructor> target = Target.create(OnlyOneProtectedConstructor.class, "foo");
-		final Set<ClassConstructor> classConstructors = target.classConstructors(new ParanamerParameterNamesProvider());
+		final Set<ClassConstructor> classConstructors = target.classConstructors(new ParanamerParameterNamesProvider(), null);
 		assertEquals(1, classConstructors.size());
 	}
 }

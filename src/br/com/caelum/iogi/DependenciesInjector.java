@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
+import br.com.caelum.iogi.util.NullDependencyProvider;
 
 public class DependenciesInjector {
 	private final DependencyProvider dependencyProvider;
@@ -28,4 +29,7 @@ public class DependenciesInjector {
 		return dependencyProvider.provide(target);
 	}
 
+    public static DependenciesInjector nullDependenciesInjector() {
+        return new DependenciesInjector(new NullDependencyProvider());
+    }
 }

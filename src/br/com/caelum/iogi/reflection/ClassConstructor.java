@@ -17,33 +17,48 @@ import java.util.Map.Entry;
 import static br.com.caelum.iogi.util.IogiCollections.zip;
 
 public class ClassConstructor {
-    private final LinkedHashSet<String> names;
+    public static ClassConstructor nullClassConstructor() {
+        return new ClassConstructor(null,Collections.<String>emptySet(), DependenciesInjector.nullDependenciesInjector()) {
+            @Override
+            public NewObject instantiate(Instantiator<?> instantiator, Parameters parameters) {
+                return NewObject.nullNewObject();
+            }
+        };
+    }
+
+    private DependenciesInjector dependenciesInjector;
+    private final Set<String> names;
 	private final Constructor<?> constructor;
-	
-	public ClassConstructor(final Constructor<?> constructor, final ParameterNamesProvider parameterNamesProvider) {
-		this.constructor = constructor;
-		this.names = Sets.newLinkedHashSet(parameterNamesProvider.lookupParameterNames(constructor));
-	}
-	
+
+    public ClassConstructor(final Constructor<?> constructor, final ParameterNamesProvider parameterNamesProvider, DependenciesInjector dependenciesInjector) {
+        this(constructor, Sets.newLinkedHashSet(parameterNamesProvider.lookupParameterNames(constructor)), dependenciesInjector);
+    }
+
+	private ClassConstructor(final Constructor<?> constructor, final Set<String> names, DependenciesInjector dependenciesInjector) {
+        this.constructor = constructor;
+        this.names = names;
+        this.dependenciesInjector = dependenciesInjector;
+    }
+
 	public Set<String> getNames() {
 		return names;
 	}
-	
+
 	public int size() {
 		return names.size();
 	}
 
-	public NewObject instantiate(final Instantiator<?> instantiator, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
+	public NewObject instantiate(final Instantiator<?> instantiator, final Parameters parameters) {
 		final List<Object> argumentValues = Lists.newArrayListWithCapacity(size());
 		final Collection<Target<?>> needDependency = notFulfilledBy(parameters);
-		
+
 		for (final Target<?> target : argumentTargets()) {
 			Object value;
 			if (needDependency.contains(target))
 				value = dependenciesInjector.provide(target);
 			else
 				value = instantiator.instantiate(target, parameters);
-			
+
 			argumentValues.add(value);
 		}
 
@@ -53,14 +68,14 @@ public class ClassConstructor {
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {
 		final ArrayList<Target<?>> unfulfilledParameterTargets = new ArrayList<Target<?>>();
-		
+
 		for (final Target<?> parameterTarget : argumentTargets()) {
 			if (!parameters.hasRelatedTo(parameterTarget))
 				unfulfilledParameterTargets.add(parameterTarget);
 		}
 		return Collections.unmodifiableList(unfulfilledParameterTargets);
 	}
-	
+
 	private List<Target<?>> argumentTargets() {
 		final Iterable<Type> types = Arrays.asList(constructor.getGenericParameterTypes());
 
@@ -68,16 +83,22 @@ public class ClassConstructor {
 		for (Entry<Type, String> parameter : zip(types, names)) {
 			targets.add(new Target<Object>(parameter.getKey(), parameter.getValue()));
 		}
-		
+
 		return Collections.unmodifiableList(targets);
-	}	
-	
+	}
+
 	private Class<?> declaringClass() {
 		return constructor.getDeclaringClass();
 	}
-	
+
 	@Override
 	public String toString() {
-		return "(" + Joiner.on(", ").join(names) + ")"; 
+		return "(" + Joiner.on(", ").join(names) + ")";
+	}
+
+    public boolean canInstantiateOrInject(final Parameters relevantParameters, DependenciesInjector dependenciesInjector) {
+		final Collection<Target<?>> uninstantiableByParameters = notFulfilledBy(relevantParameters);
+		final boolean canObtainDependencies = dependenciesInjector.canObtainDependenciesFor(uninstantiableByParameters);
+		return canObtainDependencies;
 	}
 }

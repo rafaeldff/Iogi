@@ -1,24 +1,18 @@
 package br.com.caelum.iogi.reflection;
 
 
+import br.com.caelum.iogi.DependenciesInjector;
+import br.com.caelum.iogi.spi.ParameterNamesProvider;
+import com.google.common.collect.ImmutableMap;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
-import br.com.caelum.iogi.DependenciesInjector;
-import br.com.caelum.iogi.parameters.Parameters;
-import br.com.caelum.iogi.spi.ParameterNamesProvider;
-
-import com.google.common.collect.ImmutableMap;
+import java.util.*;
 
 public class Target<T> {
-	public static <T> Target<T> create(final Class<T> type, final String name) {
+    public static <T> Target<T> create(final Class<T> type, final String name) {
 		return new Target<T>(type, name);
 	}
 
@@ -63,10 +57,10 @@ public class Target<T> {
 
 	}
 	
-	public Set<ClassConstructor> classConstructors(final ParameterNamesProvider parameterNamesProvider) {
+	public Set<ClassConstructor> classConstructors(final ParameterNamesProvider parameterNamesProvider, DependenciesInjector dependenciesInjector) {
 		final HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
 		for (final Constructor<?> constructor : getClassType().getDeclaredConstructors()) {
-			classConstructors.add(new ClassConstructor(constructor, parameterNamesProvider));
+			classConstructors.add(new ClassConstructor(constructor, parameterNamesProvider, dependenciesInjector));
 		}
 		return classConstructors;
 	}
@@ -94,24 +88,7 @@ public class Target<T> {
 		return Target.create(arrayElementType(), getName());
 	}
 
-	public Collection<ClassConstructor> compatibleConstructors(final Parameters relevantParameters, final DependenciesInjector dependenciesInjector, final ParameterNamesProvider parameterNamesProvider) {
-		final LinkedList<ClassConstructor> compatible = new LinkedList<ClassConstructor>();
-		
-		for (final ClassConstructor classConstructor : classConstructors(parameterNamesProvider)) {
-			if (canInstantiateOrInject(classConstructor, relevantParameters, dependenciesInjector))
-				compatible.add(classConstructor);
-		}
-		
-		return compatible;
-	}
 
-	private boolean canInstantiateOrInject(final ClassConstructor classConstructor, final Parameters relevantParameters,
-			final DependenciesInjector dependenciesInjector) {
-		final Collection<Target<?>> uninstatiableByParameters = classConstructor.notFulfilledBy(relevantParameters);
-		final boolean canObtainDependencies = dependenciesInjector.canObtainDependenciesFor(uninstatiableByParameters);
-		return canObtainDependencies;
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -147,8 +124,12 @@ public class Target<T> {
 	public String toString() {
 		return String.format("Target(name=%s, type=%s)", name, getClassType());
 	}
-	
-	private static class Primitives {
+
+    public Constructors constructors(ParameterNamesProvider parameterNamesProvider, DependenciesInjector dependenciesInjector) {
+        return new Constructors(classConstructors(parameterNamesProvider, dependenciesInjector), dependenciesInjector);
+    }
+
+    private static class Primitives {
 		private static final Map<Class<?>, Class<?>> primitiveToObject = ImmutableMap.<Class<?>, Class<?>>builder()
 			.put(Boolean.TYPE, Boolean.class)
 			.put(Character.TYPE, Character.class)

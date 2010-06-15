@@ -1,24 +1,23 @@
 package br.com.caelum.iogi.parameters;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
+import br.com.caelum.iogi.DependenciesInjector;
+import br.com.caelum.iogi.fixtures.TwoArguments;
+import br.com.caelum.iogi.reflection.ClassConstructor;
+import br.com.caelum.iogi.reflection.Target;
+import br.com.caelum.iogi.spi.ParameterNamesProvider;
+import com.google.common.collect.Lists;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.junit.Test;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.junit.Test;
-
-import br.com.caelum.iogi.fixtures.TwoArguments;
-import br.com.caelum.iogi.reflection.ClassConstructor;
-import br.com.caelum.iogi.reflection.Target;
-import br.com.caelum.iogi.spi.ParameterNamesProvider;
-
-import com.google.common.collect.Lists;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
 
 public class ParametersTests {
 	private final Mockery context = new Mockery();	
@@ -68,7 +67,7 @@ public class ParametersTests {
 	public void parametersNotUsedByAConstructorAreThoseWhoseFirstComponentsDontMatchWithTheConstructorArgumentNames() throws Exception {
 		final Parameters parameters = parametersNamed("foo", "one", "two", "fizzle"); 
 		final Constructor<TwoArguments> constructorWithParametersNamedOneAndTwo = TwoArguments.class.getDeclaredConstructor(int.class, int.class);
-		final ClassConstructor constructor = new ClassConstructor(constructorWithParametersNamedOneAndTwo, providingNames("one", "two"));
+		final ClassConstructor constructor = new ClassConstructor(constructorWithParametersNamedOneAndTwo, providingNames("one", "two"), DependenciesInjector.nullDependenciesInjector());
 		
 		final Parameters notUsed = parameters.notUsedBy(constructor);
 		assertThat(notUsed.getParametersList(), containsInAnyOrder(new Parameter("foo", ""), new Parameter("fizzle", "")));

@@ -22,9 +22,10 @@ import static org.junit.Assert.assertEquals;
 public class ClassConstructorTests {
 	private final Constructor<Foo> fooConstructor;
 	private final Instantiator<?> primitiveInstantiator;
-	private final Mockery context; 
-	
-	public ClassConstructorTests() throws SecurityException, NoSuchMethodException {
+	private final Mockery context;
+    private DependenciesInjector dependenciesInjector = DependenciesInjector.nullDependenciesInjector();
+
+    public ClassConstructorTests() throws SecurityException, NoSuchMethodException {
 		fooConstructor = Foo.class.getConstructor(String.class, String.class);
 		primitiveInstantiator = new StringConverter();		
 		context = new Mockery();
@@ -32,10 +33,10 @@ public class ClassConstructorTests {
 	
 	@Test
 	public void canInstantiateFromArgumentNames() throws Exception {
-		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two")); 
+		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two"), dependenciesInjector);
 		final ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
 		final DependenciesInjector nullDependenciesInjector = new DependenciesInjector(new NullDependencyProvider());
-        NewObject newObject = constructor.instantiate(primitiveInstantiator, new Parameters(parameters), nullDependenciesInjector);
+        NewObject newObject = constructor.instantiate(primitiveInstantiator, new Parameters(parameters));
         final Foo foo = (Foo) newObject.value();
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());
@@ -43,13 +44,13 @@ public class ClassConstructorTests {
 	
 	@Test
 	public void sizeIsTheNumberOfArguments() throws Exception {
-		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two")); 
+		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two"), dependenciesInjector);
 		assertEquals(2, constructor.size());
 	}
 	
 	@Test
 	public void notFulfilledByParametersWillReturnTargetsForParametersWhoseNamesArentFoundInTheParameters() throws Exception {
-		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two")); 
+		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two"), dependenciesInjector);
 		final Parameter aParameter = new Parameter("two", "");
 		
 		final Collection<Target<?>> unfulfilled = constructor.notFulfilledBy(new Parameters(aParameter));
