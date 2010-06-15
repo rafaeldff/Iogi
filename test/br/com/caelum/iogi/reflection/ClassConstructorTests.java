@@ -33,10 +33,14 @@ public class ClassConstructorTests {
 	
 	@Test
 	public void canInstantiateFromArgumentNames() throws Exception {
-		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two"), dependenciesInjector);
 		final ImmutableList<Parameter> parameters = ImmutableList.<Parameter>builder().add(new Parameter("two",  "b")).add(new Parameter("one", "a")).build();
-		final DependenciesInjector nullDependenciesInjector = new DependenciesInjector(new NullDependencyProvider());
-        NewObject newObject = constructor.instantiate(primitiveInstantiator, new Parameters(parameters));
+        final DependenciesInjector nullDependenciesInjector = new DependenciesInjector(new NullDependencyProvider());
+
+        final Constructors.FilledConstructor constructor = new Constructors.FilledConstructor(
+                new ClassConstructor(fooConstructor, providingNames("one", "two")),
+                new Parameters(parameters),
+                nullDependenciesInjector);
+        NewObject newObject = constructor.instantiate((Instantiator<Object>) primitiveInstantiator);
         final Foo foo = (Foo) newObject.value();
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());
@@ -44,13 +48,13 @@ public class ClassConstructorTests {
 	
 	@Test
 	public void sizeIsTheNumberOfArguments() throws Exception {
-		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two"), dependenciesInjector);
+		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two"));
 		assertEquals(2, constructor.size());
 	}
 	
 	@Test
 	public void notFulfilledByParametersWillReturnTargetsForParametersWhoseNamesArentFoundInTheParameters() throws Exception {
-		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two"), dependenciesInjector);
+		final ClassConstructor constructor = new ClassConstructor(fooConstructor, providingNames("one", "two"));
 		final Parameter aParameter = new Parameter("two", "");
 		
 		final Collection<Target<?>> unfulfilled = constructor.notFulfilledBy(new Parameters(aParameter));

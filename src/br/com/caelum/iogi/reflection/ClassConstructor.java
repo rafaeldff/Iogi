@@ -17,18 +17,16 @@ import java.util.Map.Entry;
 import static br.com.caelum.iogi.util.IogiCollections.zip;
 
 public class ClassConstructor {
-    private DependenciesInjector dependenciesInjector;
     private final Set<String> names;
 	private final Constructor<?> constructor;
 
-    public ClassConstructor(final Constructor<?> constructor, final ParameterNamesProvider parameterNamesProvider, DependenciesInjector dependenciesInjector) {
-        this(constructor, Sets.newLinkedHashSet(parameterNamesProvider.lookupParameterNames(constructor)), dependenciesInjector);
+    public ClassConstructor(final Constructor<?> constructor, final ParameterNamesProvider parameterNamesProvider) {
+        this(constructor, Sets.newLinkedHashSet(parameterNamesProvider.lookupParameterNames(constructor)));
     }
 
-	private ClassConstructor(final Constructor<?> constructor, final Set<String> names, DependenciesInjector dependenciesInjector) {
+	private ClassConstructor(final Constructor<?> constructor, final Set<String> names) {
         this.constructor = constructor;
         this.names = names;
-        this.dependenciesInjector = dependenciesInjector;
     }
 
 	public Set<String> getNames() {
@@ -39,7 +37,7 @@ public class ClassConstructor {
 		return names.size();
 	}
 
-	public NewObject instantiate(final Instantiator<?> argumentsInstantiator, final Parameters parameters) {
+	public NewObject instantiate(final Instantiator<?> argumentsInstantiator, final Parameters parameters, DependenciesInjector dependenciesInjector) {
 		final List<Object> argumentValues = Lists.newArrayListWithCapacity(size());
 		final Collection<Target<?>> needDependency = notFulfilledBy(parameters);
 
@@ -67,7 +65,7 @@ public class ClassConstructor {
 		return Collections.unmodifiableList(unfulfilledParameterTargets);
 	}
 
-	private List<Target<?>> argumentTargets() {
+	public List<Target<?>> argumentTargets() {
 		final Iterable<Type> types = Arrays.asList(constructor.getGenericParameterTypes());
 
         final ArrayList<Target<?>> targets = Lists.newArrayList();
@@ -78,7 +76,7 @@ public class ClassConstructor {
 		return Collections.unmodifiableList(targets);
 	}
 
-	private Class<?> declaringClass() {
+	public Class<?> declaringClass() {
 		return constructor.getDeclaringClass();
 	}
 
@@ -92,4 +90,8 @@ public class ClassConstructor {
 		final boolean canObtainDependencies = dependenciesInjector.canObtainDependenciesFor(uninstantiableByParameters);
 		return canObtainDependencies;
 	}
+
+    public Object construct(List<Object> argumentValues) {
+        return new Mirror().on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
+    }
 }

@@ -1,6 +1,5 @@
 package br.com.caelum.iogi.parameters;
 
-import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.fixtures.TwoArguments;
 import br.com.caelum.iogi.reflection.ClassConstructor;
 import br.com.caelum.iogi.reflection.Target;
@@ -67,7 +66,7 @@ public class ParametersTests {
 	public void parametersNotUsedByAConstructorAreThoseWhoseFirstComponentsDontMatchWithTheConstructorArgumentNames() throws Exception {
 		final Parameters parameters = parametersNamed("foo", "one", "two", "fizzle"); 
 		final Constructor<TwoArguments> constructorWithParametersNamedOneAndTwo = TwoArguments.class.getDeclaredConstructor(int.class, int.class);
-		final ClassConstructor constructor = new ClassConstructor(constructorWithParametersNamedOneAndTwo, providingNames("one", "two"), DependenciesInjector.nullDependenciesInjector());
+		final ClassConstructor constructor = new ClassConstructor(constructorWithParametersNamedOneAndTwo, providingNames("one", "two"));
 		
 		final Parameters notUsed = parameters.notUsedBy(constructor);
 		assertThat(notUsed.getParametersList(), containsInAnyOrder(new Parameter("foo", ""), new Parameter("fizzle", "")));

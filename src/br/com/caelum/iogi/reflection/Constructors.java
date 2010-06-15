@@ -4,10 +4,12 @@ import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.Instantiator;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.util.Ints;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Constructors {
     public static final Ordering<ClassConstructor> orderConstructorsBySize = new Ordering<ClassConstructor>() {
@@ -32,7 +34,7 @@ public class Constructors {
                 compatible.add(classConstructor);
         }
 
-        return new FilledConstructors(compatible, relevantParameters);
+        return new FilledConstructors(compatible, relevantParameters, dependenciesInjector);
     }
 
     public int size() {
@@ -42,10 +44,12 @@ public class Constructors {
     public static class FilledConstructors {
         private final Collection<ClassConstructor> classConstructors;
         private final Parameters parameters;
+        private final DependenciesInjector dependenciesInjector;
 
-        public FilledConstructors(final Collection<ClassConstructor> classConstructors, final Parameters parameters) {
+        public FilledConstructors(final Collection<ClassConstructor> classConstructors, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
             this.classConstructors = classConstructors;
             this.parameters = parameters;
+            this.dependenciesInjector = dependenciesInjector;
         }
 
         public FilledConstructor largest() {
@@ -53,8 +57,8 @@ public class Constructors {
                 return FilledConstructor.nullFilledConstructor();
             }
 
-            ClassConstructor largestConstructor = orderConstructorsBySize.max(classConstructors);
-            return new FilledConstructor(largestConstructor, parameters);
+            final ClassConstructor largestConstructor = orderConstructorsBySize.max(classConstructors);
+            return new FilledConstructor(largestConstructor, parameters, dependenciesInjector);
         }
 
     }
@@ -62,18 +66,29 @@ public class Constructors {
     public static class FilledConstructor {
         private final ClassConstructor constructor;
         private final Parameters parameters;
+        private final DependenciesInjector dependenciesInjector;
 
-        public FilledConstructor(final ClassConstructor value, final Parameters parameters) {
+        public FilledConstructor(final ClassConstructor value, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
             this.constructor = value;
             this.parameters = parameters;
+            this.dependenciesInjector = dependenciesInjector;
         }
 
         public NewObject instantiate(final Instantiator<Object> argumentInstantiator) {
-            return constructor.instantiate(argumentInstantiator, parameters);
+            final Collection<Target<?>> needDependency = constructor.notFulfilledBy(parameters); //TODO: Refactor this method
+
+            final List<Object> argumentValues = Lists.newArrayList();
+            for (final Target<?> target : constructor.argumentTargets()) {
+                Object value = needDependency.contains(target) ? dependenciesInjector.provide(target) : argumentInstantiator.instantiate(target, parameters);
+                argumentValues.add(value);
+            }
+
+            Object newObjectValue = constructor.construct(argumentValues);
+            return new NewObject(argumentInstantiator, constructor, parameters, newObjectValue);
         }
 
         private static FilledConstructor nullFilledConstructor() {
-            return new FilledConstructor(null,null) {
+            return new FilledConstructor(null,null, null) {
                 @Override
                 public NewObject instantiate(final Instantiator<Object> argumentInstantiator) {
                     return NewObject.nullNewObject();

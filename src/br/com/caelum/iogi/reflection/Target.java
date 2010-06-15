@@ -111,7 +111,7 @@ public class Target<T> {
     public Constructors constructors(ParameterNamesProvider parameterNamesProvider, DependenciesInjector dependenciesInjector) {
         final HashSet<ClassConstructor> classConstructors = new HashSet<ClassConstructor>();
         for (final Constructor<?> constructor : getClassType().getDeclaredConstructors()) {
-            classConstructors.add(new ClassConstructor(constructor, parameterNamesProvider, dependenciesInjector));
+            classConstructors.add(new ClassConstructor(constructor, parameterNamesProvider));
         }
 
         return new Constructors(classConstructors, dependenciesInjector);
