@@ -14,39 +14,41 @@ import java.util.List;
 
 public class NewObject {
     public static NewObject nullNewObject() {
-        return new NewObject(null,null,null) {
+        return new NewObject(null, null, null, null) {
             @Override
             public Object value() {
                 return null;
             }
 
             @Override
-            public Object withPropertiesSet(Parameters parametersForTarget) {
+            public Object withPropertiesSet() {
                 return null;
             }
         };
-    }    
+    }
 
     private Instantiator<?> propertiesInstantiator;
     private ClassConstructor constructorUsed;
+    private Parameters parameters;
     private Object object;
 
-    public NewObject(Instantiator<?> propertiesInstantiator, ClassConstructor constructorUsed, Object object) {
+    public NewObject(Instantiator<?> propertiesInstantiator, ClassConstructor constructorUsed, Parameters parameters, Object newObjectValue) {
         this.propertiesInstantiator = propertiesInstantiator;
         this.constructorUsed = constructorUsed;
-        this.object = object;
+        this.parameters = parameters;
+        this.object = newObjectValue;
     }
 
     public Object value() {
         return object;
     }
 
-    public Object withPropertiesSet(Parameters parameters) {
-        populateProperties(parametersForProperties(parameters));
+    public Object withPropertiesSet() {
+        populateProperties(remainingParameters());
         return value();
     }
 
-    private Parameters parametersForProperties(Parameters parameters) {
+    private Parameters remainingParameters() {
         return parameters.notUsedBy(constructorUsed);
     }
 

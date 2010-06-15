@@ -17,15 +17,6 @@ import java.util.Map.Entry;
 import static br.com.caelum.iogi.util.IogiCollections.zip;
 
 public class ClassConstructor {
-    public static ClassConstructor nullClassConstructor() {
-        return new ClassConstructor(null,Collections.<String>emptySet(), DependenciesInjector.nullDependenciesInjector()) {
-            @Override
-            public NewObject instantiate(Instantiator<?> argumentsInstantiator, Parameters parameters) {
-                return NewObject.nullNewObject();
-            }
-        };
-    }
-
     private DependenciesInjector dependenciesInjector;
     private final Set<String> names;
 	private final Constructor<?> constructor;
@@ -63,7 +54,7 @@ public class ClassConstructor {
 		}
 
         Object newObjectValue = new Mirror().on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
-        return new NewObject(argumentsInstantiator, this, newObjectValue);
+        return new NewObject(argumentsInstantiator, this, parameters, newObjectValue);
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {

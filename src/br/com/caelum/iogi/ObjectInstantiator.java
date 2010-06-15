@@ -31,8 +31,8 @@ public class ObjectInstantiator implements Instantiator<Object> {
                 .constructors(parameterNamesProvider, dependenciesInjector)
                 .compatibleWith(parametersForTarget)
                 .largest()
-                .instantiate(argumentInstantiator, parametersForTarget)
-                .withPropertiesSet(parametersForTarget);
+                .instantiate(argumentInstantiator)
+                .withPropertiesSet();
 	}
 
     private <T> void expectingAConcreteTarget(final Target<T> target) {
