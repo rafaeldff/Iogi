@@ -64,29 +64,6 @@ public class Constructors {
     }
 
     public static class FilledConstructor {
-        private final ClassConstructor constructor;
-        private final Parameters parameters;
-        private final DependenciesInjector dependenciesInjector;
-
-        public FilledConstructor(final ClassConstructor value, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
-            this.constructor = value;
-            this.parameters = parameters;
-            this.dependenciesInjector = dependenciesInjector;
-        }
-
-        public NewObject instantiate(final Instantiator<Object> argumentInstantiator) {
-            final Collection<Target<?>> needDependency = constructor.notFulfilledBy(parameters); //TODO: Refactor this method
-
-            final List<Object> argumentValues = Lists.newArrayList();
-            for (final Target<?> target : constructor.argumentTargets()) {
-                Object value = needDependency.contains(target) ? dependenciesInjector.provide(target) : argumentInstantiator.instantiate(target, parameters);
-                argumentValues.add(value);
-            }
-
-            Object newObjectValue = constructor.construct(argumentValues);
-            return new NewObject(argumentInstantiator, constructor, parameters, newObjectValue);
-        }
-
         private static FilledConstructor nullFilledConstructor() {
             return new FilledConstructor(null,null, null) {
                 @Override
@@ -95,6 +72,42 @@ public class Constructors {
                 }
             };
         }
+        
+        private final ClassConstructor constructor;
+        private final Parameters parameters;
+        private final DependenciesInjector dependenciesInjector;
+
+        public FilledConstructor(final ClassConstructor constructor, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
+            this.constructor = constructor;
+            this.parameters = parameters;
+            this.dependenciesInjector = dependenciesInjector;
+        }
+
+        public NewObject instantiate(final Instantiator<Object> argumentInstantiator) {
+            Object newObjectValue = constructor.construct(argumentValues(argumentInstantiator));
+            return new NewObject(argumentInstantiator, constructor, parameters, newObjectValue);
+        }
+
+        private List<Object> argumentValues(Instantiator<Object> argumentInstantiator) {
+            final List<Object> argumentValues = Lists.newArrayList();
+            for (final Target<?> target : constructor.argumentTargets()) {
+                argumentValues.add(argumentValue(argumentInstantiator, target));
+            }
+            return argumentValues;
+        }
+
+        private Object argumentValue(Instantiator<Object> argumentInstantiator, Target<?> target) {
+            return needsDependency(target) ? dependenciesInjector.provide(target) : argumentInstantiator.instantiate(target, parameters);
+        }
+
+        private boolean needsDependency(Target<?> target) {
+            return targetsNeedingADependency().contains(target);
+        }
+
+        private Collection<Target<?>> targetsNeedingADependency() {
+            return constructor.notFulfilledBy(parameters);
+        }
+
     }
 
 }
