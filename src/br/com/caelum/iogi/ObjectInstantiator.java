@@ -32,7 +32,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
                 .compatibleWith(parametersForTarget)
                 .largest()
                 .instantiate(argumentInstantiator)
-                .withPropertiesSet();
+                .valueWithPropertiesSet();
 	}
 
     private <T> void expectingAConcreteTarget(final Target<T> target) {

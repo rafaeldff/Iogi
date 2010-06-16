@@ -85,7 +85,7 @@ public class Constructors {
 
         public NewObject instantiate(final Instantiator<Object> argumentInstantiator) {
             Object newObjectValue = constructor.construct(argumentValues(argumentInstantiator));
-            return new NewObject(argumentInstantiator, constructor, parameters, newObjectValue);
+            return new NewObject(argumentInstantiator, parameters, newObjectValue);
         }
 
         private List<Object> argumentValues(Instantiator<Object> argumentInstantiator) {

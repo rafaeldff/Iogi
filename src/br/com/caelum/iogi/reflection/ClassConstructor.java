@@ -52,7 +52,7 @@ public class ClassConstructor {
 		}
 
         Object newObjectValue = new Mirror().on(declaringClass()).invoke().constructor(constructor).withArgs(argumentValues.toArray());
-        return new NewObject(argumentsInstantiator, this, parameters, newObjectValue);
+        return new NewObject(argumentsInstantiator, parameters.notUsedBy(this), newObjectValue);
 	}
 
 	public Collection<Target<?>> notFulfilledBy(final Parameters parameters) {

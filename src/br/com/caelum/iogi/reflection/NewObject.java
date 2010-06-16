@@ -14,53 +14,47 @@ import java.util.List;
 
 public class NewObject {
     public static NewObject nullNewObject() {
-        return new NewObject(null, null, null, null) {
+        return new NewObject(null, null, null) {
             @Override
             public Object value() {
                 return null;
             }
 
             @Override
-            public Object withPropertiesSet() {
+            public Object valueWithPropertiesSet() {
                 return null;
             }
         };
     }
 
-    private Instantiator<?> propertiesInstantiator;
-    private ClassConstructor constructorUsed;
-    private Parameters parameters;
-    private Object object;
+    private final Instantiator<?> propertiesInstantiator;
+    private final Parameters parameters;
+    private final Object object;
 
-    public NewObject(Instantiator<?> propertiesInstantiator, ClassConstructor constructorUsed, Parameters parameters, Object newObjectValue) {
+    public NewObject(final Instantiator<?> propertiesInstantiator, final Parameters parameters, final Object newObjectValue) {
         this.propertiesInstantiator = propertiesInstantiator;
-        this.constructorUsed = constructorUsed;
         this.parameters = parameters;
         this.object = newObjectValue;
+    }
+
+    public Object valueWithPropertiesSet() {
+        populateProperties();
+        return value();
     }
 
     public Object value() {
         return object;
     }
 
-    public Object withPropertiesSet() {
-        populateProperties(remainingParameters());
-        return value();
-    }
-
-    private Parameters remainingParameters() {
-        return parameters.notUsedBy(constructorUsed);
-    }
-
-    private void populateProperties(final Parameters parametersForProperties) {
-		for (final Setter setter : Setter.settersIn(object)) {
-            setProperty(setter, parametersForProperties);
+    private void populateProperties() {
+        for (final Setter setter : Setter.settersIn(object)) {
+            setProperty(setter);
         }
 	}
 
-    private void setProperty(Setter setter, Parameters remainingParameters) {
-        if (remainingParameters.hasRelatedTo(setter.asTarget())) {
-            final Object propertyValue = propertiesInstantiator.instantiate(setter.asTarget(), remainingParameters);
+    private void setProperty(final Setter setter) {
+        if (parameters.hasRelatedTo(setter.asTarget())) {
+            final Object propertyValue = propertiesInstantiator.instantiate(setter.asTarget(), parameters);
             setter.set(propertyValue);
         }
     }
@@ -73,7 +67,7 @@ public class NewObject {
         };
 
         private static Collection<Setter> settersIn(final Object object) {
-            List<Method> setterMethods = new Mirror().on(object.getClass()).reflectAll().methodsMatching(SETTERS);
+            final List<Method> setterMethods = new Mirror().on(object.getClass()).reflectAll().methodsMatching(SETTERS);
 
             final ArrayList<Setter> setters = new ArrayList<Setter>();
             for (final Method setterMethod: setterMethods) {
