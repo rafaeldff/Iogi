@@ -97,7 +97,10 @@ public class Constructors {
         }
 
         private Object argumentValue(Instantiator<Object> argumentInstantiator, Target<?> target) {
-            return needsDependency(target) ? dependenciesInjector.provide(target) : argumentInstantiator.instantiate(target, parameters);
+            if (needsDependency(target))
+                return dependenciesInjector.provide(target);
+            else
+                return argumentInstantiator.instantiate(target, parameters);
         }
 
         private boolean needsDependency(Target<?> target) {
