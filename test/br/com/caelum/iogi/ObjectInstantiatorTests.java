@@ -1,18 +1,5 @@
 package br.com.caelum.iogi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collections;
-
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import br.com.caelum.iogi.fixtures.OneConstructibleArgument;
 import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
 import br.com.caelum.iogi.fixtures.OneStringOneConstructible;
@@ -21,7 +8,17 @@ import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.ParanamerParameterNamesProvider;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
+import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Collections;
+
+import static org.junit.Assert.*;
 
 public class ObjectInstantiatorTests {
 	private Mockery context;
@@ -126,7 +123,27 @@ public class ObjectInstantiatorTests {
 		assertSame(injectedValue, object.getTwo());
 		assertEquals("x", object.getOne());
 	}
-	
+
+    @Test
+    public void shouldInstantiateRecursiveArgumentsGuidedByTheParameters() throws Exception {
+        Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
+        Recursive newObject = iogi.instantiate(Target.create(Recursive.class, "target"),
+                new Parameters(new Parameter("target.r.s" , "asdf"), new Parameter("target.s", "asdf")));
+        assertNotNull(newObject.r);
+
+    }
+
+    public static class Recursive {
+        Recursive r;
+
+        public Recursive(String s) {
+        }
+        
+        public Recursive(Recursive r, String s) {
+            this.r = r;
+        }
+    }
+
 	public static class TwoCompatibleConstructors {
 		boolean largestWasCalled = false;
 		public TwoCompatibleConstructors(final String a, final String b) {
