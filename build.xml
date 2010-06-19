@@ -74,6 +74,11 @@
 
 	<target name="testsCompiled" depends="mainCompiled">
 		<javac classpathref="testsClasspath" srcdir="${tests.source.dir}" destdir="${tests.classes.dir}" debug="true"/>
+		<copy todir="${tests.classes.dir}">
+			<fileset dir="${tests.source.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
 	</target>
 
 	<target name="mainCompiled" depends="buildPrepared">

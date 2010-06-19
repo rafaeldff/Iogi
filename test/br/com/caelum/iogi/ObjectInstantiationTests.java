@@ -1,35 +1,26 @@
 package br.com.caelum.iogi;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.util.List;
-
-import org.junit.Test;
-
+import br.com.caelum.iogi.collections.ArrayInstantiator;
+import br.com.caelum.iogi.collections.ListInstantiator;
+import br.com.caelum.iogi.conversion.TypeConverter;
 import br.com.caelum.iogi.exceptions.InvalidTypeException;
-import br.com.caelum.iogi.fixtures.AbstractClass;
-import br.com.caelum.iogi.fixtures.MixedPrimitiveAndConstructibleArguments;
-import br.com.caelum.iogi.fixtures.OneArgOneProperty;
-import br.com.caelum.iogi.fixtures.OneConstructibleArgument;
-import br.com.caelum.iogi.fixtures.OneDoublePrimitive;
-import br.com.caelum.iogi.fixtures.OneGenericListProperty;
-import br.com.caelum.iogi.fixtures.OneIntOneStringAndOneObject;
-import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
-import br.com.caelum.iogi.fixtures.OnePropertyWithReturnType;
-import br.com.caelum.iogi.fixtures.OneString;
-import br.com.caelum.iogi.fixtures.OnlyOneProtectedConstructor;
-import br.com.caelum.iogi.fixtures.TwoArguments;
-import br.com.caelum.iogi.fixtures.TwoConstructibleArguments;
-import br.com.caelum.iogi.fixtures.TwoConstructors;
-import br.com.caelum.iogi.fixtures.TwoLevelConstructible;
-import br.com.caelum.iogi.fixtures.TwoProperties;
+import br.com.caelum.iogi.fixtures.*;
 import br.com.caelum.iogi.parameters.Parameter;
+import br.com.caelum.iogi.parameters.Parameters;
+import br.com.caelum.iogi.reflection.ParanamerParameterNamesProvider;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
 import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
+import com.google.common.collect.ImmutableList;
+import org.junit.Test;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
+
+import static br.com.caelum.iogi.conversion.FallbackConverter.fallbackToNull;
+import static org.junit.Assert.*;
 
 public class ObjectInstantiationTests {
 	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
@@ -146,11 +137,25 @@ public class ObjectInstantiationTests {
 		 final Parameter oneArg = new Parameter("root.oneArg", "3.14");
 		 final Target<OneArgOneProperty> target = Target.create(OneArgOneProperty.class, "root");
 		 final OneArgOneProperty object = iogi.instantiate(target, oneProperty, oneArg);
-		 assertEquals((double)object.getOneArg(), 3.14, 0.01);
+		 assertEquals(object.getOneArg(), 3.14, 0.01);
 		 assertEquals(object.getOneProperty(), 5);
 	}
-	
-	@Test
+
+    @Test
+    public void willNotChangeClassLoaderURLs() throws Exception {
+        URL fooJarUrl = ObjectInstantiationTests.class.getResource("/foo.jar");
+        URL[] originalClassLoaderURLs = {fooJarUrl};
+        URLClassLoader classLoader = new URLClassLoader(originalClassLoaderURLs, this.getClass().getClassLoader());
+        
+        final Parameter oneProperty = new Parameter("bean.class.classLoader.URLs[0]", "http://atack.com/my.jar");
+        final Target<Object> target = new Target(classLoader.loadClass("Foo"), "bean");
+        final Object object = new IogiWithUrlConverter().instantiate(target, new Parameters(oneProperty));
+
+        assertArrayEquals(originalClassLoaderURLs, ((URLClassLoader)object.getClass().getClassLoader()).getURLs());
+    }
+
+
+    @Test
 	public void willIgnorePropertiesForWhichThereAreNoParameters() throws Exception {
 		final Parameter one = new Parameter("root.one", "1");
 		final Target<TwoProperties> target = Target.create(TwoProperties.class, "root");
@@ -281,4 +286,38 @@ public class ObjectInstantiationTests {
 			return uninstantiable;
 		}
 	}
+
+    private static class IogiWithUrlConverter implements Instantiator<Object> {
+        private final MultiInstantiator allInstantiators;
+
+        private IogiWithUrlConverter() {
+            final List<Instantiator<?>> all = new ImmutableList.Builder<Instantiator<?>>()
+                    .add(fallbackToNull(new UrlConverter()))
+                    .add(new ArrayInstantiator(this))
+                    .add(new ListInstantiator(this))
+                    .add(new ObjectInstantiator(this, new NullDependencyProvider(), new ParanamerParameterNamesProvider()))
+                    .build();
+
+            this.allInstantiators = new MultiInstantiator(all);
+        }
+
+        public boolean isAbleToInstantiate(Target<?> target) {
+            return allInstantiators.isAbleToInstantiate(target);
+        }
+
+        public Object instantiate(Target<?> target, Parameters parameters) {
+            return allInstantiators.instantiate(target, parameters);
+        }
+    }
+
+    private static class UrlConverter extends TypeConverter<URL> {
+        @Override
+        protected URL convert(String stringValue, Target<?> to) throws Exception {
+            return new URL(stringValue);
+        }
+
+        public boolean isAbleToInstantiate(Target<?> target) {
+            return target.getClassType().equals(URL.class);
+        }
+    }
 }
