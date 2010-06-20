@@ -143,12 +143,12 @@ public class ObjectInstantiationTests {
 
     @Test
     public void willNotChangeClassLoaderURLsNorTheClassLoaderItself() throws Exception {
-        URL fooJarUrl = ObjectInstantiationTests.class.getResource("/foo.jar");
-        URL[] originalClassLoaderURLs = {fooJarUrl};
-        URLClassLoader classLoader = new URLClassLoader(originalClassLoaderURLs, this.getClass().getClassLoader());
+        final URL fooJarUrl = ObjectInstantiationTests.class.getResource("/foo.jar");
+        final URL[] originalClassLoaderURLs = {fooJarUrl};
+        final URLClassLoader classLoader = new URLClassLoader(originalClassLoaderURLs, this.getClass().getClassLoader());
         
         final Parameter oneProperty = new Parameter("bean.class.classLoader.URLs[0]", "http://atack.com/my.jar");
-        final Target<Object> target = new Target(classLoader.loadClass("Foo"), "bean");
+        final Target<Object> target = new Target<Object>(classLoader.loadClass("Foo"), "bean");
         final Object object = new IogiWithUrlConverter().instantiate(target, new Parameters(oneProperty));
 
         assertArrayEquals(originalClassLoaderURLs, ((URLClassLoader)object.getClass().getClassLoader()).getURLs());
@@ -302,22 +302,22 @@ public class ObjectInstantiationTests {
             this.allInstantiators = new MultiInstantiator(all);
         }
 
-        public boolean isAbleToInstantiate(Target<?> target) {
+        public boolean isAbleToInstantiate(final Target<?> target) {
             return allInstantiators.isAbleToInstantiate(target);
         }
 
-        public Object instantiate(Target<?> target, Parameters parameters) {
+        public Object instantiate(final Target<?> target, final Parameters parameters) {
             return allInstantiators.instantiate(target, parameters);
         }
     }
 
     private static class UrlConverter extends TypeConverter<URL> {
         @Override
-        protected URL convert(String stringValue, Target<?> to) throws Exception {
+        protected URL convert(final String stringValue, final Target<?> to) throws Exception {
             return new URL(stringValue);
         }
 
-        public boolean isAbleToInstantiate(Target<?> target) {
+        public boolean isAbleToInstantiate(final Target<?> target) {
             return target.getClassType().equals(URL.class);
         }
     }
