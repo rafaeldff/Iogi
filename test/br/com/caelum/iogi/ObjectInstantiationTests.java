@@ -142,7 +142,7 @@ public class ObjectInstantiationTests {
 	}
 
     @Test
-    public void willNotChangeClassLoaderURLs() throws Exception {
+    public void willNotChangeClassLoaderURLsNorTheClassLoaderItself() throws Exception {
         URL fooJarUrl = ObjectInstantiationTests.class.getResource("/foo.jar");
         URL[] originalClassLoaderURLs = {fooJarUrl};
         URLClassLoader classLoader = new URLClassLoader(originalClassLoaderURLs, this.getClass().getClassLoader());
@@ -152,6 +152,7 @@ public class ObjectInstantiationTests {
         final Object object = new IogiWithUrlConverter().instantiate(target, new Parameters(oneProperty));
 
         assertArrayEquals(originalClassLoaderURLs, ((URLClassLoader)object.getClass().getClassLoader()).getURLs());
+        assertSame(classLoader, object.getClass().getClassLoader());
     }
 
 
