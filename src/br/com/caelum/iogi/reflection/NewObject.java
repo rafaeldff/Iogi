@@ -1,16 +1,16 @@
 package br.com.caelum.iogi.reflection;
 
-import br.com.caelum.iogi.Instantiator;
-import br.com.caelum.iogi.parameters.Parameters;
-import net.vidageek.mirror.dsl.Matcher;
-import net.vidageek.mirror.dsl.Mirror;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import net.vidageek.mirror.dsl.Matcher;
+import net.vidageek.mirror.dsl.Mirror;
+import br.com.caelum.iogi.Instantiator;
+import br.com.caelum.iogi.parameters.Parameters;
 
 public class NewObject {
     public static NewObject nullNewObject() {
@@ -59,25 +59,21 @@ public class NewObject {
         }
     }
 
-    private static class Setter {
-        private static final Matcher<Method> SETTERS = new Matcher<Method>() {
-            public boolean accepts(final Method method) {
-                return method.getName().startsWith("set");
-            }
-        };
-
+    private static abstract class Setter {
         private static Collection<Setter> settersIn(final Object object) {
-            final List<Method> setterMethods = new Mirror().on(object.getClass()).reflectAll().methodsMatching(SETTERS);
 
             final ArrayList<Setter> setters = new ArrayList<Setter>();
-            for (final Method setterMethod: setterMethods) {
-                setters.add(new Setter(setterMethod, object));
+            for (final Method setterMethod: JavaSetter.settersOf(object)) {
+                setters.add(new JavaSetter(setterMethod, object));
+            }
+            for (final Method setterMethod: ScalaSetter.settersOf(object)) {
+            	setters.add(new ScalaSetter(setterMethod, object));
             }
 
             return Collections.unmodifiableList(setters);
         }
-        
-        private final Method setter;
+
+        protected final Method setter;
 
         private final Object object;
 
@@ -94,11 +90,7 @@ public class NewObject {
             return new Target<Object>(type(), propertyName());
         }
 
-        private String propertyName() {
-            final String capitalizedPropertyName = setter.getName().substring(3);
-            final String propertyName = capitalizedPropertyName.substring(0, 1).toLowerCase() + capitalizedPropertyName.substring(1);
-            return propertyName;
-        }
+        protected abstract String propertyName();
 
         private Type type() {
             return setter.getGenericParameterTypes()[0];
@@ -108,5 +100,43 @@ public class NewObject {
         public String toString() {
             return "Setter(" + propertyName() +")";
         }
+    }
+    private static class JavaSetter extends Setter {
+		public JavaSetter(Method setter, Object object) {
+			super(setter, object);
+		}
+
+		@Override
+		protected String propertyName() {
+            final String capitalizedPropertyName = setter.getName().substring(3);
+            final String propertyName = capitalizedPropertyName.substring(0, 1).toLowerCase() + capitalizedPropertyName.substring(1);
+            return propertyName;
+        }
+
+		static List<Method> settersOf(Object object) {
+			return new Mirror().on(object.getClass()).reflectAll().methodsMatching(new Matcher<Method>() {
+	            public boolean accepts(final Method method) {
+	                return method.getName().startsWith("set");
+	            }
+	        });
+		}
+    }
+    private static class ScalaSetter extends Setter {
+    	public ScalaSetter(Method setter, Object object) {
+    		super(setter, object);
+    	}
+
+    	@Override
+    	protected String propertyName() {
+    		return setter.getName().replace("_$eq", "");
+    	}
+
+    	static List<Method> settersOf(Object object) {
+    		return new Mirror().on(object.getClass()).reflectAll().methodsMatching(new Matcher<Method>() {
+    			public boolean accepts(final Method method) {
+    				return method.getName().endsWith("_$eq");
+    			}
+    		});
+    	}
     }
 }
