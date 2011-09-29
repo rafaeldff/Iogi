@@ -8,7 +8,15 @@
 
 	<name>Immutable Object Graph Instantiator</name>
 	<url>https://github.com/rafaeldff/Iogi</url>
-
+	<developers>
+		<developer>
+			<id>rafaeldff</id>
+			<name>Rafael Ferreira</name>
+			<url>http://blog.rafaelferreira.net/</url>
+			<roles><role>leader</role></roles>
+			<timezone>-3</timezone>
+		</developer>
+	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
