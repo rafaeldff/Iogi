@@ -112,8 +112,21 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-		</plugins>
-		<sourceDirectory>src</sourceDirectory>
+                        <plugin>
+                          <groupId>org.apache.maven.plugins</groupId>
+                          <artifactId>maven-gpg-plugin</artifactId>
+                          <executions>
+                            <execution>
+                              <id>sign-artifacts</id>
+                              <phase>verify</phase>
+                              <goals>
+                                <goal>sign</goal>
+                              </goals>
+                            </execution>
+                          </executions>
+                        </plugin>
+                      </plugins>
+                      <sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
 	</build>
 </project>
