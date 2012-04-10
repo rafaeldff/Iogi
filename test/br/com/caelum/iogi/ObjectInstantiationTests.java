@@ -1,5 +1,6 @@
 package br.com.caelum.iogi;
 
+import br.com.caelum.iogi.ObjectInstantiationTests.StubValueObject;
 import br.com.caelum.iogi.collections.ArrayInstantiator;
 import br.com.caelum.iogi.collections.ListInstantiator;
 import br.com.caelum.iogi.conversion.TypeConverter;
@@ -240,6 +241,52 @@ public class ObjectInstantiationTests {
 	public void canInstantiateAClassWithOnlyOneProtectedConstructor() throws Exception {
 		final OnlyOneProtectedConstructor object = iogi.instantiate(Target.create(OnlyOneProtectedConstructor.class, "blah"));
 		assertNotNull(object);
+	}
+	
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void canCallSetterAfterInstantiatingObjectWithAConverter() {
+	  final Parameters parameters = new Parameters(
+	      new Parameter("root", "toConstructor"),
+	      new Parameter("root.fromSetter", "toSetter"));
+	  final Target<StubValueObject> target = Target.create(StubValueObject.class, "root"); 
+	  
+    Instantiator argumentInstantiator = new StubValueObjectConverter();
+    
+    Instantiator instantiator = 
+    		new MultiInstantiator(
+    				ImmutableList.<Instantiator<?>>of(argumentInstantiator,
+    							new ObjectInstantiator(argumentInstantiator , new NullDependencyProvider(), new ParanamerParameterNamesProvider())
+    		));
+	  
+    StubValueObject newObject = (StubValueObject) instantiator.instantiate(target, parameters);
+	  assertEquals("toConstructor", newObject.fromConstructor);
+	  assertEquals("toSetter", newObject.fromSetter);
+	}
+	
+	public static class StubValueObject {
+	  String fromConstructor;
+	  String fromSetter;
+	  
+	  public StubValueObject(String fromConstructor) {
+	    this.fromConstructor = fromConstructor;
+    }
+	  
+	  public void setFromSetter(String fromSetter) {
+      this.fromSetter = fromSetter;
+    }
+	}
+	
+	public static class StubValueObjectConverter extends TypeConverter<StubValueObject> {
+
+    public boolean isAbleToInstantiate(Target<?> target) {
+      return target.getClassType() == StubValueObject.class;
+    }
+
+    @Override
+    protected StubValueObject convert(String stringValue, Target<?> to) throws Exception {
+      return new StubValueObject(stringValue);
+    }
 	}
 	
 	@Test
