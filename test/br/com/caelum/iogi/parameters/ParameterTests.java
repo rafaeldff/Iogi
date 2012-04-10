@@ -27,9 +27,10 @@ public class ParameterTests {
 		assertEquals("one", parameter.getFirstNameComponent());
 	}
 	
-	public void ifTheParameterNameDoesntHaveDotsThenStripReturnsNull() {
+	@Test
+	public void ifTheParameterNameDoesntHaveDotsThenStripReturnsEmptyString() {
 		final Parameter parameter = new Parameter("wholename", "");
-		assertNull(parameter.strip());
+		assertEquals("", parameter.strip().getFirstNameComponent());
 	}
 	
 	@Test

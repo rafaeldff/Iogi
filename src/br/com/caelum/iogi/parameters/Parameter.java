@@ -48,7 +48,7 @@ public class Parameter {
 
 	public Parameter strip() {
 		if (nameComponents.size() < 2)
-			return null;
+			return new Parameter("", value);
 		
 		final ImmutableList<String> componentsExceptTheFirst = nameComponents.subList(1, nameComponents.size());
 		return new Parameter(value, componentsExceptTheFirst);
