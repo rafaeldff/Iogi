@@ -26,7 +26,7 @@ public class Parameter {
 	}
 	
 	private static ImmutableList<String> computeNameComponents(final String name) {
-		return ImmutableList.of(name.split("\\."));
+		return ImmutableList.copyOf(name.split("\\."));
 	}
 
 	public String getName() {
