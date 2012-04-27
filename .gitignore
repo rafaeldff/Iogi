@@ -6,3 +6,5 @@ build
 target/
 .classpath
 .project
+*.swp
+.settings
