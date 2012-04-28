@@ -5,6 +5,8 @@ import br.com.caelum.iogi.reflection.ClassConstructor;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
 import com.google.common.collect.Lists;
+
+import org.hamcrest.Matchers;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
@@ -14,8 +16,12 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 public class ParametersTests {
@@ -70,6 +76,33 @@ public class ParametersTests {
 		
 		final Parameters notUsed = parameters.notUsedBy(constructor);
 		assertThat(notUsed.getParametersList(), containsInAnyOrder(new Parameter("foo", ""), new Parameter("fizzle", "")));
+	}
+	
+	@Test
+	public void parametersForTargetAreThoseWhoseFirstNameComponentMatchTheTargetName() throws Exception {
+		Parameter matchingParameter = new Parameter("matchingName.foo", "42");
+		Parameter notMatchingParameter = new Parameter("notMatching.foo", "123");
+		Parameters parameters = new Parameters(matchingParameter, notMatchingParameter);
+		
+		List<Parameter> obtained = parameters.forTarget(Target.create(Object.class, "matchingName"));
+		assertEquals(asList(matchingParameter), obtained);
+	}
+	
+	@Test
+	public void ifThereAreNoMatchingParametersThenParametersForTargetReturnsAnEmptyList() throws Exception {
+		Parameter notMatchingParameter = new Parameter("notMatching.foo", "123");
+		Parameters parameters = new Parameters(notMatchingParameter);
+		
+		List<Parameter> obtained = parameters.forTarget(Target.create(Object.class, "matchingName"));
+		assertTrue(obtained.isEmpty());
+	}
+	
+	@Test
+	public void parametersHaveParametersRelatedToATargetWhenAtLeastOneParameterHasTheTargetNameAsItsFirstSegment() throws Exception {
+		Parameters parameters = parametersNamed("name.foo");
+		
+		assertTrue(parameters.hasRelatedTo(Target.create(Object.class, "name")));
+		assertFalse(parameters.hasRelatedTo(Target.create(Object.class, "other")));
 	}
 	
 	private Parameters parametersNamed(final String... names) {
