@@ -1,5 +1,9 @@
 package br.com.caelum.iogi;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.After;
@@ -17,10 +21,14 @@ import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -123,8 +131,93 @@ public class EmptyObjectsProviderTest {
       assertEquals("foo", object.normal.parameter);
       assertThat(object.mayBeEmpty, instanceOf(MayBeEmpty.class));
    }
+   
+   private EmptyObjectsProvider javaProvider = EmptyObjectsProvider.javaEmptyObjectsProvider(underlying);
+   
+   @SuppressWarnings("unchecked")
+   @Test
+   public void javaEmptyObjectsProviderCanProvideNewEmptyMutableSets() throws Exception {
+      assumeUnderlyingCannotProvideAnything();
+      Target<Set<Object>> setTarget = new Target<Set<Object>>(Set.class, "");
+      
+      assertTrue(javaProvider.canProvide(setTarget));
+      
+      Set<Object> firstSet = (Set<Object>) javaProvider.provide(setTarget);
+      assertTrue(firstSet.isEmpty());
+      
+      Set<Object> secondSet = (Set<Object>)javaProvider.provide(setTarget);
+      assertTrue(secondSet.isEmpty());
+      
+      assertNotSame(firstSet, secondSet);
+      
+      firstSet.add(new Object());
+      assertEquals(1, firstSet.size());
+   }
+   
+   @SuppressWarnings("unchecked")
+   @Test
+   public void javaEmptyObjectsProviderCanProvideNewEmptyMutableLists() throws Exception {
+      assumeUnderlyingCannotProvideAnything();
+      Target<List<Object>> listTarget = new Target<List<Object>>(List.class, "");
 
-   static class NormalObject {
+      assertTrue(javaProvider.canProvide(listTarget));
+
+      List<Object> firstList = (List<Object>) javaProvider.provide(listTarget);
+      assertTrue(firstList.isEmpty());
+
+      List<Object> secondList = (List<Object>) javaProvider.provide(listTarget);
+      assertTrue(secondList.isEmpty());
+
+      assertNotSame(firstList, secondList);
+
+      firstList.add(new Object());
+      assertEquals(1, firstList.size());
+   }
+   
+   @SuppressWarnings("unchecked")
+   @Test
+   public void javaEmptyObjectsProviderCanProvideNewEmptyMutableMaps() throws Exception {
+      assumeUnderlyingCannotProvideAnything();
+      Target<Map<Object, Object>> mapTarget = new Target<Map<Object,Object>>(Map.class, "");
+
+      assertTrue(javaProvider.canProvide(mapTarget));
+
+      Map<Object, Object> firstMap = (Map<Object, Object>) javaProvider.provide(mapTarget);
+      assertTrue(firstMap.isEmpty());
+
+      Map<Object, Object> secondMap = (Map<Object, Object>) javaProvider.provide(mapTarget);
+      assertTrue(secondMap.isEmpty());
+
+      assertNotSame(firstMap, secondMap);
+
+      firstMap.put("key", "value");
+      assertEquals(1, firstMap.size());
+   }
+   
+   @Test
+   public void javaEmptyObjectsProviderCanProvideNewObjectArrays() throws Exception {
+      assumeUnderlyingCannotProvideAnything();
+      Target<Object[]> arrayTarget = Target.create(Object[].class, "");
+
+      assertTrue(javaProvider.canProvide(arrayTarget));
+
+      Object[] array = (Object[]) javaProvider.provide(arrayTarget);
+      assertThat(array, is(emptyArray()));
+   }
+   
+   @Test
+   public void javaEmptyObjectsProviderCanProvideListsOfCustomObjects() throws Exception {
+      assumeUnderlyingCannotProvideAnything();
+      Target<List<NormalObject>> listTarget = new Target<List<NormalObject>>(List.class, "");
+
+      assertTrue(javaProvider.canProvide(listTarget));
+
+      @SuppressWarnings("unchecked")
+      List<NormalObject> list = (List<NormalObject>) javaProvider.provide(listTarget);
+      assertNotNull(list);
+   }
+   
+      static class NormalObject {
       private final String parameter;
 
       public NormalObject(String parameter) {

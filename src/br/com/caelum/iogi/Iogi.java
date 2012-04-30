@@ -1,5 +1,6 @@
 package br.com.caelum.iogi;
 
+import static br.com.caelum.iogi.EmptyObjectsProvider.javaEmptyObjectsProvider;
 import static br.com.caelum.iogi.conversion.FallbackConverter.fallbackTo;
 import static br.com.caelum.iogi.conversion.FallbackConverter.fallbackToNull;
 
@@ -67,7 +68,7 @@ public class Iogi {
 			.add(fallbackTo(new ShortPrimitiveConverter(), (short)0))
 			.add(new ArrayInstantiator(new DelegateToAllInstantatiors()))
 			.add(new ListInstantiator(new DelegateToAllInstantatiors()))
-			.add(new ObjectInstantiator(new DelegateToAllInstantatiors(), new EmptyObjectsProvider(dependencyProvider, EmptyObjectsProvider.JAVA_EMPTY_SUPPLIERS), new ParanamerParameterNamesProvider()))
+			.add(new ObjectInstantiator(new DelegateToAllInstantatiors(), javaEmptyObjectsProvider(dependencyProvider), new ParanamerParameterNamesProvider()))
 			.build();
 	
 		this.allInstantiators = new MultiInstantiator(all);
