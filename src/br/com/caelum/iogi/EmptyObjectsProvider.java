@@ -1,5 +1,7 @@
 package br.com.caelum.iogi;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,26 +26,37 @@ public class EmptyObjectsProvider implements DependencyProvider {
       return new EmptyObjectsProvider(underlying, javaEmptySuppliers);
    }
    
-   private final Map<? extends Class<?>, ? extends Supplier<?>> emptyInstances;
+   private final Map<? extends Class<?>, ? extends Supplier<?>> emptySuppliers;
    private final DependencyProvider underlying;
 
    public EmptyObjectsProvider(DependencyProvider underlying, Map<? extends Class<?>, ? extends Supplier<?>> emptyInstances) {
       this.underlying = underlying;
-      this.emptyInstances = emptyInstances;
+      this.emptySuppliers = emptyInstances;
    }
 
    @Override
    public boolean canProvide(Target<?> target) {
-      return selfCanProvide(target) || underlying.canProvide(target);
+      return target.getClassType().isArray() || selfCanProvide(target) || underlying.canProvide(target);
    }
 
    private boolean selfCanProvide(Target<?> target) {
-      return emptyInstances.containsKey(target.getClassType());
+      Class<?> targetType = target.getClassType();
+      return emptySuppliers.containsKey(targetType);
    }
 
    @Override
    public Object provide(Target<?> target) {
-      return underlying.canProvide(target) ? underlying.provide(target) : emptyInstances.get(target.getClassType()).get();
+      if (target.getClassType().isArray()) {
+         return emptyArrayFor(target);
+      }
+      if (underlying.canProvide(target)) {
+         return underlying.provide(target);
+      }
+      return emptySuppliers.get(target.getClassType()).get();
+   }
+
+   private Object emptyArrayFor(Target<?> target) {
+      return Array.newInstance(target.arrayElementType(), 0);
    }
 
    private static class CollectionSuppliers {

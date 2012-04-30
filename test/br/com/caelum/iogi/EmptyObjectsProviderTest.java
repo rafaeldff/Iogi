@@ -8,6 +8,7 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import br.com.caelum.iogi.conversion.StringConverter;
@@ -18,6 +19,7 @@ import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
 
 import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -25,6 +27,7 @@ import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -104,6 +107,19 @@ public class EmptyObjectsProviderTest {
       }});
       
       Assert.assertSame(provided, provider.provide(target));
+   }
+   
+   @Test
+   public void willDirectlyProvideEmptyArraysRegardlessOfTheReceivedSuppliers() throws Exception {
+      assumeUnderlyingCannotProvideAnything();
+      
+      Target<NormalObject[]> normalObjectTarget = Target.create(NormalObject[].class, "");
+      assertTrue(provider.canProvide(normalObjectTarget));
+      
+      Object theArray = provider.provide(normalObjectTarget);
+      
+      assertThat(theArray ,is(instanceOf(NormalObject[].class)));
+      assertThat((Object[])theArray, is(emptyArray()));
    }
    
    private Instantiator<Object> instantiator = new MultiInstantiator(
@@ -217,7 +233,18 @@ public class EmptyObjectsProviderTest {
       assertNotNull(list);
    }
    
-      static class NormalObject {
+   @Test
+   public void javaEmptyObjectsProviderCanProvideArraysOfCustomObjects() throws Exception {
+      assumeUnderlyingCannotProvideAnything();
+      Target<NormalObject[]> arrayTarget = Target.create(NormalObject[].class, "");
+
+      assertTrue(javaProvider.canProvide(arrayTarget));
+
+      NormalObject[] array = (NormalObject[]) javaProvider.provide(arrayTarget);
+      assertThat(array, is(emptyArray()));
+   }
+
+   static class NormalObject {
       private final String parameter;
 
       public NormalObject(String parameter) {
