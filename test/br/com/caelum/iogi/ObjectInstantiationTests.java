@@ -270,6 +270,19 @@ public class ObjectInstantiationTests {
 		assertNull(object);
 	}
 	
+   @Test
+   public void canInstantiateObjectDependingOnAnEmptyList() throws Exception {
+      Target<MixedObjectAndList> target = Target.create(MixedObjectAndList.class, "root");
+
+      MixedObjectAndList object = iogi.instantiate(target, new Parameter("root.object.someString", "foo"));
+
+      OneString objectDependency = object.getObject();
+      List<OneString> list = object.getList();
+
+      assertEquals("foo", objectDependency.getSomeString());
+      assertTrue(list.isEmpty());
+   }
+	
 	public static class HasDependency {
 		private final String instantiable;
 		private final String uninstantiable;

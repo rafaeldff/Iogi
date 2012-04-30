@@ -67,7 +67,7 @@ public class Iogi {
 			.add(fallbackTo(new ShortPrimitiveConverter(), (short)0))
 			.add(new ArrayInstantiator(new DelegateToAllInstantatiors()))
 			.add(new ListInstantiator(new DelegateToAllInstantatiors()))
-			.add(new ObjectInstantiator(new DelegateToAllInstantatiors(), dependencyProvider, new ParanamerParameterNamesProvider()))
+			.add(new ObjectInstantiator(new DelegateToAllInstantatiors(), new EmptyObjectsProvider(dependencyProvider, EmptyObjectsProvider.JAVA_EMPTY_SUPPLIERS), new ParanamerParameterNamesProvider()))
 			.build();
 	
 		this.allInstantiators = new MultiInstantiator(all);
