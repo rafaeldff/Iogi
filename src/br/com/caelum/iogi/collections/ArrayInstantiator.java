@@ -16,7 +16,7 @@ public class ArrayInstantiator implements Instantiator<Object> {
 		this.elementInstantiator = elementInstantiator;
 	}
 	
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return target.getClassType().isArray();
 	}
 	

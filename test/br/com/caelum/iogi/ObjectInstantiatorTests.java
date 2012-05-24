@@ -34,7 +34,7 @@ public class ObjectInstantiatorTests {
 		context = new Mockery();
 		stubInstantiator = context.mock(Instantiator.class);
 		context.checking(new Expectations() {{
-			allowing(stubInstantiator).isAbleToInstantiate(with(any(Target.class)));
+			allowing(stubInstantiator).isAbleToInstantiate(with(any(Target.class)), with(any(Parameters.class)));
 			will(returnValue(true));
 
 			allowing(stubInstantiator).instantiate(with(any(Target.class)), with(any(Parameters.class)));

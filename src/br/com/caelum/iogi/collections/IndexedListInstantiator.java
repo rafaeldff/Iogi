@@ -19,7 +19,7 @@ public class IndexedListInstantiator implements Instantiator<List<Object>> {
 		this.listElementInstantiator = listElementInstantiator;
 	}
 
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return List.class.isAssignableFrom(target.getClassType());
 	}
 	

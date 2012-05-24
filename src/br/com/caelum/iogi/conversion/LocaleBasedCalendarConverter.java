@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.LocaleProvider;
 
@@ -16,7 +17,7 @@ public class LocaleBasedCalendarConverter extends TypeConverter<Calendar> {
 		this.localeProvider = localeProvider;
 	}
 
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return target.getClassType() == Calendar.class;
 	}
 

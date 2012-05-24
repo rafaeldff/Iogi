@@ -19,11 +19,12 @@ import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.LocaleProvider;
 
 public class TypeConvertersTests {
-	private <T> T convertWith(final TypeConverter<T> instantiator, final Class<T> type, final String stringValue) {
-		final Target<T> target = Target.create(type, "foo");
-		assertTrue(instantiator.isAbleToInstantiate(target));
-		return instantiator.instantiate(target, new Parameters(new Parameter("foo", stringValue)));
-	}
+   private <T> T convertWith(final TypeConverter<T> instantiator, final Class<T> type, final String stringValue) {
+      final Target<T> target = Target.create(type, "foo");
+      final Parameters parameters = new Parameters(new Parameter("foo", stringValue));
+      assertTrue(instantiator.isAbleToInstantiate(target, parameters));
+      return instantiator.instantiate(target, parameters);
+   }
 	
 	@Test
 	public void doubleConverterCanConverterPrimitiveDoubles() throws Exception {
@@ -150,8 +151,9 @@ public class TypeConvertersTests {
 	public void enumConverterCanConvertLiterals() throws Exception {
 		final TypeConverter<Object> instantiator = new EnumConverter();
 		final Target<Object> target = new Target<Object>(Stooges.class, "foo" );
-		assertTrue(instantiator.isAbleToInstantiate(target));
-		final Stooges object = (Stooges) instantiator.instantiate(target, new Parameters(new Parameter("foo", "CURLY")));
+		final Parameters parameters = new Parameters(new Parameter("foo", "CURLY"));
+		assertTrue(instantiator.isAbleToInstantiate(target, parameters));
+      final Stooges object = (Stooges) instantiator.instantiate(target, parameters);
 		assertEquals(Stooges.CURLY, object);
 	}
 	

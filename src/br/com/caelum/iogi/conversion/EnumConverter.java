@@ -1,10 +1,11 @@
 package br.com.caelum.iogi.conversion;
 
 import br.com.caelum.iogi.exceptions.ConversionException;
+import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.Target;
 
 public class EnumConverter extends TypeConverter<Object> {
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return Enum.class.isAssignableFrom(target.getClassType());
 	}
 	

@@ -1,11 +1,12 @@
 package br.com.caelum.iogi.conversion;
 
+import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.Target;
 
 
 public class ShortWrapperConverter extends TypeConverter<Short> {
 
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return target.getClassType() == Short.class;
 	}
 	

@@ -14,7 +14,7 @@ public class ListInstantiator implements Instantiator<List<Object>> {
 		this.listElementInstantiator = listElementInstantiator;
 	}
 
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return target.getClassType().isAssignableFrom(List.class);
 	}
 

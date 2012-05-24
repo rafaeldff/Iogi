@@ -18,7 +18,7 @@ public class ObjectInstantiator implements Instantiator<Object> {
 		this.parameterNamesProvider = parameterNamesProvider;
 	}
 
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return true;
 	}
 

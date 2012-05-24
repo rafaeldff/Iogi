@@ -124,8 +124,8 @@ public class EmptyObjectsProviderTest {
                new ObjectInstantiator(new RecursiveInstantiator(), provider, new ParanamerParameterNamesProvider())));
    private final class RecursiveInstantiator implements Instantiator<Object> {
       @Override
-      public boolean isAbleToInstantiate(Target<?> target) {
-         return instantiator.isAbleToInstantiate(target);
+      public boolean isAbleToInstantiate(Target<?> target, Parameters parameters) {
+         return instantiator.isAbleToInstantiate(target, parameters);
       }
 
       @Override

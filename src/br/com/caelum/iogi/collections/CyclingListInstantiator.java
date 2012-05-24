@@ -21,7 +21,7 @@ public class CyclingListInstantiator implements Instantiator<List<Object>> {
 		this.elementInstantiator = objectInstantiator;
 	}
 
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return target.getClassType().isAssignableFrom(List.class);
 	}
 

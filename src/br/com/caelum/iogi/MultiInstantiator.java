@@ -16,15 +16,15 @@ public class MultiInstantiator implements Instantiator<Object> {
 
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
 		for (final Instantiator<?> instantiator : instantiators) {
-			if (instantiator.isAbleToInstantiate(target))
+			if (instantiator.isAbleToInstantiate(target, parameters))
 				return instantiator.instantiate(target, parameters);
 		}
 		throw new InvalidTypeException("Cannot instantiate " + target);
 	}
 
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		for (final Instantiator<?> instantiator : instantiators) {
-			if (instantiator.isAbleToInstantiate(target))
+			if (instantiator.isAbleToInstantiate(target, parameters))
 				return true;
 		}
 		return false;

@@ -315,8 +315,8 @@ public class ObjectInstantiationTests {
             this.allInstantiators = new MultiInstantiator(all);
         }
 
-        public boolean isAbleToInstantiate(final Target<?> target) {
-            return allInstantiators.isAbleToInstantiate(target);
+        public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
+            return allInstantiators.isAbleToInstantiate(target, parameters);
         }
 
         public Object instantiate(final Target<?> target, final Parameters parameters) {
@@ -330,7 +330,7 @@ public class ObjectInstantiationTests {
             return new URL(stringValue);
         }
 
-        public boolean isAbleToInstantiate(final Target<?> target) {
+        public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
             return target.getClassType().equals(URL.class);
         }
     }

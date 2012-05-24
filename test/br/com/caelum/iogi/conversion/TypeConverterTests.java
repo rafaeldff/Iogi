@@ -23,7 +23,7 @@ public class TypeConverterTests {
 				return stubConverted;
 			}
 			
-			public boolean isAbleToInstantiate(final Target<?> target) {
+			public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 				return false;
 			}
 		}
@@ -42,7 +42,7 @@ public class TypeConverterTests {
 				throw expectedWrappedException;
 			}
 			
-			public boolean isAbleToInstantiate(final Target<?> target) {
+			public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 				return false;
 			}
 		}
@@ -67,7 +67,7 @@ public class TypeConverterTests {
 				throw expectedWrappedException;
 			}
 			
-			public boolean isAbleToInstantiate(final Target<?> target) {
+			public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 				return false;
 			}
 		}

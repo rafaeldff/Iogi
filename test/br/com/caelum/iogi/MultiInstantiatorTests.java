@@ -35,7 +35,7 @@ public class MultiInstantiatorTests {
 		final MultiInstantiator multiInstantiator = new MultiInstantiator(theMockInstantiator);
 		
 		context.checking(new Expectations() {{
-			allowing(mockSubInstantiator).isAbleToInstantiate(with(any(Target.class)));
+			allowing(mockSubInstantiator).isAbleToInstantiate(with(any(Target.class)), with(any(Parameters.class)));
 			will(returnValue(true));
 			
 			one(mockSubInstantiator).instantiate(with(any(Target.class)), (with(any(Parameters.class))));
@@ -49,7 +49,7 @@ public class MultiInstantiatorTests {
 		final MultiInstantiator mutliInstantiator = new MultiInstantiator(theMockInstantiator);
 		
 		context.checking(new Expectations() {{
-			allowing(mockSubInstantiator).isAbleToInstantiate(with(any(Target.class)));
+			allowing(mockSubInstantiator).isAbleToInstantiate(with(any(Target.class)), with(any(Parameters.class)));
 			will(returnValue(false));
 		}});
 		

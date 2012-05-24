@@ -2,6 +2,7 @@ package br.com.caelum.iogi.conversion;
 
 import java.math.BigDecimal;
 
+import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.Target;
 
 public class BigDecimalConverter extends TypeConverter<BigDecimal> {
@@ -11,7 +12,7 @@ public class BigDecimalConverter extends TypeConverter<BigDecimal> {
 		return new BigDecimal(stringValue);
 	}
 
-	public boolean isAbleToInstantiate(final Target<?> target) {
+	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
 		return target.getClassType() == BigDecimal.class;
 	}
 
