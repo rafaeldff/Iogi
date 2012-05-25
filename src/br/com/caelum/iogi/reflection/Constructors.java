@@ -41,27 +41,42 @@ public class Constructors {
         return classConstructors.size();
     }
 
-    public static class FilledConstructors {
-        private final Collection<ClassConstructor> classConstructors;
-        private final Parameters parameters;
-        private final DependenciesInjector dependenciesInjector;
+   public static class FilledConstructors {
+      private final Collection<ClassConstructor> classConstructors;
+      private final Parameters parameters;
+      private final DependenciesInjector dependenciesInjector;
 
-        public FilledConstructors(final Collection<ClassConstructor> classConstructors, final Parameters parameters, final DependenciesInjector dependenciesInjector) {
-            this.classConstructors = classConstructors;
-            this.parameters = parameters;
-            this.dependenciesInjector = dependenciesInjector;
-        }
+      public FilledConstructors(final Collection<ClassConstructor> classConstructors,
+            final Parameters parameters, final DependenciesInjector dependenciesInjector) {
+         this.classConstructors = classConstructors;
+         this.parameters = parameters;
+         this.dependenciesInjector = dependenciesInjector;
+      }
 
-        public FilledConstructor largest() {
-            if (classConstructors.isEmpty()) {
-                return FilledConstructor.nullFilledConstructor();
-            }
+      public FilledConstructor largest() {
+         if (isEmpty()) {
+            return FilledConstructor.nullFilledConstructor();
+         }
 
-            final ClassConstructor largestConstructor = orderConstructorsBySize.max(classConstructors);
-            return new FilledConstructor(largestConstructor, parameters, dependenciesInjector);
-        }
+         final ClassConstructor largestConstructor = orderConstructorsBySize.max(classConstructors);
+         return new FilledConstructor(largestConstructor, parameters, dependenciesInjector);
+      }
 
-    }
+      public boolean isEmpty() {
+         return classConstructors.isEmpty();
+      }
+      
+      //XXX: Encapsulate
+      public Collection<ClassConstructor> getClassConstructors() {
+         return classConstructors;
+      }
+
+      @Override
+      public String toString() {
+         return "FilledConstructors [classConstructors=" + classConstructors + ", parameters=" + parameters
+               + ", dependenciesInjector=" + dependenciesInjector + "]";
+      }
+   }
 
     public static class FilledConstructor {
         private static FilledConstructor nullFilledConstructor() {
@@ -110,6 +125,11 @@ public class Constructors {
         private Collection<Target<?>> targetsNeedingADependency() {
             return constructor.notFulfilledBy(parameters);
         }
+        
+        //XXX: encapsulate
+        public ClassConstructor getConstructor() {
+         return constructor;
+      }
 
     }
 

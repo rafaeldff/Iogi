@@ -1,6 +1,7 @@
 package br.com.caelum.iogi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -28,20 +29,22 @@ public class ObjectInstantiatorTests {
 	private Mockery context;
 	private Instantiator<Object> stubInstantiator;
 
-	@SuppressWarnings("unchecked")
-	@Before
-	public void setUp() {
-		context = new Mockery();
-		stubInstantiator = context.mock(Instantiator.class);
-		context.checking(new Expectations() {{
-			allowing(stubInstantiator).isAbleToInstantiate(with(any(Target.class)), with(any(Parameters.class)));
-			will(returnValue(true));
+   @SuppressWarnings("unchecked")
+   @Before
+   public void setUp() {
+      context = new Mockery();
+      stubInstantiator = context.mock(Instantiator.class);
+   }
 
-			allowing(stubInstantiator).instantiate(with(any(Target.class)), with(any(Parameters.class)));
-			will(returnValue("x"));
-		}});
+   private void givenDelegateIsAbleToInstantiateAnything() {
+      context.checking(new Expectations() {{
+         allowing(stubInstantiator).isAbleToInstantiate(with(any(Target.class)), with(any(Parameters.class)));
+         will(returnValue(true));
 
-	}
+         allowing(stubInstantiator).instantiate(with(any(Target.class)), with(any(Parameters.class)));
+         will(returnValue("x"));
+      }});
+   }
 
 	@After
 	public void tearDown() {
@@ -49,18 +52,69 @@ public class ObjectInstantiatorTests {
 	}
 
 	@Test
-	public void canInstantiateIfThereAreExtraParametersInTheRequest() throws Exception {
-		final Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class,  "root");
-		final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
-		final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
+   public void canInstantiateIfTheRequiredParametersArePresentOnTheRequest() throws Exception {
+	   givenDelegateIsAbleToInstantiateAnything();
+	   
+	   final Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class,  "root");
+      final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider(), new ParanamerParameterNamesProvider());
+      final Parameters parameters = new Parameters(new Parameter("root.constructorArg", "x"));
+      assertTrue(objectInstantiator.isAbleToInstantiate(target, parameters));
+      
+      final Object object = objectInstantiator.instantiate(target, parameters);
+      assertNotNull(object);
+      
+   }
+	
+   @Test
+   public void canInstantiateIfThereAreExtraParametersInTheRequest() throws Exception {
+      givenDelegateIsAbleToInstantiateAnything();
+      final Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class, "root");
+      final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
+      final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
 
-		final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider(), new ParanamerParameterNamesProvider());
-		final Object object = objectInstantiator.instantiate(target, new Parameters(paramFoundInConstructor, paramFoundSetter));
-		assertNotNull(object);
-	}
+      final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator,
+            new NullDependencyProvider(), new ParanamerParameterNamesProvider());
+      final Parameters parameters = new Parameters(paramFoundInConstructor, paramFoundSetter);
+      assertTrue(objectInstantiator.isAbleToInstantiate(target, parameters));
+
+      final Object object = objectInstantiator.instantiate(target, parameters);
+      assertNotNull(object);
+   }
+   
+	@Test
+   public void cannotInstantiateIfThereAreMissingParameters() throws Exception {
+      givenDelegateIsAbleToInstantiateAnything();
+      
+      final Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class, "root");
+      final Parameter unreleatedParameter = new Parameter("root.doesNotFulfillAnything", "z");
+
+      final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator,
+            new NullDependencyProvider(), new ParanamerParameterNamesProvider());
+      final Parameters parameters = new Parameters(unreleatedParameter);
+      assertFalse(objectInstantiator.isAbleToInstantiate(target, parameters));
+   }
+	
+	@Test
+   public void cannotInstantiateIfDelegateInstantiatorCannotInstantiateParameter() throws Exception {
+	   final Target<ConstructorAndProperty> finalObjectType = Target.create(ConstructorAndProperty.class, "root");
+	   final Parameters allParameters = new Parameters(new Parameter("root.constructorArg", "z"));
+	   
+	   final Target<String> argumentType = Target.create(String.class, "constructorArg");
+	   final Parameters argumentParameters = new Parameters(new Parameter("constructorArg", "z"));
+	      
+      context.checking(new Expectations() {{
+         allowing(stubInstantiator).isAbleToInstantiate(argumentType, argumentParameters); will(returnValue(false));
+      }});
+      
+      final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator,
+            new NullDependencyProvider(), new ParanamerParameterNamesProvider());
+      
+      assertFalse(objectInstantiator.isAbleToInstantiate(finalObjectType, allParameters));
+   }
 
 	@Test
 	public void willFallbackToSetterIfNoAppropriateConstructorIsFound() throws Exception {
+	   givenDelegateIsAbleToInstantiateAnything();
 		final Target<ConstructorAndProperty> target = Target.create(ConstructorAndProperty.class,  "root");
 		final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
 		final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
@@ -71,21 +125,25 @@ public class ObjectInstantiatorTests {
 		assertEquals("x", object.getPropertyValue());
 	}
 
-	@Test
-	public void ifThereIsMoreThanOneCompatibleConstructorPickTheLargestOne() throws Exception {
-		 final Target<TwoCompatibleConstructors> target = Target.create(TwoCompatibleConstructors.class, "root");
-		 final Parameter a = new Parameter("root.a", "x");
-		 final Parameter b = new Parameter("root.b", "x");
-		 final Parameter c = new Parameter("root.c", "x");
-		 final Parameter irrelevant = new Parameter("root.irrelevant", "x");
+   @Test
+   public void ifThereIsMoreThanOneCompatibleConstructorPickTheLargestOne() throws Exception {
+      givenDelegateIsAbleToInstantiateAnything();
+      final Target<TwoCompatibleConstructors> target = Target.create(TwoCompatibleConstructors.class, "root");
+      final Parameter a = new Parameter("root.a", "x");
+      final Parameter b = new Parameter("root.b", "x");
+      final Parameter c = new Parameter("root.c", "x");
+      final Parameter irrelevant = new Parameter("root.irrelevant", "x");
 
-		 final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator, new NullDependencyProvider(), new ParanamerParameterNamesProvider());
-		 final TwoCompatibleConstructors object = (TwoCompatibleConstructors) objectInstantiator.instantiate(target, new Parameters(a, b, c, irrelevant));
-		 assertTrue(object.largestWasCalled);
-	}
+      final ObjectInstantiator objectInstantiator = new ObjectInstantiator(stubInstantiator,
+            new NullDependencyProvider(), new ParanamerParameterNamesProvider());
+      final TwoCompatibleConstructors object = (TwoCompatibleConstructors) objectInstantiator.instantiate(target,
+            new Parameters(a, b, c, irrelevant));
+      assertTrue(object.largestWasCalled);
+   }
 
 	@Test
 	public void willCallDependencyInjectorForUninstantiableParameters() throws Exception {
+	   givenDelegateIsAbleToInstantiateAnything();
 		final Target<OneConstructibleArgument> rootTarget = Target.create(OneConstructibleArgument.class, "root");
 		final DependencyProvider mockDependencyProvider = context.mock(DependencyProvider.class);
 		final Target<OneIntegerPrimitive> argTarget = Target.create(OneIntegerPrimitive.class, "arg");
@@ -106,6 +164,7 @@ public class ObjectInstantiatorTests {
 
 	@Test
 	public void willCallDependencyInjectorForUninstantiabelParametersAlongsideInstantiablaParameters() {
+	   givenDelegateIsAbleToInstantiateAnything();
 		final DependencyProvider mockDependencyProvider = context.mock(DependencyProvider.class);
 
 		final Target<OneStringOneConstructible> rootTarget = Target.create(OneStringOneConstructible.class, "root");
@@ -128,17 +187,19 @@ public class ObjectInstantiatorTests {
 		assertEquals("x", object.getOne());
 	}
 
-    @Test
-    public void shouldInstantiateRecursiveArgumentsGuidedByTheParameters() throws Exception {
-        Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
-        Recursive newObject = iogi.instantiate(Target.create(Recursive.class, "target"),
-                new Parameters(new Parameter("target.r.s" , "asdf"), new Parameter("target.s", "asdf")));
-        assertNotNull(newObject.r);
+   @Test
+   public void shouldInstantiateRecursiveArgumentsGuidedByTheParameters() throws Exception {
+      givenDelegateIsAbleToInstantiateAnything();
+      Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
+      Recursive newObject = iogi.instantiate(Target.create(Recursive.class, "target"), new Parameters(
+            new Parameter("target.r.s", "asdf"), new Parameter("target.s", "asdf")));
+      assertNotNull(newObject.r);
 
-    }
+   }
 
-    @Test
+   @Test
 	public void willUseScalaSetters() throws Exception {
+      givenDelegateIsAbleToInstantiateAnything();
 		final Target<ScalaObject> target = Target.create(ScalaObject.class,  "root");
 		final Parameter paramFoundInConstructor = new Parameter("root.constructorArg", "x");
 		final Parameter paramFoundSetter = new Parameter("root.propertyValue", "x");
