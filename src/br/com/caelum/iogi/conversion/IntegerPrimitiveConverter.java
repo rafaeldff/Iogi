@@ -6,6 +6,7 @@ import br.com.caelum.iogi.reflection.Target;
 
 public class IntegerPrimitiveConverter extends TypeConverter<Integer> {
 	public boolean isAbleToInstantiate(final Target<?> target, Parameters parameters) {
+	   //TODO: Check parameters
 		return target.getClassType() == int.class;
 	}
 

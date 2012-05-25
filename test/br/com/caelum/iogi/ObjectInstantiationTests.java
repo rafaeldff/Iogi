@@ -1,10 +1,42 @@
 package br.com.caelum.iogi;
 
+import static br.com.caelum.iogi.conversion.FallbackConverter.fallbackToNull;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
+
+import org.junit.Test;
+
 import br.com.caelum.iogi.collections.ArrayInstantiator;
 import br.com.caelum.iogi.collections.ListInstantiator;
+import br.com.caelum.iogi.conversion.IntegerPrimitiveConverter;
+import br.com.caelum.iogi.conversion.StringConverter;
 import br.com.caelum.iogi.conversion.TypeConverter;
 import br.com.caelum.iogi.exceptions.InvalidTypeException;
-import br.com.caelum.iogi.fixtures.*;
+import br.com.caelum.iogi.fixtures.AbstractClass;
+import br.com.caelum.iogi.fixtures.MixedObjectAndList;
+import br.com.caelum.iogi.fixtures.MixedPrimitiveAndConstructibleArguments;
+import br.com.caelum.iogi.fixtures.OneArgOneProperty;
+import br.com.caelum.iogi.fixtures.OneConstructibleArgument;
+import br.com.caelum.iogi.fixtures.OneDoublePrimitive;
+import br.com.caelum.iogi.fixtures.OneGenericListProperty;
+import br.com.caelum.iogi.fixtures.OneIntOneStringAndOneObject;
+import br.com.caelum.iogi.fixtures.OneIntegerPrimitive;
+import br.com.caelum.iogi.fixtures.OnePropertyWithReturnType;
+import br.com.caelum.iogi.fixtures.OneString;
+import br.com.caelum.iogi.fixtures.OnlyOneProtectedConstructor;
+import br.com.caelum.iogi.fixtures.TwoArguments;
+import br.com.caelum.iogi.fixtures.TwoConstructibleArguments;
+import br.com.caelum.iogi.fixtures.TwoConstructors;
+import br.com.caelum.iogi.fixtures.TwoLevelConstructible;
+import br.com.caelum.iogi.fixtures.TwoProperties;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.ParanamerParameterNamesProvider;
@@ -12,15 +44,8 @@ import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
 import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
+
 import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.List;
-
-import static br.com.caelum.iogi.conversion.FallbackConverter.fallbackToNull;
-import static org.junit.Assert.*;
 
 public class ObjectInstantiationTests {
 	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
@@ -281,6 +306,31 @@ public class ObjectInstantiationTests {
 
       assertEquals("foo", objectDependency.getSomeString());
       assertTrue(list.isEmpty());
+   }
+   
+   private final class RecursiveInstantiator implements Instantiator<Object> {
+      @Override
+      public boolean isAbleToInstantiate(Target<?> target, Parameters parameters) {
+         return instantiator.isAbleToInstantiate(target, parameters);
+      }
+
+      @Override
+      public Object instantiate(Target<?> target, Parameters parameters) {
+         return instantiator.instantiate(target, parameters);
+      }
+   }
+
+   private Instantiator<Object> instantiator = new MultiInstantiator(
+         ImmutableList.of(
+               new IntegerPrimitiveConverter(),
+               new ObjectInstantiator(new RecursiveInstantiator(), new NullDependencyProvider(), new ParanamerParameterNamesProvider())));
+   
+   
+   @Test
+   public void recursiveIsAbleTo() throws Exception {
+      Target<OneIntegerPrimitive> target = Target.create(OneIntegerPrimitive.class,  "root");
+      Parameters parameters = new Parameters(new Parameter("root.anInteger", "42"));
+      assertTrue(instantiator.isAbleToInstantiate(target, parameters));
    }
 	
 	public static class HasDependency {
