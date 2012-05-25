@@ -85,7 +85,7 @@ public class ObjectInstantiatorTests {
 	}
 
 	@Test
-	public void willCallDependencyInjectorForUninstantiabelParameters() throws Exception {
+	public void willCallDependencyInjectorForUninstantiableParameters() throws Exception {
 		final Target<OneConstructibleArgument> rootTarget = Target.create(OneConstructibleArgument.class, "root");
 		final DependencyProvider mockDependencyProvider = context.mock(DependencyProvider.class);
 		final Target<OneIntegerPrimitive> argTarget = Target.create(OneIntegerPrimitive.class, "arg");
