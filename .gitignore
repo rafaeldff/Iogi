@@ -8,3 +8,4 @@ target/
 .project
 *.swp
 .settings
+bin
