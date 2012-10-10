@@ -231,6 +231,12 @@ public class ObjectInstantiationTests {
 	}
 	
 	@Test
+	public void emptyObjectParametersWillBeInstantiatedAsNull() throws Exception {
+		final TakesOneObject object = iogi.instantiate(Target.create(TakesOneObject.class, "foo"), new Parameter("foo.objectWithInteger", ""));
+		assertNull(object.getObjectWithInteger());
+	}
+	
+	@Test
 	public void emptyDoubleParametersWillBeInstantiatedAsZero() throws Exception {
 		final OneDoublePrimitive object = iogi.instantiate(Target.create(OneDoublePrimitive.class, "foo"), new Parameter("foo.aDouble", ""));
 		assertEquals(0d, object.getADouble(), 0.00d);
