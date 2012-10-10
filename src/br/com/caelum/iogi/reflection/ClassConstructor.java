@@ -17,7 +17,7 @@ import java.util.Map.Entry;
 import static br.com.caelum.iogi.util.IogiCollections.zip;
 
 public class ClassConstructor {
-    private final Set<String> names;
+   private final Set<String> names;
 	private final Constructor<?> constructor;
 
     public ClassConstructor(final Constructor<?> constructor, final ParameterNamesProvider parameterNamesProvider) {
