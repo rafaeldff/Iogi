@@ -102,14 +102,14 @@
 			</exclusions>
 			<scope>test</scope>
 		</dependency>
-                <dependency>
-                  <groupId>org.jmock</groupId>
-                  <artifactId>jmock-legacy</artifactId>
-                  <version>2.5.1</version>
-		    <scope>test</scope>
-                </dependency>
-
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -122,21 +122,22 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-                        <plugin>
-                          <groupId>org.apache.maven.plugins</groupId>
-                          <artifactId>maven-gpg-plugin</artifactId>
-                          <executions>
-                            <execution>
-                              <id>sign-artifacts</id>
-                              <phase>verify</phase>
-                              <goals>
-                                <goal>sign</goal>
-                              </goals>
-                            </execution>
-                          </executions>
-                        </plugin>
-                      </plugins>
-                      <sourceDirectory>src</sourceDirectory>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
 	</build>
 </project>
