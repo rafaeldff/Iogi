@@ -105,7 +105,7 @@ public class ParametersTests {
 	}
 	
     @Test
-	public void foo() {
+	public void parametersHaveIndexedParameters() {
         Parameter p0 = new Parameter("foo[1]", "10");
         Parameter p1 = new Parameter("foo[0]", "00");
         Parameter p2 = new Parameter("foo[2]", "20");
@@ -116,6 +116,9 @@ public class ParametersTests {
         assertEquals(result.get(0), p1);
         assertEquals(result.get(1), p0);
         assertEquals(result.get(2), p2);
+        
+        result = parameters.forTarget(Target.create(Object.class, "bar"));
+        assertEquals(result.get(0), p3);
 	}
 	
 	private Parameters parametersNamed(final String... names) {
