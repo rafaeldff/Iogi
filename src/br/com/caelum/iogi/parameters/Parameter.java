@@ -67,8 +67,10 @@ public class Parameter implements Comparable<Parameter> {
 	
 	private int getIndex(String parameterName) {
 		Matcher m1 = INDEX_PATTERN.matcher(parameterName);
-		m1.find();
-		return Integer.parseInt(m1.group(1));
+		if (m1.find()) {
+			return Integer.parseInt(m1.group(1));
+		}
+		return -1;
 	}
 	
 	@Override
