@@ -1,12 +1,15 @@
 package br.com.caelum.iogi.parameters;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
-public class Parameter {
+public class Parameter implements Comparable<Parameter> {
 	private static final Pattern DECORATION_REGEX = Pattern.compile("\\[\\d+\\]$");
+	private static final Pattern INDEX_PATTERN = Pattern.compile("\\[([^\\]]+)]");
+
 	private final String value;
 	private final ImmutableList<String> nameComponents;
 
@@ -56,6 +59,16 @@ public class Parameter {
 	
 	public boolean isDecorated() {
 		return DECORATION_REGEX.matcher(getFirstNameComponentWithDecoration()).find();
+	}
+	
+	public int compareTo(Parameter o) {
+		return getIndex(getName()) - getIndex(o.getName());
+	}
+	
+	private int getIndex(String parameterName) {
+		Matcher m1 = INDEX_PATTERN.matcher(parameterName);
+		m1.find();
+		return Integer.parseInt(m1.group(1));
 	}
 	
 	@Override
