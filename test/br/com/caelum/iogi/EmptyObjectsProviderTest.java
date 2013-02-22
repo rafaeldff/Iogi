@@ -37,7 +37,6 @@ public class EmptyObjectsProviderTest {
    
    private Class<?> classThatMayBeEmpty = MayBeEmpty.class;
    private Supplier<MayBeEmpty> emptyValueSupplier = new Supplier<MayBeEmpty>() {
-      @Override
       public MayBeEmpty get() {
          return new MayBeEmpty();
       }
@@ -123,12 +122,10 @@ public class EmptyObjectsProviderTest {
                new StringConverter(),
                new ObjectInstantiator(new RecursiveInstantiator(), provider, new ParanamerParameterNamesProvider())));
    private final class RecursiveInstantiator implements Instantiator<Object> {
-      @Override
       public boolean isAbleToInstantiate(Target<?> target) {
          return instantiator.isAbleToInstantiate(target);
       }
 
-      @Override
       public Object instantiate(Target<?> target, Parameters parameters) {
          return instantiator.instantiate(target, parameters);
       }
