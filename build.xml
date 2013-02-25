@@ -23,6 +23,7 @@
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="main.classes.dir" value="${build.dir}/main/classes"/>
 	<property name="tests.classes.dir" value="${build.dir}/tests/classes"/>
+	<property name="tests.synthetic_classes.dir" value="${basedir}/testBytecode"/>
 	<property name="tests.reports.dir" value="${build.dir}/tests/reports"/>
 
 	<property name="main.target.dir" value="${build.dir}/target" />
@@ -42,6 +43,7 @@
 			<include name="**/*.jar" />
 		</fileset>
 		<path path="${main.classes.dir}"/>
+		<path path="${tests.synthetic_classes.dir}"/>
 		<path path="${tests.classes.dir}"/>
 	</path>
 	
