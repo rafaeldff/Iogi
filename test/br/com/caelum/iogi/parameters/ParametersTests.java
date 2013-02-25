@@ -1,28 +1,27 @@
 package br.com.caelum.iogi.parameters;
 
-import br.com.caelum.iogi.fixtures.TwoArguments;
-import br.com.caelum.iogi.reflection.ClassConstructor;
-import br.com.caelum.iogi.reflection.Target;
-import br.com.caelum.iogi.spi.ParameterNamesProvider;
-import com.google.common.collect.Lists;
-
-import org.hamcrest.Matchers;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.junit.Test;
+import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.junit.Test;
+
+import br.com.caelum.iogi.fixtures.TwoArguments;
+import br.com.caelum.iogi.reflection.ClassConstructor;
+import br.com.caelum.iogi.reflection.Target;
+import br.com.caelum.iogi.spi.ParameterNamesProvider;
+
+import com.google.common.collect.Lists;
 
 public class ParametersTests {
 	private final Mockery context = new Mockery();	
@@ -103,6 +102,23 @@ public class ParametersTests {
 		
 		assertTrue(parameters.hasRelatedTo(Target.create(Object.class, "name")));
 		assertFalse(parameters.hasRelatedTo(Target.create(Object.class, "other")));
+	}
+	
+    @Test
+	public void parametersHaveIndexedParameters() {
+        Parameter p0 = new Parameter("foo[1]", "10");
+        Parameter p1 = new Parameter("foo[0]", "00");
+        Parameter p2 = new Parameter("foo[2]", "20");
+        Parameter p3 = new Parameter("bar", "99");
+
+        Parameters parameters = new Parameters(p0, p1, p2, p3);
+        List<Parameter> result = parameters.forTarget(Target.create(Object.class, "foo"));
+        assertEquals(result.get(0), p1);
+        assertEquals(result.get(1), p0);
+        assertEquals(result.get(2), p2);
+        
+        result = parameters.forTarget(Target.create(Object.class, "bar"));
+        assertEquals(result.get(0), p3);
 	}
 	
 	private Parameters parametersNamed(final String... names) {

@@ -1,6 +1,9 @@
 package br.com.caelum.iogi.parameters;
 
 
+import static java.util.Collections.sort;
+import static java.util.Collections.unmodifiableList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,11 +17,11 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public class Parameters {
+    
 	private final ListMultimap<String, Parameter> parametersByFirstNameComponent;
 	
 	public Parameters(final Parameter... parameters) {
@@ -36,11 +39,13 @@ public class Parameters {
 			firstNameComponentToParameterMap.put(parameter.getFirstNameComponent(), parameter);
 		}
 		
-		return Multimaps.unmodifiableListMultimap(firstNameComponentToParameterMap);
+		return firstNameComponentToParameterMap;
 	}
 
 	public List<Parameter> forTarget(final Target<?> target) {
-		return parametersByFirstNameComponent.get(target.getName());
+		List<Parameter> list = parametersByFirstNameComponent.get(target.getName());
+		sort(list);
+		return unmodifiableList(list);
 	}
 	
 	public Parameter namedAfter(final Target<?> target) {
