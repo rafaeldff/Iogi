@@ -62,3 +62,27 @@ final House house = iogi.instantiate(target, parameter);
 assertThat(house.cat.firstLeg.id, is(equalTo(42)));
 
 
+h2. Installing
+
+Altough some old versions can be found in mvnrepository, Iogi is currently distributed
+through sonatype repositories. So, if you are using maven, you can simply add the following
+dependency to your pom.xml:
+
+bc.. <dependency>
+         <groupId>br.com.caelum</groupId>
+         <artifactId>iogi</artifactId>
+         <version>0.9.2</version>
+     </dependency>
+
+And add sonatype repository:
+
+bc.. <repository>
+         <id>sonatype-oss-public</id>
+         <url>http://oss.sonatype.org/content/groups/public/</url>
+         <releases>
+             <enabled>true</enabled>
+         </releases>
+         <snapshots>
+             <enabled>true</enabled>
+         </snapshots>
+     </repository>
