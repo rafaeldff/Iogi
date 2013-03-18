@@ -62,7 +62,7 @@ final House house = iogi.instantiate(target, parameter);
 assertThat(house.cat.firstLeg.id, is(equalTo(42)));
 
 
-h2. Installing
+h2. Installing with Maven
 
 Altough some old versions can be found in mvnrepository, Iogi is currently distributed
 through sonatype repositories. So, if you are using maven, you can simply add the following
