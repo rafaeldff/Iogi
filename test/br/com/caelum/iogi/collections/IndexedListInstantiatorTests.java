@@ -38,6 +38,18 @@ public class IndexedListInstantiatorTests {
 		assertThat(list, contains(1, 2));
 	}
 	
+    @Test
+    public void canInstantiateAListOfStringsWithOrder() throws Exception {
+        final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfInteger").getGenericType();
+        final Target<List<Integer>> target = new Target<List<Integer>>(parameterizedListType, "list");
+        
+        Parameter[] parameters = { new Parameter("list[0]", "10"), new Parameter("list[2]", "30"), new Parameter("list[1]", "20") };
+        final List<Integer> list = iogi.instantiate(target, parameters );
+        System.out.println(list);
+        
+        assertThat(list, contains(10, 20, 30));
+    }
+    
 	@Test
 	public void canInstantiateAListOfStringsAtSpacedIntervals() throws Exception {
 		final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfInteger").getGenericType();
