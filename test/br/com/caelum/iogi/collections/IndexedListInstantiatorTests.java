@@ -45,7 +45,6 @@ public class IndexedListInstantiatorTests {
         
         Parameter[] parameters = { new Parameter("list[0]", "10"), new Parameter("list[2]", "30"), new Parameter("list[1]", "20") };
         final List<Integer> list = iogi.instantiate(target, parameters );
-        System.out.println(list);
         
         assertThat(list, contains(10, 20, 30));
     }
