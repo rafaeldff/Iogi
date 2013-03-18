@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Type;
@@ -121,6 +122,21 @@ public class IndexedListInstantiatorTests {
 		 
 		 iogi.instantiate(target, parameter);
 	}
+	
+	@Test
+  public void willIgnoreInvalidListEntries() throws Exception {
+	  final Type type = ContainsParameterizedList.class.getDeclaredField("listOfOneString").getGenericType();
+    final Target<List<OneString>> target = new Target<List<OneString>>(type, "list");
+    final List<OneString> list = iogi.instantiate(target, 
+        new Parameter("list[0].someString", "ha"),
+        new Parameter("irrelevant", "no"),
+        new Parameter("list", "nope"),
+        new Parameter("list.someString", "never"),
+        new Parameter("list[1].someString", "he"));
+    
+    assertEquals("ha", list.get(0).getSomeString());
+    assertEquals("he", list.get(1).getSomeString());
+  }
 	
 	@Test
 	public void canInstantiateACollection() throws Exception {
