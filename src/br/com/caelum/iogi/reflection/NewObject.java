@@ -69,7 +69,7 @@ public class NewObject {
             for (final Method setterMethod: ScalaSetter.settersOf(object)) {
             	setters.add(new ScalaSetter(setterMethod, object));
             }
-
+            
             return Collections.unmodifiableList(setters);
         }
 
@@ -116,7 +116,7 @@ public class NewObject {
 		static List<Method> settersOf(Object object) {
 			return new Mirror().on(object.getClass()).reflectAll().methodsMatching(new Matcher<Method>() {
 	            public boolean accepts(final Method method) {
-	                return method.getName().startsWith("set");
+	                return !method.isBridge() && method.getName().startsWith("set");
 	            }
 	        });
 		}
