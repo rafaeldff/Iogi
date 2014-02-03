@@ -112,7 +112,6 @@ public class IndexedListInstantiatorTests {
 		assertThat(secondList, contains(20, 21));
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test(expected=InvalidTypeException.class)
 	public void ifTargetIsAListButIsNotParameterizedThrowAnInvalidTypeException() throws Exception {
 		 final Type rawListType = List.class;

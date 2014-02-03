@@ -63,7 +63,6 @@ public class CyclingListInstantiatonTests {
 		assertEquals(0, second);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test(expected=InvalidTypeException.class)
 	public void ifTargetIsAListButIsNotParameterizedThrowAnInvalidTypeException() throws Exception {
 		 final Type rawListType = List.class;
