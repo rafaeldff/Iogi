@@ -1,6 +1,7 @@
 package br.com.caelum.iogi.reflection;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,7 +117,9 @@ public class NewObject {
 		static List<Method> settersOf(Object object) {
 			return new Mirror().on(object.getClass()).reflectAll().methodsMatching(new Matcher<Method>() {
 	            public boolean accepts(final Method method) {
-	                return !method.isBridge() && method.getName().startsWith("set");
+	            	return !method.isBridge() && !method.isSynthetic()
+	                		&& !Modifier.isAbstract(method.getModifiers())
+	                		&& method.getName().startsWith("set");
 	            }
 	        });
 		}
