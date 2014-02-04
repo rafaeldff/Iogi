@@ -1,7 +1,6 @@
 package br.com.caelum.iogi.reflection;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -58,7 +57,6 @@ public class GenericEntityIdTest {
 		final Parameter parameter = new Parameter("product.id", "42");
 		final Product product = iogi.instantiate(target, parameter);
 
-		assertEquals("product id", new Integer(42), product.getId());
 		assertThat(product.getId(), is(42));
 	}
 
