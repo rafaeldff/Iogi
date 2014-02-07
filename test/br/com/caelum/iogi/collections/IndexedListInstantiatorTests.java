@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -113,7 +112,6 @@ public class IndexedListInstantiatorTests {
 		assertThat(secondList, contains(20, 21));
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test(expected=InvalidTypeException.class)
 	public void ifTargetIsAListButIsNotParameterizedThrowAnInvalidTypeException() throws Exception {
 		 final Type rawListType = List.class;
