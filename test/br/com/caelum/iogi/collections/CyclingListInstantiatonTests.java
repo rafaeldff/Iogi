@@ -27,7 +27,6 @@ import br.com.caelum.iogi.util.NullDependencyProvider;
 public class CyclingListInstantiatonTests {
 	private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void canInstantiateAListOfObjects() throws Exception {
 		final Parameter firstParameter = new Parameter("root.someString", "bla");
@@ -35,8 +34,8 @@ public class CyclingListInstantiatonTests {
 		
 		final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfOneString").getGenericType();
 		
-		final Target<List> target = new Target(parameterizedListType, "root" );
-		final List objects = iogi.instantiate(target, firstParameter, secondParameter);
+		final Target<List<OneString>> target = new Target<List<OneString>>(parameterizedListType, "root" );
+		final List<OneString> objects = iogi.instantiate(target, firstParameter, secondParameter);
 		
 		assertEquals(2, objects.size());
 		final OneString first = (OneString)objects.get(0);
@@ -45,7 +44,6 @@ public class CyclingListInstantiatonTests {
 		assertEquals(second.getSomeString(), "ble");
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void canInstantiateAListOfPrimitives() throws Exception {
 		final Parameter firstParameter = new Parameter("root", "1");
@@ -53,8 +51,8 @@ public class CyclingListInstantiatonTests {
 		
 		final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfInteger").getGenericType();
 		
-		final Target<List> target = new Target(parameterizedListType, "root");
-		final List objects = iogi.instantiate(target, firstParameter, secondParameter);
+		final Target<List<Integer>> target = new Target<List<Integer>>(parameterizedListType, "root");
+		final List<Integer> objects = iogi.instantiate(target, firstParameter, secondParameter);
 		
 		assertEquals(2, objects.size());
 		final int first = (Integer) objects.get(0);
@@ -63,6 +61,7 @@ public class CyclingListInstantiatonTests {
 		assertEquals(0, second);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Test(expected=InvalidTypeException.class)
 	public void ifTargetIsAListButIsNotParameterizedThrowAnInvalidTypeException() throws Exception {
 		 final Type rawListType = List.class;
@@ -72,7 +71,6 @@ public class CyclingListInstantiatonTests {
 		 iogi.instantiate(target, parameter);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void canInstantiateAListWhoseElementsHaveMoreThanOneConstructorParameter() throws Exception {
 		final Parameter p1 = new Parameter("root.one", "1");
@@ -82,8 +80,8 @@ public class CyclingListInstantiatonTests {
 		
 		final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfTwoArguments").getGenericType();
 		
-		final Target<List> target = new Target(parameterizedListType, "root");
-		final List objects = iogi.instantiate(target, p1, p2, p3, p4);
+		final Target<List<TwoArguments>> target = new Target<List<TwoArguments>>(parameterizedListType, "root");
+		final List<TwoArguments> objects = iogi.instantiate(target, p1, p2, p3, p4);
 		
 		assertEquals(2, objects.size());
 		final TwoArguments first = (TwoArguments)objects.get(0);
@@ -113,13 +111,12 @@ public class CyclingListInstantiatonTests {
 		assertEquals("blu", root.getObject().getSomeString());
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void willInstantiateAnEmptyListIfGivenNoAppropriatedParameters() throws Exception {
 		final Type parameterizedListType = ContainsParameterizedList.class.getDeclaredField("listOfOneString").getGenericType();
 		
-		final Target<List> target = new Target(parameterizedListType, "root");
-		final List objects = iogi.instantiate(target);
+		final Target<List<OneString>> target = new Target<List<OneString>>(parameterizedListType, "root");
+		final List<OneString> objects = iogi.instantiate(target);
 		
 		assertTrue(objects.isEmpty());
 	}

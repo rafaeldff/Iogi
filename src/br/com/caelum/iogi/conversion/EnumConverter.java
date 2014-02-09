@@ -43,7 +43,7 @@ public class EnumConverter extends TypeConverter<Object> {
 		}
 	}
 	
-	@SuppressWarnings("unchecked") //SupressWarnings ok because at this point we know type is an Enum
+	@SuppressWarnings({ "unchecked", "rawtypes" }) //SupressWarnings ok because at this point we know type is an Enum
 	private Object instantiateFromName(final Class<?> type, final String name, final Target<?> to) {
 		try {
 			final Class<? extends Enum> enumClass = (Class<? extends Enum>) type;

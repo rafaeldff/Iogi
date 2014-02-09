@@ -115,7 +115,8 @@ public class IndexedListInstantiatorTests {
 	@Test(expected=InvalidTypeException.class)
 	public void ifTargetIsAListButIsNotParameterizedThrowAnInvalidTypeException() throws Exception {
 		 final Type rawListType = List.class;
-		 final Target<List> target = new Target<List>(rawListType, "foo");
+		 @SuppressWarnings("rawtypes")
+		final Target<List> target = new Target<List>(rawListType, "foo");
 		 final Parameter parameter = new Parameter("foo[0].bar", "baz");
 		 
 		 iogi.instantiate(target, parameter);
