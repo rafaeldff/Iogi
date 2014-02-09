@@ -6,7 +6,6 @@ import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
 import com.google.common.collect.Lists;
 
-import org.hamcrest.Matchers;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
@@ -19,10 +18,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class ParametersTests {
 	private final Mockery context = new Mockery();	

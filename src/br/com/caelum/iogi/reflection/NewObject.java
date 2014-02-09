@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.vidageek.mirror.dsl.Matcher;
 import net.vidageek.mirror.dsl.Mirror;
+import net.vidageek.mirror.list.dsl.Matcher;
 import br.com.caelum.iogi.Instantiator;
 import br.com.caelum.iogi.parameters.Parameters;
 
@@ -115,11 +115,9 @@ public class NewObject {
         }
 
 		static List<Method> settersOf(Object object) {
-			return new Mirror().on(object.getClass()).reflectAll().methodsMatching(new Matcher<Method>() {
+			return new Mirror().on(object.getClass()).reflectAll().setters().matching(new Matcher<Method>() {
 	            public boolean accepts(final Method method) {
-	            	return !method.isBridge() && !method.isSynthetic()
-	                		&& !Modifier.isAbstract(method.getModifiers())
-	                		&& method.getName().startsWith("set");
+	            	return !method.isBridge() && !method.isSynthetic() && !Modifier.isAbstract(method.getModifiers());
 	            }
 	        });
 		}
@@ -135,7 +133,7 @@ public class NewObject {
     	}
 
     	static List<Method> settersOf(Object object) {
-    		return new Mirror().on(object.getClass()).reflectAll().methodsMatching(new Matcher<Method>() {
+    		return new Mirror().on(object.getClass()).reflectAll().methods().matching(new Matcher<Method>() {
     			public boolean accepts(final Method method) {
     				return method.getName().endsWith("_$eq");
     			}
