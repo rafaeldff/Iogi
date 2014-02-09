@@ -34,7 +34,6 @@ public class EmptyObjectsProvider implements DependencyProvider {
       this.emptySuppliers = emptyInstances;
    }
 
-   @Override
    public boolean canProvide(Target<?> target) {
       return target.getClassType().isArray() || selfCanProvide(target) || underlying.canProvide(target);
    }
@@ -44,7 +43,6 @@ public class EmptyObjectsProvider implements DependencyProvider {
       return emptySuppliers.containsKey(targetType);
    }
 
-   @Override
    public Object provide(Target<?> target) {
       if (target.getClassType().isArray()) {
          return emptyArrayFor(target);
@@ -70,7 +68,6 @@ public class EmptyObjectsProvider implements DependencyProvider {
       
       public static Supplier<Object[]> objectArraySupplier() {
          return new Supplier<Object[]>() {
-            @Override
             public Object[] get() {
                return new Object[0];
             }
@@ -87,7 +84,6 @@ public class EmptyObjectsProvider implements DependencyProvider {
     
       public static Supplier<Map<Object,Object>> mapSupplier() {
          return new Supplier<Map<Object,Object>>() {
-            @Override
             public Map<Object, Object> get() {
                return Maps.newHashMap();
             }
