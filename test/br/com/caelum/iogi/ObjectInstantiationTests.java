@@ -5,6 +5,7 @@ import br.com.caelum.iogi.collections.ListInstantiator;
 import br.com.caelum.iogi.conversion.TypeConverter;
 import br.com.caelum.iogi.exceptions.InvalidTypeException;
 import br.com.caelum.iogi.fixtures.*;
+import br.com.caelum.iogi.fixtures.generic.Product;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.reflection.ParanamerParameterNamesProvider;
@@ -12,7 +13,9 @@ import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.spi.DependencyProvider;
 import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
+
 import com.google.common.collect.ImmutableList;
+
 import org.junit.Test;
 
 import java.net.URL;
@@ -20,6 +23,7 @@ import java.net.URLClassLoader;
 import java.util.List;
 
 import static br.com.caelum.iogi.conversion.FallbackConverter.fallbackToNull;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class ObjectInstantiationTests {
@@ -305,6 +309,24 @@ public class ObjectInstantiationTests {
 		public String getUninstantiable() {
 			return uninstantiable;
 		}
+	}
+	
+	@Test
+	public void shouldInstantiateEntityWithGenericInterface() {
+		final Target<Product> target = Target.create(Product.class, "product");
+		final Parameter parameter = new Parameter("product.id", "42");
+		final Product product = iogi.instantiate(target, parameter);
+
+		assertThat(product.getId(), is(42));
+	}
+
+	@Test
+	public void shouldInstantiateEntityWithGenericSuperclass() {
+		final Target<Product> target = Target.create(Product.class, "product");
+		final Parameter parameter = new Parameter("product.code", "42");
+		final Product product = iogi.instantiate(target, parameter);
+
+		assertThat(product.getCode(), is(42));
 	}
 
     private static class IogiWithUrlConverter implements Instantiator<Object> {
