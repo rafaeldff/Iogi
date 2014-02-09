@@ -7,7 +7,9 @@ import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.parameters.Parameters;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
+
 import com.google.common.collect.ImmutableList;
+
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
@@ -23,7 +25,6 @@ public class ClassConstructorTests {
 	private final Constructor<Foo> fooConstructor;
 	private final Instantiator<?> primitiveInstantiator;
 	private final Mockery context;
-    private DependenciesInjector dependenciesInjector = DependenciesInjector.nullDependenciesInjector();
 
     public ClassConstructorTests() throws SecurityException, NoSuchMethodException {
 		fooConstructor = Foo.class.getConstructor(String.class, String.class);
@@ -40,7 +41,8 @@ public class ClassConstructorTests {
                 new ClassConstructor(fooConstructor, providingNames("one", "two")),
                 new Parameters(parameters),
                 nullDependenciesInjector);
-        NewObject newObject = constructor.instantiate((Instantiator<Object>) primitiveInstantiator);
+        @SuppressWarnings("unchecked")
+		NewObject newObject = constructor.instantiate((Instantiator<Object>) primitiveInstantiator);
         final Foo foo = (Foo) newObject.value();
 		assertEquals("a", foo.getOne());
 		assertEquals("b", foo.getTwo());

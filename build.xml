@@ -75,7 +75,10 @@
 	</target>
 
 	<target name="testsCompiled" depends="mainCompiled">
-		<javac classpathref="testsClasspath" srcdir="${tests.source.dir}" destdir="${tests.classes.dir}" debug="true"/>
+		<javac includeantruntime="false" classpathref="testsClasspath" srcdir="${tests.source.dir}" source="1.5" target="1.5" destdir="${tests.classes.dir}" debug="true">
+                  <compilerarg value="-Xlint:unchecked"/>
+                  <compilerarg value="-Xlint:-options"/>
+                </javac>
 		<copy todir="${tests.classes.dir}">
 			<fileset dir="${tests.source.dir}">
 				<exclude name="**/*.java"/>
@@ -84,7 +87,9 @@
 	</target>
 
 	<target name="mainCompiled" depends="buildPrepared">
-		<javac classpathref="mainClasspath" source="1.5" target="1.5" srcdir="${main.source.dir}" destdir="${main.classes.dir}" debug="true"/>
+		<javac includeantruntime="false" classpathref="mainClasspath" source="1.5" target="1.5" srcdir="${main.source.dir}" destdir="${main.classes.dir}" debug="true">
+                  <compilerarg value="-Xlint:-options"/>
+                </javac>
 	</target>
 
 	<target name="buildPrepared">
