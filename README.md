@@ -3,7 +3,7 @@
 Iogi is a small library for instantiating objects (and graphs therof) in Java.  It's primary motivation is to help with
 unmarshalling request parameters in Web applications.
 
-The project was born as a spin-off of the "VRaptor Web Framework":http://vraptor.caelum.com.br/en/.  Many frameworks use OGLN
+The project was born as a spin-off of the [VRaptor Web Framework](http://vraptor.caelum.com.br/en/).  Many frameworks use OGLN
 to construct objects, but, as it's name atests, OGNL is most useful as a language for *navigating* object graphs.  As such,
 it is oriented around properties as getter/setter pairs. Iogi, on the other hand, is able to instantiate objects through
 constructor parameters or setters. Iogi also supports dependency injection, so you can inject arbitrary objects (perhaps with
@@ -61,7 +61,7 @@ assertThat(house.cat.firstLeg.id, is(equalTo(42)));
 
 Altough some old versions can be found in mvnrepository, Iogi is currently distributed
 through sonatype repositories. So, if you are using maven, you can simply add the following
-dependency to your pom.xml:
+dependency to your `pom.xml`:
 
 ```xml
 <dependency>
