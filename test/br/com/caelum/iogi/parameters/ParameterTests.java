@@ -53,4 +53,10 @@ public class ParameterTests {
 		assertTrue(new Parameter("asdf[0].k","").isDecorated()); 
 		assertFalse(new Parameter("asdf.k","").isDecorated()); 
 	}
+
+	@Test
+	public void isDecoratedIfFirstnameComponentHasAStringBracket() throws Exception {
+		assertTrue(new Parameter("asdf[name].k","").isDecorated()); 
+		assertFalse(new Parameter("asdf.k","").isDecorated()); 
+	}
 }

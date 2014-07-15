@@ -6,7 +6,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 public class Parameter {
-	private static final Pattern DECORATION_REGEX = Pattern.compile("\\[\\d+\\]$");
+	private static final Pattern DECORATION_REGEX = Pattern.compile("\\[\\w+\\]$");
 	private final String value;
 	private final ImmutableList<String> nameComponents;
 
