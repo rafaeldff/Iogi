@@ -20,7 +20,6 @@ public class EmptyObjectsProvider implements DependencyProvider {
             .put(List.class, CollectionSuppliers.listSupplier())
             .put(Set.class, CollectionSuppliers.setSupplier())
             .put(Map.class, CollectionSuppliers.mapSupplier())
-            .put(Object[].class, CollectionSuppliers.objectArraySupplier())
             .build();
       return new EmptyObjectsProvider(underlying, javaEmptySuppliers);
    }
@@ -65,14 +64,6 @@ public class EmptyObjectsProvider implements DependencyProvider {
          };
       }
       
-      public static Supplier<Object[]> objectArraySupplier() {
-         return new Supplier<Object[]>() {
-            public Object[] get() {
-               return new Object[0];
-            }
-         };
-      }
-
       public static Supplier<Set<Object>> setSupplier() { 
          return new Supplier<Set<Object>>() {
             public Set<Object> get() {
