@@ -94,6 +94,9 @@ public class NewObject {
         protected abstract String propertyName();
 
         private Type type() {
+        	if(setter.getGenericParameterTypes().length == 0) {
+        		return null;
+        	}
             return setter.getGenericParameterTypes()[0];
         }
 

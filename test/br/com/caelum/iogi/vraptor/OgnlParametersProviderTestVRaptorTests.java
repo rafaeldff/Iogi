@@ -125,4 +125,28 @@ public class OgnlParametersProviderTestVRaptorTests {
         assertThat(house.owners, hasSize(1));
         assertThat(house.owners.get(0), is(equalTo("guilherme")));
     }
+	
+	static class MyClass {
+		private String name;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+		public void setEmptyProperty() {
+			
+		}
+	}
+	
+	@Test
+	public void setterWithoutProperty() {
+		final Target<MyClass> target = Target.create(MyClass.class, "foo");
+		final Parameter parameter = new Parameter("foo.name", "bar");
+		final MyClass my = iogi.instantiate(target, parameter);
+		assertThat(my.getName(), is(equalTo("bar")));
+	}
 }
