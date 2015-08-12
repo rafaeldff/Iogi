@@ -94,9 +94,6 @@ public class NewObject {
         protected abstract String propertyName();
 
         private Type type() {
-        	if(setter.getGenericParameterTypes().length == 0) {
-        		return null;
-        	}
             return setter.getGenericParameterTypes()[0];
         }
 
@@ -122,6 +119,7 @@ public class NewObject {
 	            public boolean accepts(final Method method) {
 	            	return !method.isBridge() && !method.isSynthetic()
 	                		&& !Modifier.isAbstract(method.getModifiers())
+	                		&& method.getParameterCount() == 1
 	                		&& method.getName().startsWith("set");
 	            }
 	        });
