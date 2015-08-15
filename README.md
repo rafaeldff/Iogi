@@ -67,7 +67,7 @@ dependency to your `pom.xml`:
 <dependency>
 	<groupId>br.com.caelum</groupId>
 	<artifactId>iogi</artifactId>
-	<version>0.9.2</version>
+	<version>1.0.0</version>
 </dependency>
 ```
 
