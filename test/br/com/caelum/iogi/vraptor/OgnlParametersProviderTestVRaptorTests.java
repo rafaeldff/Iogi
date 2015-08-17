@@ -143,7 +143,7 @@ public class OgnlParametersProviderTestVRaptorTests {
 	}
 	
 	@Test
-	public void setterWithoutProperty() {
+	public void shouldIgnoreMethodsWithSetPrefix() {
 		final Target<MyClass> target = Target.create(MyClass.class, "foo");
 		final Parameter parameter = new Parameter("foo.name", "bar");
 		final MyClass my = iogi.instantiate(target, parameter);
