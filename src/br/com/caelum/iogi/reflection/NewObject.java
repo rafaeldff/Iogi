@@ -119,6 +119,7 @@ public class NewObject {
 	            public boolean accepts(final Method method) {
 	            	return !method.isBridge() && !method.isSynthetic()
 	                		&& !Modifier.isAbstract(method.getModifiers())
+	                		&& method.getParameterTypes().length == 1
 	                		&& method.getName().startsWith("set");
 	            }
 	        });
