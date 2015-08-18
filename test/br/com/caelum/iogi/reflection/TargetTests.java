@@ -3,6 +3,8 @@ package br.com.caelum.iogi.reflection;
 import br.com.caelum.iogi.DependenciesInjector;
 import br.com.caelum.iogi.fixtures.OnlyOneProtectedConstructor;
 import br.com.caelum.iogi.spi.ParameterNamesProvider;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.reflect.AccessibleObject;
@@ -26,7 +28,7 @@ public class TargetTests {
       assertEquals(1, classConstructors.size());
    }
    
-   @Test
+   @Test @Ignore
    public void willNotListSyntheticConstructors() throws Exception {
      Target<?> target = Target.create(Class.forName("WithSyntheticConstructor"), "");
      Constructors constructors = target.constructors(nullNamesProvider, DependenciesInjector.nullDependenciesInjector());
