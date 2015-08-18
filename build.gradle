@@ -1,12 +1,11 @@
-apply plugin: 'java'
-apply plugin: 'maven-publish'
+apply plugin: 'maven'
+apply plugin: 'signing'
 apply plugin: 'eclipse'
+apply plugin: 'java'
 
-buildscript {
-  dependencies {
-    classpath files('${projectDir}/testBytecode')
-  }
-} 
+group = "br.com.caelum"
+version = "1.0.1"
+ext.packaging = 'jar'
 
 repositories {
     mavenCentral()
@@ -22,6 +21,75 @@ dependencies {
     testCompile group: 'org.jmock', name: 'jmock', version: '2.5.1'
     testCompile group: 'org.jmock', name: 'jmock-legacy', version: '2.5.1'
     testCompile 'junit:junit:4.11'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from tasks.javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'Immutable Object Graph Instantiator'
+        packaging 'jar'
+        artifactId 'iogi'
+        description 'Library for instantiating graphs of objects'
+        url 'https://github.com/rafaeldff/Iogi'
+
+        scm {
+          connection 'scm:git:git://github.com/rafaeldff/Iogi'
+          developerConnection 'scm:git:git@github.com:rafaeldff/Iogi.git'
+          url 'https://github.com/rafaeldff/Iogi'
+        }
+
+        licenses {
+          license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        developers {
+          developer {
+            id 'rafaeldff'
+            name 'Rafael Ferreira'
+          }
+          developer {
+            id 'turini'
+            name 'Rodrigo Turini'
+          }
+        }
+      }
+    }
+  }
 }
 
 sourceSets {
@@ -40,19 +108,6 @@ sourceSets {
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId 'br.com.caelum'
-            artifactId 'iogi'
-            version '1.0.1-SNAPSHOT'
-
-            from components.java
-        }
-    }
-}
-    
 task unitTest(type: Test) {
     classpath = project.sourceSets.test.runtimeClasspath + files("${projectDir}/testBytecode")  
 }
-
