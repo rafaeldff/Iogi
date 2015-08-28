@@ -1,4 +1,4 @@
-# Iogi - Immutable Object Graph Instantiation
+# Immutable Object Graph Instantiation
 
 [![][maven img]][maven]
 [![][license img]][license]
