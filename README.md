@@ -1,3 +1,14 @@
+# Iogi - Immutable Object Graph Instantiation
+
+[![][maven img]][maven]
+[![][license img]][license]
+
+[maven]:http://search.maven.org/#search|gav|1|g:"br.com.caelum"%20AND%20a:"iogi"
+[maven img]:https://maven-badges.herokuapp.com/maven-central/br.com.caelum/iogi/badge.svg
+
+[license]:LICENSE
+[license img]:https://img.shields.io/badge/License-Apache%202-blue.svg
+
 ## What is Iogi
 
 Iogi is a small library for instantiating objects (and graphs therof) in Java.  It's primary motivation is to help with
