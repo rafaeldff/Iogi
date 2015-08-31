@@ -1,5 +1,6 @@
 # Immutable Object Graph Instantiation
 
+[![Build Status](https://travis-ci.org/rafaeldff/Iogi.svg?branch=master)](https://travis-ci.org/rafaeldff/Iogi)
 [![][maven img]][maven]
 [![][license img]][license]
 
