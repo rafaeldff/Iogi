@@ -96,4 +96,5 @@ And add sonatype repository:
 		<enabled>true</enabled>
 	</snapshots>
 </repository>
+
 ```
