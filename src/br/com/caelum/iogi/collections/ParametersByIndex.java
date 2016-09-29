@@ -5,6 +5,7 @@ package br.com.caelum.iogi.collections;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,10 +36,9 @@ class ParametersByIndex {
 
 	private ListMultimap<Integer, Parameter> groupByIndex(final Parameters parameters, final Target<?> target) {
     final List<Parameter> relevant = parameters.forTarget(target);
-    final List<Parameter> sorted = Ordering.natural().onResultOf(EXTRACT_INDEX_OR_RETURN_NEGATIVE).sortedCopy(relevant);
     final ListMultimap<Integer, Parameter> map = LinkedListMultimap.create();
     
-    for (final Parameter parameter : sorted) {
+    for (final Parameter parameter : relevant) {
       final Integer index = EXTRACT_INDEX_OR_RETURN_NEGATIVE.apply(parameter);
       if (index >= 0)
         map.put(index, parameter);
@@ -48,7 +48,7 @@ class ParametersByIndex {
 	}
 
   public Collection<Integer> indexes() {
-		return firstComponentToParameterMap.keySet();
+		return new TreeSet<Integer>(firstComponentToParameterMap.keySet());
 	}
 
 	public boolean isEmpty() {
