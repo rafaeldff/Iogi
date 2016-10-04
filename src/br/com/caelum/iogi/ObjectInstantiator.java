@@ -25,14 +25,18 @@ public class ObjectInstantiator implements Instantiator<Object> {
 	public Object instantiate(final Target<?> target, final Parameters parameters) {
 		expectingAConcreteTarget(target);
 		
-		final Parameters parametersForTarget = parameters.focusedOn(target);
-
-        return target
-                .constructors(parameterNamesProvider, dependenciesInjector)
-                .compatibleWith(parametersForTarget)
-                .largest()
-                .instantiate(argumentInstantiator)
-                .valueWithPropertiesSet();
+		if(parameters.hasRelatedTo(target)){
+			final Parameters parametersForTarget = parameters.focusedOn(target);
+			
+			 return target
+		         .constructors(parameterNamesProvider, dependenciesInjector)
+	                .compatibleWith(parametersForTarget)
+	                .largest()
+	                .instantiate(argumentInstantiator)
+	                .valueWithPropertiesSet();
+		} else {
+			return null;
+		}
 	}
 
     private <T> void expectingAConcreteTarget(final Target<T> target) {

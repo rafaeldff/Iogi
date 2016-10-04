@@ -107,6 +107,14 @@ public class OgnlParametersProviderTestVRaptorTests {
 		assertThat(house.extraCats, hasSize(1));
 		assertThat(house.extraCats.get(0).id, is(equalTo("guilherme")));
 	}
+	
+	@Test
+	public void returnNullWhenNoParameters() {
+		final Target<Cat> target = Target.create(Cat.class, "cat");
+		final Parameter parameter = new Parameter("cats.id", "1");
+		final Cat cat = iogi.instantiate(target, parameter);
+		assertEquals(cat, null);
+	}
 
 	@Test
     public void removeFromTheCollectionIfAnElementIsCreatedWithinAnArrayButNoFieldIsSet() {
