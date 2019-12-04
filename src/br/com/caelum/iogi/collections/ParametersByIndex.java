@@ -60,6 +60,6 @@ class ParametersByIndex {
 	}
 
 	public int count() {
-		return firstComponentToParameterMap.values().size();
+		return firstComponentToParameterMap.keySet().size();
 	}
 }
