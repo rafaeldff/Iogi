@@ -45,6 +45,7 @@ public class ArrayInstantiationTests {
 	public void canInstantiateAnArrayOfObjects() throws Exception {
 		final Target<OneIntegerPrimitive[]> target = Target.create(OneIntegerPrimitive[].class, "arr");
 		final OneIntegerPrimitive[] array = iogi.instantiate(target, new Parameter("arr[0].anInteger", "99"), new Parameter("arr[1].anInteger", "98"));
+		assertEquals(2, array.length);
 		assertEquals(99, array[0].getAnInteger());
 		assertEquals(98, array[1].getAnInteger());
 	}
@@ -64,6 +65,7 @@ public class ArrayInstantiationTests {
 				new Parameter("arr[0].two", "11"), 
 				new Parameter("arr[1].one", "20"), 
 				new Parameter("arr[1].two", "21"));
+		assertEquals(2, array.length);
 		assertEquals(10, array[0].getOne());
 		assertEquals(11, array[0].getTwo());
 		assertEquals(20, array[1].getOne());
